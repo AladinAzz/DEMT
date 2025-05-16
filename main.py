@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.exception_handlers import http_exception_handler
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from database import engine, get_db
@@ -14,6 +15,9 @@ from models import Base
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DEMT API with Auth")
+
+
+templates = Jinja2Templates(directory="static")
 
 
 @app.post("/token", response_model=security.Token)
@@ -37,8 +41,17 @@ async def custom_unauthorized_handler(request: Request, exc: HTTPException):
 
 @app.get("/", response_class=RedirectResponse)
 async def root(current_agent: Agent = Depends(security.get_current_agent)):
-    return RedirectResponse(url=f"/{current_agent.role}/{current_agent.id_agent}")
+    return RedirectResponse(url=f"/{current_agent.role}")
 
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+
+@app.get("/directeur", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
 
 
 

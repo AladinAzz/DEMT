@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -57,21 +57,34 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 # Dependency for getting current authenticated user
-async def get_current_agent(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Agent:
+async def get_current_agent(
+    request: Request,
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> Agent:
+    # Try to extract token from header
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        # Try to extract from cookies
+        token = request.cookies.get("access_token")
+    else:
+        token = auth_header.replace("Bearer ", "")
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    agent = get_agent_by_username(db, token_data.username)
+
+    agent = get_agent_by_username(db, username)
     if agent is None:
         raise credentials_exception
     return agent

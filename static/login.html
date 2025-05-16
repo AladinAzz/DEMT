@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UNH Rapports - Connexion</title>
   <style>
     * {
@@ -103,32 +103,83 @@
       height: 100%;
       object-fit: cover;
     }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="login-panel">
-      <img src="logo.png" alt="UNH Logo" class="logo">
+      <img src="/static/logo.png" alt="UNH Logo" class="logo">
       <h2>DEMT</h2>
       <p class="subtitle">connectez-vous pour continuer</p>
 
-      <form class="login-form">
-        <label for="email">Identifiant</label>
-        <input type="text" id="email" placeholder="Nom d'utilisateur...">
+      <form id="login-form" class="login-form">
+        <div id="error" class="error-message" style="display: none;">Échec de la connexion.</div>
+
+        <label for="username">Identifiant</label>
+        <input type="text" id="username" name="username" placeholder="Nom d'utilisateur..." required>
 
         <div class="password-section">
           <label for="password">Mot de passe</label>
           <a href="#" class="forgot-link">Mot de passe oublié ?</a>
         </div>
-        <input type="password" id="password" placeholder="Mot de passe 6+ caractères">
+        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
 
-        <button type="submit">Soumettre</button>
+        <button type="submit">s'authentifier</button>
       </form>
     </div>
 
     <div class="image-panel">
-      <img src="data/photo_2025-05-16_19-00-04.jpg" alt="UNH Building">
+      <img src="/static/data/login.jpg" alt="UNH Building">
     </div>
   </div>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorBox = document.getElementById("error");
+
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
+
+      try {
+        const response = await fetch("/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          errorBox.style.display = "block";
+          return;
+        }
+
+        const data = await response.json();
+        const token = data.access_token;
+
+        // Store token in secure cookie
+        document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
+
+        // Redirect to home, where the token will be validated
+        window.location.href = "/";
+      } catch (error) {
+        console.error("Erreur de connexion :", error);
+        errorBox.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
+<!-- This HTML file is a login page for the UNH Rapports application. It includes a form for users to enter their username and password,
+  and handles the submission of the form using JavaScript. The page also includes styling for layout and design. -->
