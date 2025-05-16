@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -26,12 +28,16 @@ async def login_for_access_token(
 # Protect all routes by default:
 app.include_router(router, dependencies=[Depends(security.get_current_agent)])
 
+@app.exception_handler(HTTPException)
+async def custom_unauthorized_handler(request: Request, exc: HTTPException):
+    if exc.status_code == 401 and request.url.path == "/":
+        return RedirectResponse(url="/login")
+    return await http_exception_handler(request, exc)
 
-@app.get("/")
+
+@app.get("/", response_class=RedirectResponse)
 async def root(current_agent: Agent = Depends(security.get_current_agent)):
-    return {"message": f"Hello {current_agent.prenom} {current_agent.nom}, welcome to DEMT1 API!"}
-
-
+    return RedirectResponse(url=f"/profile/{current_agent.id_agent}")
 
 
 
