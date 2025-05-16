@@ -37,7 +37,7 @@ async def custom_unauthorized_handler(request: Request, exc: HTTPException):
 
 @app.get("/", response_class=RedirectResponse)
 async def root(current_agent: Agent = Depends(security.get_current_agent)):
-    return RedirectResponse(url=f"/profile/{current_agent.id_agent}")
+    return RedirectResponse(url=f"/{current_agent.role}/{current_agent.id_agent}")
 
 
 
