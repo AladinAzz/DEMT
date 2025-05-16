@@ -1,0 +1,352 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+
+import crud, models, schemas
+from database import get_db
+
+router = APIRouter()
+
+# Helper to raise 404 if not found
+def get_or_404(obj, model_name: str):
+    if obj is None:
+        raise HTTPException(status_code=404, detail=f"{model_name} not found")
+    return obj
+
+# ----- Agent -----
+@router.get("/agents", response_model=List[schemas.AgentRead])
+def list_agents(db: Session = Depends(get_db)):
+    return crud.AgentCRUD.get_all(db)
+
+@router.get("/agents/{agent_id}", response_model=schemas.AgentRead)
+def get_agent(agent_id: int, db: Session = Depends(get_db)):
+    agent = crud.AgentCRUD.get(db, agent_id)
+    return get_or_404(agent, "Agent")
+
+@router.post("/agents", response_model=schemas.AgentRead, status_code=status.HTTP_201_CREATED)
+def create_agent(agent: schemas.AgentCreate, db: Session = Depends(get_db)):
+    return crud.AgentCRUD.create(db, agent.dict())
+
+@router.put("/agents/{agent_id}", response_model=schemas.AgentRead)
+def update_agent(agent_id: int, agent: schemas.AgentCreate, db: Session = Depends(get_db)):
+    updated = crud.AgentCRUD.update(db, agent_id, agent.dict())
+    return get_or_404(updated, "Agent")
+
+@router.delete("/agents/{agent_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_agent(agent_id: int, db: Session = Depends(get_db)):
+    success = crud.AgentCRUD.delete(db, agent_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    return
+
+# ----- Bureau -----
+@router.get("/bureaux", response_model=List[schemas.BureauRead])
+def list_bureaux(db: Session = Depends(get_db)):
+    return crud.BureauCRUD.get_all(db)
+
+@router.get("/bureaux/{bureau_id}", response_model=schemas.BureauRead)
+def get_bureau(bureau_id: int, db: Session = Depends(get_db)):
+    bureau = crud.BureauCRUD.get(db, bureau_id)
+    return get_or_404(bureau, "Bureau")
+
+@router.post("/bureaux", response_model=schemas.BureauRead, status_code=status.HTTP_201_CREATED)
+def create_bureau(bureau: schemas.BureauCreate, db: Session = Depends(get_db)):
+    return crud.BureauCRUD.create(db, bureau.dict())
+
+@router.put("/bureaux/{bureau_id}", response_model=schemas.BureauRead)
+def update_bureau(bureau_id: int, bureau: schemas.BureauCreate, db: Session = Depends(get_db)):
+    updated = crud.BureauCRUD.update(db, bureau_id, bureau.dict())
+    return get_or_404(updated, "Bureau")
+
+@router.delete("/bureaux/{bureau_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_bureau(bureau_id: int, db: Session = Depends(get_db)):
+    success = crud.BureauCRUD.delete(db, bureau_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Bureau not found")
+    return
+
+# ----- Direction -----
+@router.get("/directions", response_model=List[schemas.DirectionRead])
+def list_directions(db: Session = Depends(get_db)):
+    return crud.DirectionCRUD.get_all(db)
+
+@router.get("/directions/{direction_id}", response_model=schemas.DirectionRead)
+def get_direction(direction_id: int, db: Session = Depends(get_db)):
+    direction = crud.DirectionCRUD.get(db, direction_id)
+    return get_or_404(direction, "Direction")
+
+@router.post("/directions", response_model=schemas.DirectionRead, status_code=status.HTTP_201_CREATED)
+def create_direction(direction: schemas.DirectionCreate, db: Session = Depends(get_db)):
+    return crud.DirectionCRUD.create(db, direction.dict())
+
+@router.put("/directions/{direction_id}", response_model=schemas.DirectionRead)
+def update_direction(direction_id: int, direction: schemas.DirectionCreate, db: Session = Depends(get_db)):
+    updated = crud.DirectionCRUD.update(db, direction_id, direction.dict())
+    return get_or_404(updated, "Direction")
+
+@router.delete("/directions/{direction_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_direction(direction_id: int, db: Session = Depends(get_db)):
+    success = crud.DirectionCRUD.delete(db, direction_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Direction not found")
+    return
+
+# ----- Chapitre -----
+@router.get("/chapitres", response_model=List[schemas.ChapitreRead])
+def list_chapitres(db: Session = Depends(get_db)):
+    return crud.ChapitreCRUD.get_all(db)
+
+@router.get("/chapitres/{chapitre_id}", response_model=schemas.ChapitreRead)
+def get_chapitre(chapitre_id: int, db: Session = Depends(get_db)):
+    chapitre = crud.ChapitreCRUD.get(db, chapitre_id)
+    return get_or_404(chapitre, "Chapitre")
+
+@router.post("/chapitres", response_model=schemas.ChapitreRead, status_code=status.HTTP_201_CREATED)
+def create_chapitre(chapitre: schemas.ChapitreCreate, db: Session = Depends(get_db)):
+    return crud.ChapitreCRUD.create(db, chapitre.dict())
+
+@router.put("/chapitres/{chapitre_id}", response_model=schemas.ChapitreRead)
+def update_chapitre(chapitre_id: int, chapitre: schemas.ChapitreCreate, db: Session = Depends(get_db)):
+    updated = crud.ChapitreCRUD.update(db, chapitre_id, chapitre.dict())
+    return get_or_404(updated, "Chapitre")
+
+@router.delete("/chapitres/{chapitre_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_chapitre(chapitre_id: int, db: Session = Depends(get_db)):
+    success = crud.ChapitreCRUD.delete(db, chapitre_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Chapitre not found")
+    return
+
+# ----- Projet -----
+@router.get("/projets", response_model=List[schemas.ProjetRead])
+def list_projets(db: Session = Depends(get_db)):
+    return crud.ProjetCRUD.get_all(db)
+
+@router.get("/projets/{projet_id}", response_model=schemas.ProjetRead)
+def get_projet(projet_id: int, db: Session = Depends(get_db)):
+    projet = crud.ProjetCRUD.get(db, projet_id)
+    return get_or_404(projet, "Projet")
+
+@router.post("/projets", response_model=schemas.ProjetRead, status_code=status.HTTP_201_CREATED)
+def create_projet(projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
+    return crud.ProjetCRUD.create(db, projet.dict())
+
+@router.put("/projets/{projet_id}", response_model=schemas.ProjetRead)
+def update_projet(projet_id: int, projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
+    updated = crud.ProjetCRUD.update(db, projet_id, projet.dict())
+    return get_or_404(updated, "Projet")
+
+@router.delete("/projets/{projet_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_projet(projet_id: int, db: Session = Depends(get_db)):
+    success = crud.ProjetCRUD.delete(db, projet_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Projet not found")
+    return
+
+# ----- AchatSurFacture -----
+@router.get("/achats_sur_facture", response_model=List[schemas.AchatSurFactureRead])
+def list_achats(db: Session = Depends(get_db)):
+    return crud.AchatSurFactureCRUD.get_all(db)
+
+@router.get("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
+def get_achat(id_facture: str, db: Session = Depends(get_db)):
+    achat = crud.AchatSurFactureCRUD.get(db, id_facture)
+    return get_or_404(achat, "AchatSurFacture")
+
+@router.post("/achats_sur_facture", response_model=schemas.AchatSurFactureRead, status_code=status.HTTP_201_CREATED)
+def create_achat(achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
+    return crud.AchatSurFactureCRUD.create(db, achat.dict())
+
+@router.put("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
+def update_achat(id_facture: str, achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
+    updated = crud.AchatSurFactureCRUD.update(db, id_facture, achat.dict())
+    return get_or_404(updated, "AchatSurFacture")
+
+@router.delete("/achats_sur_facture/{id_facture}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_achat(id_facture: str, db: Session = Depends(get_db)):
+    success = crud.AchatSurFactureCRUD.delete(db, id_facture)
+    if not success:
+        raise HTTPException(status_code=404, detail="AchatSurFacture not found")
+    return
+
+# ----- Contract -----
+@router.get("/contracts", response_model=List[schemas.ContractRead])
+def list_contracts(db: Session = Depends(get_db)):
+    return crud.ContractCRUD.get_all(db)
+
+@router.get("/contracts/{id_contrat}", response_model=schemas.ContractRead)
+def get_contract(id_contrat: str, db: Session = Depends(get_db)):
+    contract = crud.ContractCRUD.get(db, id_contrat)
+    return get_or_404(contract, "Contract")
+
+@router.post("/contracts", response_model=schemas.ContractRead, status_code=status.HTTP_201_CREATED)
+def create_contract(contract: schemas.ContractCreate, db: Session = Depends(get_db)):
+    return crud.ContractCRUD.create(db, contract.dict())
+
+@router.put("/contracts/{id_contrat}", response_model=schemas.ContractRead)
+def update_contract(id_contrat: str, contract: schemas.ContractCreate, db: Session = Depends(get_db)):
+    updated = crud.ContractCRUD.update(db, id_contrat, contract.dict())
+    return get_or_404(updated, "Contract")
+
+@router.delete("/contracts/{id_contrat}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_contract(id_contrat: str, db: Session = Depends(get_db)):
+    success = crud.ContractCRUD.delete(db, id_contrat)
+    if not success:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    return
+
+# ----- Fournisseur -----
+@router.get("/fournisseurs", response_model=List[schemas.FournisseurRead])
+def list_fournisseurs(db: Session = Depends(get_db)):
+    return crud.FournisseurCRUD.get_all(db)
+
+@router.get("/fournisseurs/{id_fournisseur}", response_model=schemas.FournisseurRead)
+def get_fournisseur(id_fournisseur: int, db: Session = Depends(get_db)):
+    fournisseur = crud.FournisseurCRUD.get(db, id_fournisseur)
+    return get_or_404(fournisseur, "Fournisseur")
+
+@router.post("/fournisseurs", response_model=schemas.FournisseurRead, status_code=status.HTTP_201_CREATED)
+def create_fournisseur(fournisseur: schemas.FournisseurCreate, db: Session = Depends(get_db)):
+    return crud.FournisseurCRUD.create(db, fournisseur.dict())
+
+@router.put("/fournisseurs/{id_fournisseur}", response_model=schemas.FournisseurRead)
+def update_fournisseur(id_fournisseur: int, fournisseur: schemas.FournisseurCreate, db: Session = Depends(get_db)):
+    updated = crud.FournisseurCRUD.update(db, id_fournisseur, fournisseur.dict())
+    return get_or_404(updated, "Fournisseur")
+
+@router.delete("/fournisseurs/{id_fournisseur}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_fournisseur(id_fournisseur: int, db: Session = Depends(get_db)):
+    success = crud.FournisseurCRUD.delete(db, id_fournisseur)
+    if not success:
+        raise HTTPException(status_code=404, detail="Fournisseur not found")
+    return
+
+# ----- BonDeCommande -----
+@router.get("/bons_de_commande", response_model=List[schemas.BonDeCommandeRead])
+def list_bons(db: Session = Depends(get_db)):
+    return crud.BonDeCommandeCRUD.get_all(db)
+
+@router.get("/bons_de_commande/{id_bon}", response_model=schemas.BonDeCommandeRead)
+def get_bon(id_bon: int, db: Session = Depends(get_db)):
+    bon = crud.BonDeCommandeCRUD.get(db, id_bon)
+    return get_or_404(bon, "BonDeCommande")
+
+@router.post("/bons_de_commande", response_model=schemas.BonDeCommandeRead, status_code=status.HTTP_201_CREATED)
+def create_bon(bon: schemas.BonDeCommandeCreate, db: Session = Depends(get_db)):
+    return crud.BonDeCommandeCRUD.create(db, bon.dict())
+
+@router.put("/bons_de_commande/{id_bon}", response_model=schemas.BonDeCommandeRead)
+def update_bon(id_bon: int, bon: schemas.BonDeCommandeCreate, db: Session = Depends(get_db)):
+    updated = crud.BonDeCommandeCRUD.update(db, id_bon, bon.dict())
+    return get_or_404(updated, "BonDeCommande")
+
+@router.delete("/bons_de_commande/{id_bon}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_bon(id_bon: int, db: Session = Depends(get_db)):
+    success = crud.BonDeCommandeCRUD.delete(db, id_bon)
+    if not success:
+        raise HTTPException(status_code=404, detail="BonDeCommande not found")
+    return
+
+# ----- PVDeReception -----
+@router.get("/pvs", response_model=List[schemas.PVDeReceptionRead])
+def list_pvs(db: Session = Depends(get_db)):
+    return crud.PVDeReceptionCRUD.get_all(db)
+
+@router.get("/pvs/{id_pv}", response_model=schemas.PVDeReceptionRead)
+def get_pv(id_pv: str, db: Session = Depends(get_db)):
+    pv = crud.PVDeReceptionCRUD.get(db, id_pv)
+    return get_or_404(pv, "PVDeReception")
+
+@router.post("/pvs", response_model=schemas.PVDeReceptionRead, status_code=status.HTTP_201_CREATED)
+def create_pv(pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
+    return crud.PVDeReceptionCRUD.create(db, pv.dict())
+
+@router.put("/pvs/{id_pv}", response_model=schemas.PVDeReceptionRead)
+def update_pv(id_pv: str, pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
+    updated = crud.PVDeReceptionCRUD.update(db, id_pv, pv.dict())
+    return get_or_404(updated, "PVDeReception")
+
+@router.delete("/pvs/{id_pv}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_pv(id_pv: str, db: Session = Depends(get_db)):
+    success = crud.PVDeReceptionCRUD.delete(db, id_pv)
+    if not success:
+        raise HTTPException(status_code=404, detail="PVDeReception not found")
+    return
+
+# ----- PVDeReceptionDifinitive -----
+@router.get("/pvs_difinitive", response_model=List[schemas.PVDeReceptionDifinitiveRead])
+def list_pvs_dif(db: Session = Depends(get_db)):
+    return crud.PVDeReceptionDifinitiveCRUD.get_all(db)
+
+@router.get("/pvs_difinitive/{id_pv}", response_model=schemas.PVDeReceptionDifinitiveRead)
+def get_pv_dif(id_pv: str, db: Session = Depends(get_db)):
+    pv = crud.PVDeReceptionDifinitiveCRUD.get(db, id_pv)
+    return get_or_404(pv, "PVDeReceptionDifinitive")
+
+@router.post("/pvs_difinitive", response_model=schemas.PVDeReceptionDifinitiveRead, status_code=status.HTTP_201_CREATED)
+def create_pv_dif(pv: schemas.PVDeReceptionDifinitiveCreate, db: Session = Depends(get_db)):
+    return crud.PVDeReceptionDifinitiveCRUD.create(db, pv.dict())
+
+@router.put("/pvs_difinitive/{id_pv}", response_model=schemas.PVDeReceptionDifinitiveRead)
+def update_pv_dif(id_pv: str, pv: schemas.PVDeReceptionDifinitiveCreate, db: Session = Depends(get_db)):
+    updated = crud.PVDeReceptionDifinitiveCRUD.update(db, id_pv, pv.dict())
+    return get_or_404(updated, "PVDeReceptionDifinitive")
+
+@router.delete("/pvs_difinitive/{id_pv}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_pv_dif(id_pv: str, db: Session = Depends(get_db)):
+    success = crud.PVDeReceptionDifinitiveCRUD.delete(db, id_pv)
+    if not success:
+        raise HTTPException(status_code=404, detail="PVDeReceptionDifinitive not found")
+    return
+
+# ----- Facture -----
+@router.get("/factures", response_model=List[schemas.FactureRead])
+def list_factures(db: Session = Depends(get_db)):
+    return crud.FactureCRUD.get_all(db)
+
+@router.get("/factures/{id_facture}", response_model=schemas.FactureRead)
+def get_facture(id_facture: str, db: Session = Depends(get_db)):
+    facture = crud.FactureCRUD.get(db, id_facture)
+    return get_or_404(facture, "Facture")
+
+@router.post("/factures", response_model=schemas.FactureRead, status_code=status.HTTP_201_CREATED)
+def create_facture(facture: schemas.FactureCreate, db: Session = Depends(get_db)):
+    return crud.FactureCRUD.create(db, facture.dict())
+
+@router.put("/factures/{id_facture}", response_model=schemas.FactureRead)
+def update_facture(id_facture: str, facture: schemas.FactureCreate, db: Session = Depends(get_db)):
+    updated = crud.FactureCRUD.update(db, id_facture, facture.dict())
+    return get_or_404(updated, "Facture")
+
+@router.delete("/factures/{id_facture}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_facture(id_facture: str, db: Session = Depends(get_db)):
+    success = crud.FactureCRUD.delete(db, id_facture)
+    if not success:
+        raise HTTPException(status_code=404, detail="Facture not found")
+    return
+
+# ----- HistoriqueEtat -----
+@router.get("/historiques_etat", response_model=List[schemas.HistoriqueEtatRead])
+def list_historiques(db: Session = Depends(get_db)):
+    return crud.HistoriqueEtatCRUD.get_all(db)
+
+@router.get("/historiques_etat/{id_historique}", response_model=schemas.HistoriqueEtatRead)
+def get_historique(id_historique: int, db: Session = Depends(get_db)):
+    historique = crud.HistoriqueEtatCRUD.get(db, id_historique)
+    return get_or_404(historique, "HistoriqueEtat")
+
+@router.post("/historiques_etat", response_model=schemas.HistoriqueEtatRead, status_code=status.HTTP_201_CREATED)
+def create_historique(historique: schemas.HistoriqueEtatCreate, db: Session = Depends(get_db)):
+    return crud.HistoriqueEtatCRUD.create(db, historique.dict())
+
+@router.put("/historiques_etat/{id_historique}", response_model=schemas.HistoriqueEtatRead)
+def update_historique(id_historique: int, historique: schemas.HistoriqueEtatCreate, db: Session = Depends(get_db)):
+    updated = crud.HistoriqueEtatCRUD.update(db, id_historique, historique.dict())
+    return get_or_404(updated, "HistoriqueEtat")
+
+@router.delete("/historiques_etat/{id_historique}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_historique(id_historique: int, db: Session = Depends(get_db)):
+    success = crud.HistoriqueEtatCRUD.delete(db, id_historique)
+    if not success:
+        raise HTTPException(status_code=404, detail="HistoriqueEtat not found")
+    return
