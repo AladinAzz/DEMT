@@ -59,16 +59,23 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 # Dependency for getting current authenticated user
 async def get_current_agent(
     request: Request,
-    token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> Agent:
     # Try to extract token from header
     auth_header = request.headers.get("Authorization")
-    if not auth_header:
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.replace("Bearer ", "")
+    else:
         # Try to extract from cookies
         token = request.cookies.get("access_token")
-    else:
-        token = auth_header.replace("Bearer ", "")
+        print("Token from cookies:", token)
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -87,4 +94,5 @@ async def get_current_agent(
     agent = get_agent_by_username(db, username)
     if agent is None:
         raise credentials_exception
+
     return agent
