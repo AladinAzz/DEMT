@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestion des Agents</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    aside {
+      transition: width 0.3s ease;
+    }
+    aside.collapsed {
+      width: 4.5rem;
+      overflow-x: visible;
+    }
+    aside.collapsed nav a span.text-label {
+      display: none;
+    }
+    aside.collapsed nav a {
+      justify-content: center;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+    aside.collapsed nav a {
+      position: relative;
+    }
+    aside.collapsed nav a:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #334155;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+      margin-left: 0.5rem;
+      font-size: 0.75rem;
+    }
+    main.collapsed {
+      margin-left: 4.5rem;
+      transition: margin-left 0.3s ease;
+    }
+    aside.collapsed .sidebar-title {
+      display: none;
+    }
+    @keyframes slideDownFade {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDownFade 0.7s ease forwards;
+}
+  
+
+  
+  </style>
+</head>
+<body class="bg-gray-100 text-sm font-sans">
+  <div class="flex min-h-screen">
+    <aside id="sidebar" class="w-64 bg-slate-900 text-white fixed top-0 bottom-0 flex flex-col">
+      <div class="p-6 text-xl font-bold flex items-center justify-between">
+        <span class="sidebar-title">ADMINISTRATION</span>
+        <button id="toggleSidebar" class="text-white focus:outline-none" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <nav class="mt-6 space-y-2 px-4 flex-grow">
+        <a href="#" data-tooltip="Tableau de bord" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-line w-5"></i>
+          <span class="ml-3 text-label">Tableau de bord</span>
+        </a>
+        <a href="projet.html" data-tooltip="Projets" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-folder w-5"></i>
+          <span class="ml-3 text-label">Projets</span>
+        </a>
+        <a href="contrat.html" data-tooltip="Contrats" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-file-signature w-5"></i>
+          <span class="ml-3 text-label">Contrats</span>
+        </a>
+        <a href="achat_sur_facture.html" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-receipt w-5"></i>
+          <span class="ml-3 text-label">Achat sur facture</span>
+        </a>
+        <a href="#" data-tooltip="Agents" class="flex items-center px-3 py-2 rounded bg-slate-800">
+          <i class="fas fa-users w-5"></i>
+          <span class="ml-3 text-label">Agents</span>
+        </a>
+        <a href="#" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-pie w-5"></i>
+          <span class="ml-3 text-label">Rapports</span>
+        </a>
+          <a href="#" data-tooltip="Notifications" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-bell w-5"></i>
+          <span class="ml-3 text-label">Notifications</span>
+        </a>
+        
+        <a href="#" data-tooltip="Recherche" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-search w-5"></i>
+          <span class="ml-3 text-label">Recherche</span>
+        </a>
+        
+      </nav>
+    </aside>
+
+    <main id="mainContent" class="ml-64 p-8 w-full transition-margin duration-300">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Agents</h1>
+        <button  id="addUserBtn" class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download"">+ Ajouter un agent</button>
+      </div>
+      <div id="overlay" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-center items-center">
+
+  <div id="formPanel"
+       class="relative bg-white w-full max-w-xl rounded-lg shadow-lg p-6 opacity-0 transform -translate-y-20">
+    <button id="closeUserPanel"
+            class="absolute top-2 right-3 text-2xl text-gray-700 hover:text-red-500 font-bold">
+      &times;
+    </button>
+    <h2 class="text-xl font-semibold mb-4">Ajouter un agent</h2>
+
+    <form>
+      <label class="block mb-1 text-sm">Nom</label>
+      <input type="text" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez le nom">
+
+      <label class="block mb-1 text-sm">Prenom</label>
+      <input type="email" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez l'email">
+
+      <label class="block mb-1 text-sm">Nom d'utilisateur</label>
+      <input type="text" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez le Nom d'utilisation">
+      <label class="block mb-1 text-sm">Mot de passe</label>
+      <input type="text" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez le Mot de passe">
+      <label class="block font-medium">Rôle</label>
+        <select name="role" required class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md ">
+          
+          <option value="directeur" >Directeur</option>
+          <option value="chef direction">Chef direction</option>
+          <option value="chef bureau">Chef bureau</option>
+          <option value="agent">Agent</option>
+        </select>
+      <label class="block mb-1 text-sm">Direction</label>
+      <input type="text" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez le Direction">
+      <label class="block mb-1 text-sm">Bureau</label>
+      <input type="text" class="mb-6 w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md" placeholder="Entrez le Bureau">
+     
+
+      <button type="submit" class="bg-violet-600 hover:bg-violet-800 text-white px-4 py-2 rounded w-full">
+        Ajouter
+      </button>
+    </form>
+  </div>
+</div>
+
+
+
+      
+
+  
+
+      
+        <form class="w-full max-w-4xl mx-auto mb-6">
+  <div class="flex relative">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button"
+      class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:outline-none">
+      <span id="selected-category">All categories</span>
+      <svg class="w-2.5 h-2.5 ml-2" fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown"
+      class="absolute top-full left-0 mt-1 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 z-20">
+      <ul class="py-2 text-sm text-gray-700">
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Nom">Nom</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Prenom">Prenom</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Nom d'utilisateur">Nom d'utilisateur</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="role">Role</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID direction">ID Direction</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID Bureau">ID Bureau</button></li>
+        
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full">
+      <input type="search" id="searchInput" placeholder="Rechercher..."
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" />
+      <button type="submit"
+        class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-violet-600 rounded-e-lg hover:bg-violet-700">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+        </svg>
+        <span class="sr-only">Search</span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<section class="space-y-8">
+  <!-- Loop over Directions -->
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Direction: Direction Médicale</h2>
+
+    <!-- Bureaux Table inside Direction -->
+    <div class="space-y-6">
+      <!-- Loop over Bureaux -->
+     <div class="border border-white rounded-md p-4 bg-gray-50 ">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Bureau: Bureau des Soins</h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+    <th class="px-4 py-3 text-left align-middle">ID</th>
+    <th class="px-4 py-3 text-left align-middle">Nom</th>
+    <th class="px-4 py-3 text-left align-middle">Prénom</th>
+    <th class="px-4 py-3 text-left align-middle">Nom d'utilisateur</th>
+    <th class="px-4 py-3 text-left align-middle">Rôle</th>
+    <th class="px-4 py-3 text-left align-middle">ID Direction</th>
+    <th class="px-4 py-3 text-left align-middle">ID Bureau</th>
+    <th class="px-4 py-3 text-left align-middle">Action</th>
+  </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50 border-0">
+    <td class="px-4 py-3 align-middle">1</td>
+    <td class="px-4 py-3 align-middle">Durand</td>
+    <td class="px-4 py-3 align-middle">Jean</td>
+    <td class="px-4 py-3 align-middle">jdurand</td>
+    <td class="px-4 py-3 align-middle"><span class="inline-block px-3 py-1 rounded-full text-white text-xs bg-[#37FF18]">Directeur</span></td>
+    <td class="px-4 py-3 align-middle">101</td>
+    <td class="px-4 py-3 align-middle">201</td>
+    <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a>
+    </td>
+  </tr>
+  <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">2</td>
+              <td class="px-4 py-2">Lemoine</td>
+              <td class="px-4 py-2">Claire</td>
+              <td class="px-4 py-2">clemoine</td>
+              <td class="px-4 py-2"><span class= "bg-[#ff9933] text-black px-2 py-1 rounded-full text-xs">Chef Direction</span></td>
+              <td class="px-4 py-2">102</td>
+              <td class="px-4 py-2">202</td>
+              <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+             <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">3</td>
+              <td class="px-4 py-2">Bernard</td>
+              <td class="px-4 py-2">Luc</td>
+              <td class="px-4 py-2">lbernard</td>
+              <td class="px-4 py-2"><span class=" bg-[#ff0000] text-white px-2 py-1 rounded-full text-xs">Agent</span></td>
+              <td class="px-4 py-2">103</td>
+              <td class="px-4 py-2">203</td>
+             <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-700 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+   <div class="space-y-6 mt-10">
+      <!-- Loop over Bureaux -->
+      <div class="border border-white rounded-md p-4 bg-gray-50 ">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Bureau: Bureau des Soins</h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+    <th class="px-4 py-3 text-left align-middle">ID</th>
+    <th class="px-4 py-3 text-left align-middle">Nom</th>
+    <th class="px-4 py-3 text-left align-middle">Prénom</th>
+    <th class="px-4 py-3 text-left align-middle">Nom d'utilisateur</th>
+    <th class="px-4 py-3 text-left align-middle">Rôle</th>
+    <th class="px-4 py-3 text-left align-middle">ID Direction</th>
+    <th class="px-4 py-3 text-left align-middle">ID Bureau</th>
+    <th class="px-4 py-3 text-left align-middle">Action</th>
+  </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50 border-0">
+    <td class="px-4 py-3 align-middle">1</td>
+    <td class="px-4 py-3 align-middle">Durand</td>
+    <td class="px-4 py-3 align-middle">Jean</td>
+    <td class="px-4 py-3 align-middle">jdurand</td>
+    <td class="px-4 py-3 align-middle"><span class="inline-block px-3 py-1 rounded-full text-white text-xs bg-[#37FF18]">Directeur</span></td>
+    <td class="px-4 py-3 align-middle">101</td>
+    <td class="px-4 py-3 align-middle">201</td>
+    <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a>
+    </td>
+  </tr>
+  <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">2</td>
+              <td class="px-4 py-2">Lemoine</td>
+              <td class="px-4 py-2">Claire</td>
+              <td class="px-4 py-2">clemoine</td>
+              <td class="px-4 py-2"><span class= "bg-[#ff9933] text-black px-2 py-1 rounded-full text-xs">Chef Direction</span></td>
+              <td class="px-4 py-2">102</td>
+              <td class="px-4 py-2">202</td>
+              <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+             <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">3</td>
+              <td class="px-4 py-2">Bernard</td>
+              <td class="px-4 py-2">Luc</td>
+              <td class="px-4 py-2">lbernard</td>
+              <td class="px-4 py-2"><span class=" bg-[#ff0000] text-white px-2 py-1 rounded-full text-xs">Agent</span></td>
+              <td class="px-4 py-2">103</td>
+              <td class="px-4 py-2">203</td>
+             <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-700 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+
+  <!-- Repeat for more Directions -->
+
+      
+
+        
+      </div>
+      <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Direction: Direction Médicale</h2>
+
+    <!-- Bureaux Table inside Direction -->
+    <div class="space-y-6">
+      <!-- Loop over Bureaux -->
+      <div class="border border-white rounded-md p-4 bg-gray-50 ">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Bureau: Bureau des Soins</h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+    <th class="px-4 py-3 text-left align-middle">ID</th>
+    <th class="px-4 py-3 text-left align-middle">Nom</th>
+    <th class="px-4 py-3 text-left align-middle">Prénom</th>
+    <th class="px-4 py-3 text-left align-middle">Nom d'utilisateur</th>
+    <th class="px-4 py-3 text-left align-middle">Rôle</th>
+    <th class="px-4 py-3 text-left align-middle">ID Direction</th>
+    <th class="px-4 py-3 text-left align-middle">ID Bureau</th>
+    <th class="px-4 py-3 text-left align-middle">Action</th>
+  </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50 border-0">
+    <td class="px-4 py-3 align-middle">1</td>
+    <td class="px-4 py-3 align-middle">Durand</td>
+    <td class="px-4 py-3 align-middle">Jean</td>
+    <td class="px-4 py-3 align-middle">jdurand</td>
+    <td class="px-4 py-3 align-middle"><span class="inline-block px-3 py-1 rounded-full text-white text-xs bg-[#37FF18]">Directeur</span></td>
+    <td class="px-4 py-3 align-middle">101</td>
+    <td class="px-4 py-3 align-middle">201</td>
+    <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a>
+    </td>
+  </tr>
+  <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">2</td>
+              <td class="px-4 py-2">Lemoine</td>
+              <td class="px-4 py-2">Claire</td>
+              <td class="px-4 py-2">clemoine</td>
+              <td class="px-4 py-2"><span class= "bg-[#ff9933] text-black px-2 py-1 rounded-full text-xs">Chef Direction</span></td>
+              <td class="px-4 py-2">102</td>
+              <td class="px-4 py-2">202</td>
+              <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+             <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">3</td>
+              <td class="px-4 py-2">Bernard</td>
+              <td class="px-4 py-2">Luc</td>
+              <td class="px-4 py-2">lbernard</td>
+              <td class="px-4 py-2"><span class=" bg-[#ff0000] text-white px-2 py-1 rounded-full text-xs">Agent</span></td>
+              <td class="px-4 py-2">103</td>
+              <td class="px-4 py-2">203</td>
+             <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-700 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+   <div class="space-y-6 mt-10">
+      <!-- Loop over Bureaux -->
+      <div class="border border-white rounded-md p-4 bg-gray-50 ">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Bureau: Bureau des Soins</h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+    <th class="px-4 py-3 text-left align-middle">ID</th>
+    <th class="px-4 py-3 text-left align-middle">Nom</th>
+    <th class="px-4 py-3 text-left align-middle">Prénom</th>
+    <th class="px-4 py-3 text-left align-middle">Nom d'utilisateur</th>
+    <th class="px-4 py-3 text-left align-middle">Rôle</th>
+    <th class="px-4 py-3 text-left align-middle">ID Direction</th>
+    <th class="px-4 py-3 text-left align-middle">ID Bureau</th>
+    <th class="px-4 py-3 text-left align-middle">Action</th>
+  </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50 border-0">
+    <td class="px-4 py-3 align-middle">1</td>
+    <td class="px-4 py-3 align-middle">Durand</td>
+    <td class="px-4 py-3 align-middle">Jean</td>
+    <td class="px-4 py-3 align-middle">jdurand</td>
+    <td class="px-4 py-3 align-middle"><span class="inline-block px-3 py-1 rounded-full text-white text-xs bg-[#37FF18]">Directeur</span></td>
+    <td class="px-4 py-3 align-middle">101</td>
+    <td class="px-4 py-3 align-middle">201</td>
+    <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a>
+    </td>
+  </tr>
+  <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">2</td>
+              <td class="px-4 py-2">Lemoine</td>
+              <td class="px-4 py-2">Claire</td>
+              <td class="px-4 py-2">clemoine</td>
+              <td class="px-4 py-2"><span class= "bg-[#ff9933] text-black px-2 py-1 rounded-full text-xs">Chef Direction</span></td>
+              <td class="px-4 py-2">102</td>
+              <td class="px-4 py-2">202</td>
+              <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+             <tr class="hover:bg-gray-50 border-0">
+              <td class="px-4 py-2">3</td>
+              <td class="px-4 py-2">Bernard</td>
+              <td class="px-4 py-2">Luc</td>
+              <td class="px-4 py-2">lbernard</td>
+              <td class="px-4 py-2"><span class=" bg-[#ff0000] text-white px-2 py-1 rounded-full text-xs">Agent</span></td>
+              <td class="px-4 py-2">103</td>
+              <td class="px-4 py-2">203</td>
+             <td class="px-4 py-3 align-middle">
+     <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-700 focus:outline-none focus:ring"href="/download"> Details</a>
+    </td>
+            </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+
+  <!-- Repeat for more Directions -->
+
+      
+
+        
+      </div>
+</section>
+    </main>
+  </div>
+  
+
+  <script>
+  // Dropdown toggle logic
+  const dropdownButton = document.getElementById('dropdown-button');
+  const dropdown = document.getElementById('dropdown');
+  const selectedCategory = document.getElementById('selected-category');
+  const options = document.querySelectorAll('.category-option');
+
+  // Search bar input
+  const searchInput = document.getElementById('searchInput');
+
+  // Table rows to filter
+  const tableRows = document.querySelectorAll('table tbody tr');
+
+  // Map categories to column indexes (adjust indexes as per your table)
+  const categoryIndexMap = {
+    "ID": 0,
+    "Nom": 1,
+    "Prenom": 2,
+    "Nom d'utilisateur": 3,
+    "Role": 4,
+    "ID Direction":5,
+    "ID Bureau":6
+  };
+
+  // Current selected category for filtering
+  let currentCategory = null;
+
+  // Toggle dropdown visibility
+  dropdownButton.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+
+  // When a category option is selected
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      const category = option.dataset.category;
+      currentCategory = category;
+      selectedCategory.textContent = category;
+      dropdown.classList.add('hidden');
+      performSearch(); // Re-run search with new category
+    });
+  });
+
+  // Perform filtering based on search input and selected category
+  searchInput.addEventListener('input', performSearch);
+
+  function performSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+
+    tableRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      let textToSearch = '';
+
+      if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+        // Search only in the column of the selected category
+        const cellIndex = categoryIndexMap[currentCategory];
+        const cell = cells[cellIndex];
+        textToSearch = cell ? cell.textContent.trim().toLowerCase() : '';
+      } else {
+        // No category selected: search entire row text
+        textToSearch = Array.from(cells).map(td => td.textContent.trim().toLowerCase()).join(' ');
+      }
+
+      row.style.display = textToSearch.includes(query) ? '' : 'none';
+    });
+  }
+
+  // Panel open/close handlers for add user form
+  const addUserBtn = document.getElementById('addUserBtn');
+  const overlay = document.getElementById('overlay');
+  const formPanel = document.getElementById('formPanel');
+  const addUserPanel = document.getElementById('addUserPanel');
+  const closeUserPanel = document.getElementById('closeUserPanel');
+
+  addUserBtn.addEventListener('click', () => {
+    overlay.classList.remove('hidden');
+    if (formPanel) {
+      formPanel.classList.remove('opacity-0', '-translate-y-20');
+      formPanel.classList.add('animate-slide-down');
+    }
+    if (addUserPanel) {
+      addUserPanel.classList.remove('-translate-y-20', 'opacity-0');
+      addUserPanel.classList.add('translate-y-0', 'opacity-100');
+    }
+  });
+
+  closeUserPanel.addEventListener('click', () => {
+    overlay.classList.add('hidden');
+    if (formPanel) {
+      formPanel.classList.remove('animate-slide-down');
+      formPanel.classList.add('opacity-0', '-translate-y-20');
+    }
+    if (addUserPanel) {
+      addUserPanel.classList.remove('translate-y-0', 'opacity-100');
+      addUserPanel.classList.add('-translate-y-20', 'opacity-0');
+    }
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.add('hidden');
+      if (formPanel) {
+        formPanel.classList.remove('animate-slide-down');
+        formPanel.classList.add('opacity-0', '-translate-y-20');
+      }
+      if (addUserPanel) {
+        addUserPanel.classList.remove('translate-y-0', 'opacity-100');
+        addUserPanel.classList.add('-translate-y-20', 'opacity-0');
+      }
+    }
+  });
+
+  // Sidebar toggle logic
+  const toggleBtn = document.getElementById('toggleSidebar');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('collapsed');
+  });
+
+  // Close dropdown if clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
+
+
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

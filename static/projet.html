@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liste des Projets par Chapitre</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .collapsed {
+      width: 64px !important;
+    }
+
+    .collapsed .text-label,
+    .collapsed .sidebar-title {
+      display: none;
+    }
+
+    .collapsed + main {
+      margin-left: 64px !important;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-sm font-sans">
+
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-white fixed top-0 bottom-0 flex flex-col transition-all duration-300">
+      <div class="p-6 text-xl font-bold flex items-center justify-between">
+        <span class="sidebar-title">ADMINISTRATION</span>
+        <button id="toggleSidebar" class="text-white focus:outline-none" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <nav class="mt-6 space-y-2 px-4 flex-grow">
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-line w-5"></i>
+          <span class="ml-3 text-label">Tableau de bord</span>
+        </a>
+        <a href="projet.html" class="flex items-center px-3 py-2 rounded bg-slate-800">
+          <i class="fas fa-folder w-5"></i>
+          <span class="ml-3 text-label">Projets</span>
+        </a>
+        <a href="contrat.html" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-file-signature w-5"></i>
+          <span class="ml-3 text-label">Contrats</span>
+        </a>
+
+        
+        
+         <a href="achat_sur_facture.html" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-receipt w-5"></i>
+          <span class="ml-3 text-label">Achat sur facture</span>
+        </a>
+        <a href="agent.html" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+           <i class="fas fa-users w-5"></i>
+          <span class="ml-3 text-label">Agents</span>
+        </a>
+        
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-pie w-5"></i>
+          <span class="ml-3 text-label">Rapports</span>
+        </a>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-bell w-5"></i>
+          <span class="ml-3 text-label">Notifications</span>
+        </a>
+        
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-search w-5"></i>
+          <span class="ml-3 text-label">Recherche</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main id="mainContent" class="ml-64 p-8 w-full transition-all duration-300">
+      <!-- Top bar -->
+      <div class="flex justify-end mb-6">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-bell text-gray-500"></i>
+          <div class="flex items-center bg-gray-100 rounded-full px-3 py-1">
+            <span class="text-sm font-medium text-gray-700 mr-2">Administrateur</span>
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">A</div>
+          </div>
+        </div>
+      </div>
+ <form class="w-full max-w-4xl mx-auto mb-6">
+  <div class="flex relative">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button"
+      class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:outline-none">
+      <span id="selected-category">All categories</span>
+      <svg class="w-2.5 h-2.5 ml-2" fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown"
+      class="absolute top-full left-0 mt-1 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 z-20">
+      <ul class="py-2 text-sm text-gray-700">
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID">ID </button></li>
+      <ul class="py-2 text-sm text-gray-700">
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Etat">Etat</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Nom De Projet">Nom De Projet </button></li>
+            <ul class="py-2 text-sm text-gray-700">
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Num De Achat">Num De Achat </button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Periode">Periode</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Etat">Etat</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full">
+      <input type="search" id="searchInput" placeholder="Rechercher..."
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" />
+      <button type="submit"
+        class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-violet-600 rounded-e-lg hover:bg-violet-700">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+        </svg>
+        <span class="sr-only">Search</span>
+      </button>
+    </div>
+  </div>
+</form>
+      <!-- Category Grouped Tables -->
+      <section class="space-y-10">
+        <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Chapitre: Équipements Médicaux</h2>
+
+    <!-- Bureaux Table inside Direction -->
+    <div class="space-y-6">
+      <!-- Loop over Bureaux -->
+      <div class="border border-white rounded-md p-4 bg-gray-50 ">
+      
+        <h3 class="text-lg font-semibold text-gray-700 mb-2"><i class="fas fa-file-signature w-5 text-red-700"></i>
+    <span class="ml-2 text-red-700">Contrats</span></h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                 <tr>
+        <th class="w-1/12 px-4 py-2">ID</th>
+        <th class="w-3/12 px-4 py-2">Nom du projet</th>
+        <th class="w-2/12 px-4 py-2">Période</th>
+        <th class="w-2/12 px-4 py-2">Bureau</th>
+        <th class="w-1/12 px-4 py-2">État</th>
+        <th class="w-2/12 px-4 py-2">Actions</th>
+      </tr>
+              </thead>
+              <tbody class="divide-y">
+               <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+   <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+              <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+   <div class="space-y-6 mt-10">
+      <!-- Loop over Bureaux -->
+      <div class="border border-white rounded-md p-4 bg-gray-50 ">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2"><i class="fas fa-file-invoice-dollar w-5 text-green-700"></i>
+    <span class="ml-2 text-green-700">Achats sur Facture</span></h3>
+
+        <!-- Agents Table inside Bureau -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                 <tr>
+        <th class="w-1/12 px-4 py-2">ID</th>
+        <th class="w-3/12 px-4 py-2">Nom du projet</th>
+        <th class="w-2/12 px-4 py-2">Période</th>
+        <th class="w-2/12 px-4 py-2">Bureau</th>
+        <th class="w-1/12 px-4 py-2">État</th>
+        <th class="w-2/12 px-4 py-2">Actions</th>
+      </tr>
+              </thead>
+              <tbody class="divide-y">
+               <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+   <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+              <tr class="hover:bg-gray-50 border-0">
+        <td class="px-4 py-2">1</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">Acquisition Équipements 2022</div>
+          <div class="text-gray-500 text-sm">Projet d'acquisition d'équipements médicaux...</div>
+        </td>
+        <td class="px-4 py-2">01 janv. 2022 - 31 déc. 2022</td>
+        <td class="px-4 py-2">Bureau des Achats Médicaux</td>
+        <td class="px-4 py-2"><span class="bg-red-600 text-white px-2 py-1 rounded-full text-xs">F/P</span></td>
+        <td class="px-4 py-2">
+          <a class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700" href="/download">Details</a>
+        </td>
+      </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- Repeat for more Bureaux -->
+    </div>
+  </div>
+
+  <!-- Repeat for more Directions -->
+
+      
+
+        
+      </div>
+
+        
+       
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Toggle Script -->
+  <script>
+  const dropdownButton = document.getElementById('dropdown-button');
+  const dropdown = document.getElementById('dropdown');
+  const selectedCategory = document.getElementById('selected-category');
+  const options = document.querySelectorAll('.category-option');
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('tbody tr');
+
+  // Map of category to column index
+  const categoryIndexMap = {
+    "ID":0,
+    "Num De Contrat": 1,
+    "Nom De Projet": 2,
+    "Periode": 3,
+    "Bureau": 4,
+    "Etat": 5
+    // Details (column 5) not searchable
+  };
+
+  let currentCategory = null;
+
+  // Show/hide dropdown
+  dropdownButton.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+
+  // Category selection
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      currentCategory = option.dataset.category;
+      selectedCategory.textContent = option.textContent;
+      dropdown.classList.add('hidden');
+      performSearch(); // filter again on category change
+    });
+  });
+
+  // Search event
+  searchInput.addEventListener('input', performSearch);
+
+  function performSearch() {
+    const query = searchInput.value.toLowerCase().trim();
+
+    tableRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+
+      let textToSearch = '';
+
+      if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+        const index = categoryIndexMap[currentCategory];
+        const cell = cells[index];
+        textToSearch = cell ? cell.innerText.toLowerCase() : '';
+      } else {
+        // All categories: search across all text in row
+        textToSearch = Array.from(cells).map(td => td.innerText.toLowerCase()).join(' ');
+      }
+
+      row.style.display = textToSearch.includes(query) ? '' : 'none';
+    });
+  }
+
+  // Click outside dropdown closes it
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+
+  
+  dropdownButton.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      selectedCategory.textContent = option.dataset.category;
+      dropdown.classList.add('hidden');
+    });
+  });
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('ml-64');
+    });
+</script>
+
+   <script type="module" src="/src/main.js"></script>
+
+</body>
+</html>

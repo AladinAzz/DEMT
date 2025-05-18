@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter un Agent</title>
+  <
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
+    <h2 class="text-2xl font-bold mb-6 text-center">Ajouter un Agent</h2>
+
+    <form method="post" action="/agent/add" class="space-y-4">
+      <div>
+        <label class="block font-medium">Nom</label>
+        <input type="text" name="nom" required class="w-full px-3 py-2 border rounded" />
+      </div>
+      <div>
+        <label class="block font-medium">Prénom</label>
+        <input type="text" name="prenom" required class="w-full px-3 py-2 border rounded" />
+      </div>
+      <div>
+        <label class="block font-medium">Nom d'utilisateur</label>
+        <input type="text" name="username" required class="w-full px-3 py-2 border rounded" />
+      </div>
+      <div>
+        <label class="block font-medium">Mot de passe</label>
+        <input type="password" name="password" required class="w-full px-3 py-2 border rounded" />
+      </div>
+      <div>
+        <label class="block font-medium">Rôle</label>
+        <select name="role" required class="w-full px-3 py-2 border rounded">
+          <option value="">-- Choisir un rôle --</option>
+          <option value="directeur">Directeur</option>
+          <option value="chef direction">Chef direction</option>
+          <option value="chef bureau">Chef bureau</option>
+          <option value="agent">Agent</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium">Direction</label>
+        <select name="direction_id" required class="w-full px-3 py-2 border rounded">
+          {% for d in directions %}
+          <option value="{{ d.id_direction }}">{{ d.nom_direction }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium">Bureau</label>
+        <select name="bureau_id" required class="w-full px-3 py-2 border rounded">
+          {% for b in bureaux %}
+          <option value="{{ b.id_bureau }}">{{ b.nom_bureau }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="bg-violet-600 text-white px-6 py-2 rounded hover:bg-violet-700">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

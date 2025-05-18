@@ -1,0 +1,354 @@
+<!DOCTYPE  html> 
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liste des Contrats</title>
+  
+  <link rel="stylesheet" href="contrat.css"/>
+  <style>
+    /* Transition for smooth sidebar resize */
+    aside {
+      transition: width 0.3s ease;
+    }
+    /* Collapsed sidebar styles */
+    aside.collapsed {
+      width: 4.5rem; /* narrow width */
+      overflow-x: visible;
+    }
+    /* Hide text labels in collapsed sidebar */
+    aside.collapsed nav a span.text-label {
+      display: none;
+    }
+    /* Center icons in collapsed sidebar */
+    aside.collapsed nav a {
+      justify-content: center;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+    /* Tooltip for icons when collapsed */
+    aside.collapsed nav a {
+      position: relative;
+    }
+    aside.collapsed nav a:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #334155;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+      margin-left: 0.5rem;
+      font-size: 0.75rem;
+    }
+    /* Adjust main margin to match sidebar width */
+    main.collapsed {
+      margin-left: 4.5rem;
+      transition: margin-left 0.3s ease;
+    }
+    /* Hide ADMINISTRATION text when sidebar collapsed */
+    aside.collapsed .sidebar-title {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-sm font-sans">
+
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-white fixed top-0 bottom-0 flex flex-col">
+      <div class="p-6 text-xl font-bold flex items-center justify-between">
+        <span class="sidebar-title">ADMINISTRATION</span>
+        <button id="toggleSidebar" class="text-white focus:outline-none" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <nav class="mt-6 space-y-2 px-4 flex-grow">
+        <a href="#" data-tooltip="Tableau de bord" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-line w-5"></i>
+          <span class="ml-3 text-label">Tableau de bord</span>
+        </a>
+        <a href="projet.html" data-tooltip="Projets" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-folder w-5"></i>
+          <span class="ml-3 text-label">Projets</span>
+        </a>
+        <a href="contrat.html" data-tooltip="Contrats" class="flex items-center px-3 py-2 rounded bg-slate-800">
+          <i class="fas fa-file-signature w-5"></i>
+          <span class="ml-3 text-label">Contrats</span>
+        </a>
+         <a href="achat_sur_facture.html" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-receipt w-5"></i>
+          <span class="ml-3 text-label">Achat sur facture</span>
+        </a>
+         <a href="agent.html" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-users w-5"></i>
+          <span class="ml-3 text-label">Agents</span>
+        </a>
+        <a href="#" data-tooltip="Rapports" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-chart-pie w-5"></i>
+          <span class="ml-3 text-label">Rapports</span>
+        </a>
+        <a href="#" data-tooltip="Notifications" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-bell w-5"></i>
+          <span class="ml-3 text-label">Notifications</span>
+        </a>
+        
+        <a href="#" data-tooltip="Recherche" class="flex items-center px-3 py-2 rounded hover:bg-slate-700">
+          <i class="fas fa-search w-5"></i>
+          <span class="ml-3 text-label">Recherche</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main id="mainContent" class="ml-64 p-8 w-full transition-margin duration-300">
+
+      <!-- Top bar -->
+      <div class="flex justify-end mb-6">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-bell text-gray-500"></i>
+          <div class="flex items-center bg-gray-100 rounded-full px-3 py-1">
+            <span class="text-sm font-medium text-gray-700 mr-2">Administrateur</span>
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">A</div>
+          </div>
+        </div>
+      </div>
+      <form class="w-full max-w-4xl mx-auto mb-6">
+  <div class="flex relative">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button"
+      class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:outline-none">
+      <span id="selected-category">All categories</span>
+      <svg class="w-2.5 h-2.5 ml-2" fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown"
+      class="absolute top-full left-0 mt-1 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 z-20">
+      <ul class="py-2 text-sm text-gray-700">
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Etat">Etat</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID_Contrat">ID Contrat</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Date_Debut">Date_Debut</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Date De Notification">Date De Notification</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="MIN">Min</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Max">Max</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="Duree">Duree</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID project">ID Project</button></li>
+        <li><button type="button" class="category-option w-full px-4 py-2 hover:bg-gray-100"
+            data-category="ID Fornisseu">ID Fornisseur</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative w-full">
+      <input type="search" id="searchInput" placeholder="Rechercher..."
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" />
+      <button type="submit"
+        class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-violet-600 rounded-e-lg hover:bg-violet-700">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+        </svg>
+        <span class="sr-only">Search</span>
+      </button>
+    </div>
+  </div>
+</form>
+
+      <!-- Contrats Ferme -->
+      <section class="mb-16">
+        
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          <div class="p-4 border-b text-lg font-semibold bg-gray-50">Contrats Ferme</div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Contrat</th>
+                  <th class="px-4 py-2 whitespace-nowrap max-w-xs">Description</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Date Début</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Durée (mois)</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Min</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Max</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Etat</th>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Projet</th>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Fournisseur</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Devise</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2 font-medium whitespace-nowrap">C-2022-001</td>
+                  <td class="px-4 py-2 max-w-xs truncate" title="Contrat ferme pour l'acquisition de matériel médical.">Contrat ferme pour l'acquisition de matériel médical.</td>
+                  <td class="px-4 py-2 whitespace-nowrap">2022-01-01</td>
+                  <td class="px-4 py-2 whitespace-nowrap">12</td>
+                  <td class="px-4 py-2 whitespace-nowrap">50,000</td>
+                  <td class="px-4 py-2 whitespace-nowrap">100,000</td>
+                  <td class="px-4 py-2"><span class=" bg-[#ff0000] text-white px-2 py-1 rounded-full text-xs">CH</span></td>
+                  <td class="px-4 py-2 whitespace-nowrap">1</td>
+                  <td class="px-4 py-2 whitespace-nowrap">10</td>
+                  <td class="px-4 py-2 whitespace-nowrap">DZD</td>
+                  <td class="px-4 py-3 align-middle"> <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a></td>
+                </tr>
+                <!-- Add more ferme contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contrats À Commande -->
+      <section>
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          <div class="p-4 border-b text-lg font-semibold bg-gray-50">Contrats À Commande</div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Contrat</th>
+                  <th class="px-4 py-2 whitespace-nowrap max-w-xs">Description</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Date Début</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Durée (mois)</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Max</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Etat</th>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Projet</th>
+                  <th class="px-4 py-2 whitespace-nowrap">ID Fournisseur</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Devise</th>
+                  <th class="px-4 py-2 whitespace-nowrap">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2 font-medium whitespace-nowrap">C-2023-002</td>
+                  <td class="px-4 py-2 max-w-xs truncate" title="Contrat à commande pour renouvellement du matériel.">Contrat à commande pour renouvellement du matériel.</td>
+                  <td class="px-4 py-2 whitespace-nowrap">2023-01-01</td>
+                  <td class="px-4 py-2 whitespace-nowrap">2022-12-10</td>
+                  <td class="px-4 py-2 whitespace-nowrap">20,000</td>
+                  <td class="px-4 py-2 whitespace-nowrap">50,000</td>
+                  <td class="px-4 py-2"><span class=" bg-[#00CC00] text-white px-2 py-1 rounded-full text-xs">VISA CF</span></td>
+                  <td class="px-4 py-2 whitespace-nowrap">2</td>
+                  <td class="px-4 py-2 whitespace-nowrap">15</td>
+                  <td class="px-4 py-2 whitespace-nowrap">EURO</td>
+                  <td class="px-4 py-3 align-middle"> <a class="px-6 py-2 min-w-[120px] text-center text-white bg-violet-600 border border-violet-600 rounded active:text-violet-500 hover:bg-transparent hover:text-violet-600 focus:outline-none focus:ring" href="/download">Details</a></td>
+                </tr>
+                <!-- Add more à commande contracts here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+  // DOM Elements
+  const dropdownButton = document.getElementById('dropdown-button');
+  const dropdown = document.getElementById('dropdown');
+  const selectedCategory = document.getElementById('selected-category');
+  const options = document.querySelectorAll('.category-option');
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('tbody tr');
+
+  // Map each category to its corresponding column index (0-based)
+  const categoryIndexMap = {
+    "ID_Contrat": 0,
+    "Description": 1, // Not in dropdown but optional fallback
+    "Date_Debut": 2,
+    "Duree": 3,
+    "MIN": 4,
+    "Max": 5,
+    "Etat": 6,
+    "ID project": 7,
+    "ID Fornisseu": 8,
+    "Monnaie": 9,
+    "Action": 10, // Optional (Details button column)
+    "Date De Notification": 2, // Assuming it's same as Date_Debut
+  };
+
+  let currentCategory = null;
+
+  // Toggle dropdown menu
+  dropdownButton.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+
+  // Handle dropdown selection
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      const category = option.dataset.category;
+      currentCategory = category;
+      selectedCategory.textContent = option.textContent;
+      dropdown.classList.add('hidden');
+      performSearch(); // Reapply search with new category
+    });
+  });
+
+  // Search input listener
+  searchInput.addEventListener('input', performSearch);
+
+  function performSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+
+    tableRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+
+      let textToSearch = '';
+      if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+        const cellIndex = categoryIndexMap[currentCategory];
+        const cell = cells[cellIndex];
+        textToSearch = cell ? cell.textContent.trim().toLowerCase() : '';
+      } else {
+        // Search in entire row if no category selected
+        textToSearch = Array.from(cells).map(td => td.textContent.trim().toLowerCase()).join(' ');
+      }
+
+      row.style.display = textToSearch.includes(query) ? '' : 'none';
+    });
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+  const toggleBtn = document.getElementById('toggleSidebar');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('collapsed');
+  });
+
+  // Optional: Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
+
+   <script type="module" src="/src/main.js"></script>
+</body>
+</html>
