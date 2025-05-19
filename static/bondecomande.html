@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Sidebar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="static/styles.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -24,7 +24,7 @@
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
-      <a href="/contrat" class="sidebar-link active" data-tooltip="Contrats">
+      <a href="/contrat" class="sidebar-link" data-tooltip="Contrats">
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
@@ -61,15 +61,53 @@
       </div>
     </div>
     <div class="header">
-      <h1>Contrats</h1>
-      <button id="addUserBtn" class="btn-primary">+ Ajouter un contrat</button>
+      <h1>Bons de Commande</h1>
+      <div class="button-group">
+        <button id="addUserBtn" class="btn-primary">+ Ajouter un bon</button>
+        <button id="modifyContratBtn" class="btn-primary">Modify Contrat</button>
+        <button id="deleteContratBtn" class="btn-primary">Supprimer Contrat</button>
+      </div>
     </div>
 
+    <!-- Modal Ajout Bon de Commande -->
     <div id="overlay" class="overlay hidden">
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
-        <h2>Ajouter un contrat</h2>
+        <h2>Ajouter un bon de commande</h2>
         <form>
+          <label>Date</label>
+          <input type="date" placeholder="Entrez la date" />
+          <label>Description</label>
+          <input type="text" placeholder="Entrez la description" />
+          <label>Montant</label>
+          <input type="number" placeholder="Entrez le montant" />
+          <label>État</label>
+          <input type="text" placeholder="Entrez l'état" />
+          <label>Date de notification</label>
+          <input type="date" placeholder="Entrez la date de notification" />
+          <label>Délais</label>
+          <input type="number" placeholder="Entrez le délais" />
+          <label>Agent</label>
+          <input type="text" placeholder="Entrez l'agent" />
+          <label>Projet</label>
+          <input type="text" placeholder="Entrez le projet" />
+          <label>Fournisseur</label>
+          <input type="text" placeholder="Entrez le fournisseur" />
+          <label>Contrat</label>
+          <input type="text" placeholder="Entrez le contrat" />
+          <button type="submit" class="btn-submit">Ajouter</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Modifier Contrat -->
+    <div id="modifyOverlay" class="overlay hidden">
+      <div id="modifyPanel" class="form-panel">
+        <button id="closeModifyPanel" class="close-btn">&times;</button>
+        <h2>Modifier Contrat</h2>
+        <form>
+          <label>ID Contrat</label>
+          <input type="text" placeholder="Entrez l'ID Contrat" />
           <label>Description</label>
           <input type="text" placeholder="Entrez la description" />
           <label>Date Début</label>
@@ -92,7 +130,21 @@
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
           </select>
-          <button type="submit" class="btn-submit">Ajouter</button>
+          <button type="submit" class="btn-submit">Modifier</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay" class="overlay hidden">
+      <div id="deletePanel" class="form-panel">
+        <button id="closeDeletePanel" class="close-btn">&times;</button>
+        <h2>Supprimer Contrat</h2>
+        <form>
+          <label>ID Contrat</label>
+          <input type="text" placeholder="Entrez l'ID Contrat à supprimer" />
+          <p>Êtes-vous sûr de vouloir supprimer ce contrat ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
         </form>
       </div>
     </div>
@@ -119,6 +171,17 @@
             <li><button type="button" class="category-option" data-category="ID Projet">ID Projet</button></li>
             <li><button type="button" class="category-option" data-category="ID Fournisseur">ID Fournisseur</button></li>
             <li><button type="button" class="category-option" data-category="Devise">Devise</button></li>
+            <li><button type="button" class="category-option" data-category="ID Bon">ID Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Date Bon">Date Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Description Bon">Description Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Montant Bon">Montant Bon</button></li>
+            <li><button type="button" class="category-option" data-category="État Bon">État Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Date Notification">Date Notification</button></li>
+            <li><button type="button" class="category-option" data-category="Délais">Délais</button></li>
+            <li><button type="button" class="category-option" data-category="Agent">Agent</button></li>
+            <li><button type="button" class="category-option" data-category="Projet Bon">Projet Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Fournisseur Bon">Fournisseur Bon</button></li>
+            <li><button type="button" class="category-option" data-category="Contrat Bon">Contrat Bon</button></li>
           </ul>
         </div>
         <!-- Search Input -->
@@ -134,36 +197,33 @@
       </div>
     </form>
     <section class="section-space">
-      {% if contracts %}
-        {# Grouper les contrats par projet si besoin, sinon afficher tout #}
-        <div class="card mb-6">
-          <h2 class="section-title">Liste des Contrats</h2>
-          <div class="group-space">
-            <div class="group-box contrats">
-              <h3 class="group-title">
-                <i class="fas fa-file-signature icon red-icon"></i>
-                <span>Contrats</span>
-              </h3>
-              <div class="table-wrapper">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>ID Contrat</th>
-                      <th>Description</th>
-                      <th>Date Début</th>
-                      <th>Durée (mois)</th>
-                      <th>Min</th>
-                      <th>Max</th>
-                      <th>État</th>
-                      <th>ID Projet</th>
-                      <th>ID Fournisseur</th>
-                      <th>Devise</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for contrat in contracts %}
-                      <tr class="row-hover">
+      <div class="card mb-6">
+        <h2 class="section-title">Contrat</h2>
+        <div class="group-space">
+          <div class="group-box contrats">
+            <h3 class="group-title">
+              <i class="fas fa-file-signature icon red-icon"></i>
+              <span>Contrats</span>
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID Contrat</th>
+                    <th>Description</th>
+                    <th>Date Début</th>
+                    <th>Durée (mois)</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>État</th>
+                    <th>ID Projet</th>
+                    <th>ID Fournisseur</th>
+                    <th>Devise</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                 <tr class="row-hover">
                         <td>{{ contrat.id_contrat }}</td>
                         <td>
                           <div class="font-medium">{{ contrat.description }}</div>
@@ -185,21 +245,85 @@
                         <td>{{ contrat.id_fournisseur }}</td>
                         <td>{{ contrat.devise.value if contrat.devise is defined else '' }}</td>
                         <td>
-                          <a href="/bondecommande/{{ contrat.id_projet }}" class="btn btn-primary">Details</a>
+                          
                         </td>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      {% else %}
-        <div class="card">
-          <h2 class="section-title">Aucun contrat trouvé</h2>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Liste des Bons de Commande</h2>
+        <div class="group-space">
+          <div class="group-box bons">
+            <h3 class="group-title">
+              <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
+              <span>Bons de Commande</span>
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>État</th>
+                    <th>Date de notification</th>
+                    <th>Délais</th>
+                    <th>Agent</th>
+                    <th>Projet</th>
+                    <th>Fournisseur</th>
+                    <th>Contrat</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if bons %}
+                    {% for bon in bons %}
+                      <tr class="row-hover">
+                        <td>{{ bon.id_bon }}</td>
+                        <td>
+                          {% if bon.date_bon %}
+                            {{ bon.date_bon|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.description }}</td>
+                        <td>{{ bon.montant }}</td>
+                        <td>{{ bon.etat }}</td>
+                        <td>
+                          {% if bon.date_de_notification %}
+                            {{ bon.date_de_notification|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.delais }}</td>
+                        <td>{{ bon.agent_id_agent }}</td>
+                        <td>{{ bon.contract_id_projet }}</td>
+                        <td>{{ bon.contract_id_fournisseur }}</td>
+                        <td>{{ bon.contract_id_contrat }}</td>
+                        <td>
+                          <a href="/pv/{{bon.id_bon}}" class="btn btn-primary">Details</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="12" class="text-center text-gray-500">Aucun bon de commande trouvé</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      {% endif %}
+      </div>
     </section>
   </main>
   <script>
@@ -214,7 +338,7 @@
     const searchInput = document.getElementById('searchInput');
     const tableRows = document.querySelectorAll('tbody tr');
 
-    // Map of category name to column index
+    // Map of category name to column index (adapt as needed)
     const categoryIndexMap = {
       "ID Contrat": 0,
       "Description": 1,
@@ -225,7 +349,18 @@
       "État": 6,
       "ID Projet": 7,
       "ID Fournisseur": 8,
-      "Devise": 9
+      "Devise": 9,
+      "ID": 0,
+      "Date": 1,
+      "Description Bon": 2,
+      "Montant Bon": 3,
+      "État Bon": 4,
+      "Date de notification": 5,
+      "Délais": 6,
+      "Agent": 7,
+      "Projet": 8,
+      "Fournisseur": 9,
+      "Contrat": 10
     };
 
     let currentCategory = null;
@@ -293,7 +428,7 @@
       }
     });
 
-    // Add contrat modal
+    // Add bon modal
     const addUserBtn = document.getElementById('addUserBtn');
     const overlay = document.getElementById('overlay');
     const panel = document.getElementById('formPanel');
@@ -320,6 +455,55 @@
         }, 300);
       }
     });
+
+    // Modify Contrat Modal
+    const modifyContratBtn = document.getElementById('modifyContratBtn');
+    const modifyOverlay = document.getElementById('modifyOverlay');
+    const modifyPanel = document.getElementById('modifyPanel');
+    const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+    modifyContratBtn.addEventListener('click', () => {
+      modifyOverlay.classList.remove('hidden');
+      void modifyPanel.offsetWidth;
+      modifyPanel.classList.add('show');
+    });
+
+    closeModifyPanel.addEventListener('click', () => {
+      modifyPanel.classList.remove('show');
+      setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+    });
+
+    modifyOverlay.addEventListener('click', (e) => {
+      if (e.target === modifyOverlay) {
+        modifyPanel.classList.remove('show');
+        setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+      }
+    });
+
+    // Delete Contrat Modal
+    const deleteContratBtn = document.getElementById('deleteContratBtn');
+    const deleteOverlay = document.getElementById('deleteOverlay');
+    const deletePanel = document.getElementById('deletePanel');
+    const closeDeletePanel = document.getElementById('closeDeletePanel');
+
+    deleteContratBtn.addEventListener('click', () => {
+      deleteOverlay.classList.remove('hidden');
+      void deletePanel.offsetWidth;
+      deletePanel.classList.add('show');
+    });
+
+    closeDeletePanel.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteOverlay) {
+        deletePanel.classList.remove('show');
+        setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+      }
+    });
+
   </script>
 </body>
 </html>

@@ -131,6 +131,12 @@ class ContractCRUD:
     @staticmethod
     def get(db: Session, id: str): return get_by_id(db, ContractCRUD.model, id)
     @staticmethod
+    def get_by_id_projet(db: Session, id: Any, model=None):
+        if model is None:
+            model = ContractCRUD.model
+        return db.query(model).filter(model.id_projet == id).first()
+    
+    @staticmethod
     def create(db: Session, data: dict): return create(db, ContractCRUD.model, data)
     @staticmethod
     def update(db: Session, id: str, data: dict): return update(db, ContractCRUD.model, id, data)
@@ -157,6 +163,11 @@ class BonDeCommandeCRUD:
     @staticmethod
     def get(db: Session, id: int): return get_by_id(db, BonDeCommandeCRUD.model, id)
     @staticmethod
+    def get_by_id_project(db: Session, id: Any, model=None):
+        if model is None:
+            model = BonDeCommandeCRUD.model
+        return db.query(model).filter(model.contract_id_projet == id).all()
+    @staticmethod
     def create(db: Session, data: dict): return create(db, BonDeCommandeCRUD.model, data)
     @staticmethod
     def update(db: Session, id: int, data: dict): return update(db, BonDeCommandeCRUD.model, id, data)
@@ -169,6 +180,11 @@ class PVDeReceptionCRUD:
     def get_all(db: Session): return get_all(db, PVDeReceptionCRUD.model)
     @staticmethod
     def get(db: Session, id: str): return get_by_id(db, PVDeReceptionCRUD.model, id)
+    @staticmethod
+    def get_by_id_commande(db: Session, id: Any, model=None):
+        if model is None:
+            model = PVDeReceptionCRUD.model
+        return db.query(model).filter(model.id_bon == id).all()
     @staticmethod
     def create(db: Session, data: dict): return create(db, PVDeReceptionCRUD.model, data)
     @staticmethod
@@ -197,6 +213,12 @@ class FactureCRUD:
     def get(db: Session, id: str): return get_by_id(db, FactureCRUD.model, id)
     @staticmethod
     def create(db: Session, data: dict): return create(db, FactureCRUD.model, data)
+    @staticmethod
+    def get_by_id_pv(db: Session, id: Any, model=None):
+        if model is None:
+            model = FactureCRUD.model
+        return db.query(model).filter(model.id_PV == id).all()
+    
     @staticmethod
     def update(db: Session, id: str, data: dict): return update(db, FactureCRUD.model, id, data)
     @staticmethod

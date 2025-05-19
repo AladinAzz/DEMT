@@ -12,8 +12,8 @@ class RoleEnum(str, Enum):
 
 class ProjetTypeEnum(str, Enum):
     contrat = 'contrat'
-    marche = 'marché'
-    achat = 'achat sur facture'
+    marche = 'marche'
+    achat = 'achat'
 
 class DeviseEnum(str, Enum):
     DZD = 'DZD'
@@ -24,6 +24,19 @@ class ContractTypeEnum(str, Enum):
     ferme = 'ferme'
     commande = 'a commande'
 
+class EtatEnum(str, Enum):
+    CahierDeCharge = 'Cahier de charge'
+    Pub_CC = 'Pub CC'
+    COPEO= 'COPEO'
+    VisaCF= 'VisaCF'
+    CCTP= 'CCTP'
+    VisaCahierDeChargeCSM= 'Visa Cahier de charge CSM'
+    Pub_AOON= 'Pub AOON'
+    VisaCSM= 'Visa CSM'
+    FP= 'F/P'
+    engagement= 'Engagement'
+    rejet= 'Rejet'
+    
 # -------- Schemas --------
 
 class AgentBase(BaseModel):
@@ -98,7 +111,10 @@ class AchatSurFactureBase(BaseModel):
     montant: float
     date: date
     projet_id_projet: int
-
+    id_fournisseur: int
+    devise: DeviseEnum
+    class Config:
+        extra = "allow"
 class AchatSurFactureCreate(AchatSurFactureBase):
     id_facture: str
 
@@ -114,6 +130,7 @@ class ContractBase(BaseModel):
     min: float
     max: Optional[float]
     duree: int
+    etat:Optional[str]
     id_projet: int
     id_fournisseur: int
     devise: DeviseEnum
@@ -163,6 +180,8 @@ class PVDeReceptionBase(BaseModel):
     date: date
     description: Optional[str]
     id_bon: int
+    date_f: Optional[date]
+    montant: Optional[float]
     agent_id_agent: int
 
 class PVDeReceptionCreate(PVDeReceptionBase):
@@ -203,7 +222,7 @@ class FactureRead(FactureCreate):
 
 class HistoriqueEtatBase(BaseModel):
     id_projet: int
-    etat: str
+    etat: EtatEnum
     date_debut: date
     date_fin: Optional[date]
     description: Optional[str]

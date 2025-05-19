@@ -17,8 +17,8 @@ class RoleEnum(str, Enum):
 
 class ProjetTypeEnum(str, Enum):
     contrat = 'contrat'
-    marche = 'marché'
-    achat = 'achat sur facture'
+    marche = 'marche'
+    achat = 'achat'
 
 class DeviseEnum(str, Enum):
     DZD = 'DZD'
@@ -29,13 +29,25 @@ class ContractTypeEnum(str, Enum):
     ferme = 'ferme'
     commande = 'a commande'
 
+class EtatEnum(str, Enum):
+    CahierDeCharge = 'Cahier de charge'
+    Pub_CC = 'Pub CC'
+    COPEO= 'COPEO'
+    VisaCF= 'VisaCF'
+    CCTP= 'CCTP'
+    VisaCahierDeChargeCSM= 'Visa Cahier de charge CSM'
+    Pub_AOON= 'Pub AOON'
+    VisaCSM= 'Visa CSM'
+    FP= 'F/P'
+    engagement= 'Engagement'
+    rejet= 'Rejet'
+    
 # ---------------------- TABLES ----------------------
 
 class Direction(Base):
     __tablename__ = 'direction'
     id_direction = Column(Integer, primary_key=True)
     nom_direction = Column(String(100), nullable=False)
-
     agents = relationship("Agent", back_populates="direction")
     bureaux = relationship("Bureau", back_populates="direction")
 
@@ -44,7 +56,7 @@ class Bureau(Base):
     id_bureau = Column(Integer, primary_key=True)
     nom_bureau = Column(String(100), nullable=False)
     id_direction = Column(Integer, ForeignKey('direction.id_direction'), nullable=False)
-
+    
     direction = relationship("Direction", back_populates="bureaux")
     agents = relationship("Agent", back_populates="bureau")
     projets = relationship("Projet", back_populates="bureau")
@@ -97,9 +109,11 @@ class AchatSurFacture(Base):
     montant = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
     projet_id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=False)
-
+    id_fournisseur = Column(Integer, ForeignKey('fournisseur.id_fournisseur'), nullable=False)
+    devise= Column(SqlEnum(DeviseEnum), nullable=False)
+    
     projet = relationship("Projet", back_populates="achats")
-
+    
 class Fournisseur(Base):
     __tablename__ = 'fournisseur'
     id_fournisseur = Column(Integer, primary_key=True)
@@ -173,7 +187,7 @@ class HistoriqueEtat(Base):
     __tablename__ = 'historique_etat'
     id_historique = Column(Integer, primary_key=True)
     id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=False)
-    etat = Column(String(45), nullable=False)
+    etat = Column(SqlEnum(EtatEnum), nullable=False)
     date_debut = Column(Date, nullable=False)
     date_fin = Column(Date, nullable=True)
     description = Column(Text, nullable=True)

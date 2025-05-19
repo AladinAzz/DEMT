@@ -13,7 +13,7 @@ from pydantic import BaseModel
 # Config
 SECRET_KEY = "DEMT_SECRET_KEY"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 12*60
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -68,7 +68,7 @@ async def get_current_agent(
     else:
         # Try to extract from cookies
         token = request.cookies.get("access_token")
-        print("Token from cookies:", token)
+        
 
     if not token:
         raise HTTPException(

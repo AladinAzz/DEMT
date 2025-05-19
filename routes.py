@@ -120,7 +120,8 @@ def delete_chapitre(chapitre_id: int, db: Session = Depends(get_db)):
 # ----- Projet -----
 @router.get("/projets", response_model=List[schemas.ProjetRead])
 def list_projets(db: Session = Depends(get_db)):
-    return crud.ProjetCRUD.get_all(db)
+    projects= crud.ProjetCRUD.get_all(db)
+    return projects
 
 @router.get("/projets/{projet_id}", response_model=schemas.ProjetRead)
 def get_projet(projet_id: int, db: Session = Depends(get_db)):

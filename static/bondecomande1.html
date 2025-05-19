@@ -24,7 +24,7 @@
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
-      <a href="contrat.html" class="sidebar-link" data-tooltip="Contrats">
+      <a href="contrat.html" class="sidebar-link active" data-tooltip="Contrats">
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
@@ -32,7 +32,7 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="agent.html" class="sidebar-link active" data-tooltip="Agents">
+      <a href="agent.html" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
@@ -65,72 +65,81 @@
   </div>
 </div>
 <div class="header">
-  <h1>Agents</h1>
-  <button id="addUserBtn" class="btn-primary">+ Ajouter un Agent</button>
+  <h1>Bon De Command</h1>
+  
+  <div class="button-group">
+    <button id="addUserBtn" class="btn-primary">+ Ajouter un Bon</button>
+    <button class="btn-primary">Modify contrat</button>
+    <button class="btn-primary">Supprimer Contrat</button>
+    
+  </div>
 </div>
 
 <div id="overlay" class="overlay hidden">
   <div id="formPanel" class="form-panel">
     <button id="closeUserPanel" class="close-btn">&times;</button>
-    <h2>Ajouter un agent</h2>
+    <h2>Ajouter un Bon</h2>
     <form >
-      <label>Nom</label>
-      <input type="text" placeholder="Entrez le nom du nom" />
+      <label>Date</label>
+      <input type="Date" id="dateInput" class="date-field" placeholder="Entrez la date" />
+       <label>Periode</label>
+      <input type="text" placeholder="Entrez le Periode" />
       
-      <label>Prenom</label>
-      <input type="text" placeholder="Entrez le prenom" />
-      <label>Nom d'utilisation</label>
-      <input type="text" placeholder="Entrez le nom d'utilisation" />
-      <label>Mot De Passe</label>
-      <input type="password" placeholder="Entrez le mot de passe" />
+      <label>Montant</label>
+      <input type="text" placeholder="Entrez le Montant" />
+       <label>Projet</label>
+      <input type="text" placeholder="Entrez la Projer" />
+       <label>Contrat</label>
+      <input type="text" placeholder="Entrez le Contrat" />
+         <label>Agent</label>
+      <input type="text" placeholder="Entrez le Agent" />
       
+     
       
-      <label>Rolz</label>
-      <select required>
-        <option value="directeur"> Directeur</option>
-        <option value="chef direction">Chef Direction</option>
-        <option value="chef bureau">Chef Bureau</option>
-        <option value="chef bureau">Agent</option>
-        
-      </select>
-      
-      <label>Direction</label>
-      <input type="text" placeholder="Entrez la Direction" />
-      
-      <label>Bureau</label>
-      <input type="text" placeholder="Entrez le Bureau" />
+      <label>Fournisseur</label>
+      <input type="text" placeholder="Entrez le Fournisseur" />
       
       <button type="submit" class="btn-submit">Ajouter</button>
     </form>
   </div>
 </div>
-<div id="detailsOverlay" class="overlay hidden">
-  <div id="detailsPanel" class="form-panel">
-    <button id="closeDetailsPanel" class="close-btn">&times;</button>
-    <h2>Modify du Projet</h2>
+<!-- Modify Contrat Modal -->
+<div id="modifyOverlay" class="overlay hidden">
+  <div id="modifyPanel" class="form-panel">
+    <button id="closeModifyPanel" class="close-btn">&times;</button>
+    <h2>Modifier Contrat</h2>
     <form>
-      <label>ID</label>
-      <input type="text" id="detailName" readonly />
-
-      <label>Nom</label>
-      <input type="text" id="detailPeriod" readonly />
-
-      <label>Prenom</label>
-      <input type="text" id="detailBureau" readonly />
-
-      <label>Nom d'utilisation</label>
-      <input type="text" id="detailBureau" readonly />
-      <label>Role</label>
-      <select required>
-        <option value="directeur">CH</option>
-        <option value="chef direction">visa CF</option>
-        <option value="chef bureau">CEPEO</option>
-        </select>
-       <button type="submit" class="btn-submit">Modify</button>
-      <!-- Add more fields if needed -->
+      <label>ID Contrat</label>
+      <input type="text" placeholder="Entrez l'ID Contrat" />
+      <label>Description</label>
+      <input type="text" placeholder="Entrez la description" />
+      <label>Date Début</label>
+      <input type="date" />
+      <label>Durée (mois)</label>
+      <input type="number" />
+      <label>Min</label>
+      <input type="text" />
+      <label>Max</label>
+      <input type="text" />
+      <label>État</label>
+      <input type="text" />
+      <button type="submit" class="btn-submit">Modifier</button>
     </form>
   </div>
 </div>
+
+<!-- Supprimer Projet Modal -->
+<div id="deleteOverlay" class="overlay hidden">
+  <div id="deletePanel" class="form-panel">
+    <button id="closeDeletePanel" class="close-btn">&times;</button>
+    <h2>Supprimer Contrat</h2>
+    <form>
+      <p>Êtes-vous sûr de vouloir supprimer ce contrat ? Cette action est irréversible.</p>
+      <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+    </form>
+  </div>
+</div>
+
 <form class="search-form">
   <div class="search-wrapper">
     <!-- Dropdown Button -->
@@ -147,10 +156,14 @@
 
       <ul class="dropdown-list">
         <li><button type="button" class="category-option" data-category="ID">ID</button></li>
-        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
+        <li><button type="button" class="category-option" data-category="Date">Date</button></li>
         <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
-        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option" data-category="Montant">Montant</button></li>
         <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+        <li><button type="button" class="category-option" data-category="Delais">Delais</button></li>
+        <li><button type="button" class="category-option" data-category="ID Agent">ID Agent</button></li>
+        <li><button type="button" class="category-option" data-category="ID Fournisseur">ID Fournisseur</button></li>
+
       </ul>
     </div>
 
@@ -179,13 +192,62 @@
 </form>
 <section class="section-space">
   <div class="card">
-    <h2 class="section-title">Direction:Medical</h2>
+    <div class="section-header">
+    <h2 class="section-title">Projet</h2>
+    <span class="montant">Montant: 150,000 DZD</span>
+  </div>
+     <div class="group-box achats">
+        <h3 class="group-title">
+            <i class="fas fa-file-signature icon red-icon"></i>
+          <span>Contrat</span>
+        </h3>
 
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID Contrat</th>
+                <th class="w-3">Description</th>
+                <th class="w-2">Date Début</th>
+                <th class="w-2">Durée (mois)</th>
+                <th class="w-2">Min</th>
+                <th class="w-2">Max</th>
+                <th class="w-1">État</th>
+                <th class="w-2">ID Projet</th>
+                <th class="w-2">ID Fournisseur</th>
+                <th class="w-2">Devise</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-hover">
+                <td>1</td>
+                <td>
+                  <div class="font-medium">Acquisition Équipements 2022</div>
+                  <div class="text-muted small">Projet d'acquisition d'équipements médicaux...</div>
+                  
+                </td>
+                <td>2022-01-01</td>
+                <td>12</td>
+                <td>50,000</td>
+                <td>100,000</td>
+                
+                <td><span class="badge badge-red">VISA CF</span></td>
+                <td>1</td>
+                <td>125</td>
+                <td>D</td>
+                
+              </tr>
+              <!-- Repeat rows as needed -->
+            </tbody>
+          </table>
+        </div>
+  </div>
     <div class="group-space">
       <div class="group-box contrats">
         <h3 class="group-title">
-          
-          <span>Bureau:soin</span>
+         <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
+          <span>Bon De Cammande</span>
         </h3>
 
         <div class="table-wrapper">
@@ -193,10 +255,17 @@
             <thead>
               <tr>
                 <th class="w-1">ID</th>
-                <th class="w-3">Nom </th>
-                <th class="w-2">Prenom</th>
-                <th class="w-2">Nom d'utlisateur</th>
-                <th class="w-1">Role</th>
+                <th class="w-3">Date</th>
+                <th class="w-2">Desctiption</th>
+                
+                 <th class="w-2">Periode</th>
+                   <th class="w-2">Delais</th>
+
+                <th class="w-2">Montant</th>
+                <th class="w-1">État</th>
+                <th class="w-3">Agent</th>
+                <th class="w-3">Fournisseur</th>
+                
                 <th class="w-2">Actions</th>
               </tr>
             </thead>
@@ -204,13 +273,17 @@
               <tr class="row-hover">
                 <td>1</td>
                 <td>
-                  <div >slama</div>
+                  <div class="font-medium">2003-01-20</div>
                   
                 </td>
-                <td >ibrahim</td>
-                <td> slama</td>
-                <td><span class="badge badge-red">bahi</span></td>
-               <td><a  class="btn btn-primary btn-detail">Modify</a></td>
+                <td><div class="text-muted small">slama ibrahim</div></td>
+                <td>60</td>
+                <td>15-20-2003</td>
+                <td>20000000</td>
+                <td><span class="badge badge-red">VISA CF</span></td>
+                <td>155</td>
+                <td>3</td>
+                <td><a href="pv_de_reception.html" class="btn btn-primary">Details</a></td>
               </tr>
               <!-- Repeat rows as needed -->
             </tbody>
@@ -218,42 +291,7 @@
         </div>
       </div>
 
-      <div class="group-box contrats">
-        <h3 class="group-title">
-          
-          <span>Bureau:soin</span>
-        </h3>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="w-1">ID</th>
-                <th class="w-3">Nom </th>
-                <th class="w-2">Prenom</th>
-                <th class="w-2">Nom d'utlisateur</th>
-                <th class="w-1">Role</th>
-                <th class="w-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="row-hover">
-                <td>1</td>
-                <td>
-                  <div >slama</div>
-                  
-                </td>
-                <td >ibrahim</td>
-                <td> slama</td>
-                <td><span class="badge badge-green">bahi</span></td>
-                <td><a  class="btn btn-primary btn-detail">Modify</a></td>
-              </tr>
-              <!-- Repeat rows as needed -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+      
     </div>
   </div>
 </section>
@@ -277,10 +315,14 @@ const tableRows = document.querySelectorAll('tbody tr');
 // Map of category name to column index
 const categoryIndexMap = {
   "ID": 0,
-  "Num": 1,
-  "Prenom": 2,
-  "Nom d'utilisation": 3,
-  "Role": 4
+  "Date": 1,
+  "Descrption": 2,
+  "Periode": 3,
+  "Delais": 4,
+  "Montant": 5,
+  "Etat":6 ,
+  "Agent":7,
+  "Fournisseur":8
 };
 
 let currentCategory = null;
@@ -387,37 +429,84 @@ overlay.addEventListener('click', (e) => {
     }, 300);
   }
 });
-//Modify button
-const detailButtons = document.querySelectorAll('.btn-detail');
+/*calandre*/
+const dateInput = document.getElementById('dateInput');
 
-
-
-
-
-detailButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    // You could populate fields here later
-    detailsOverlay.classList.remove('hidden');
-    void detailsPanel.offsetWidth; // Trigger reflow
-    detailsPanel.classList.add('show');
+  dateInput.addEventListener('mouseenter', () => {
+    dateInput.focus(); // Triggers the calendar popup
   });
+
+  // Optional: Remove focus when mouse leaves, so it doesn’t stay open
+  dateInput.addEventListener('mouseleave', () => {
+    dateInput.blur(); // Optional: closes calendar when mouse leaves
+  });
+  //modify and supprimer
+  // Modify Contrat modal
+const modifyBtn = document.querySelector('button.btn-primary:nth-child(2)'); // Modify contrat button
+const modifyOverlay = document.getElementById('modifyOverlay');
+const modifyPanel = document.getElementById('modifyPanel');
+const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+// Supprimer Projet modal
+const deleteBtn = document.querySelector('button.btn-primary:nth-child(3)'); // Supprimer Projet button
+const deleteOverlay = document.getElementById('deleteOverlay');
+const deletePanel = document.getElementById('deletePanel');
+const closeDeletePanel = document.getElementById('closeDeletePanel');
+
+// Function to hide all modals
+function hideAllModals() {
+  panel.classList.remove('show');
+  overlay.classList.add('hidden');
+
+  modifyPanel.classList.remove('show');
+  modifyOverlay.classList.add('hidden');
+
+  deletePanel.classList.remove('show');
+  deleteOverlay.classList.add('hidden');
+}
+
+// Show Modify Contrat modal
+modifyBtn.addEventListener('click', () => {
+  hideAllModals();
+  modifyOverlay.classList.remove('hidden');
+  void modifyPanel.offsetWidth;
+  modifyPanel.classList.add('show');
 });
 
-closeDetailsPanel.addEventListener('click', () => {
-  detailsPanel.classList.remove('show');
-  setTimeout(() => {
-    detailsOverlay.classList.add('hidden');
-  }, 300);
+// Show Supprimer Projet modal
+deleteBtn.addEventListener('click', () => {
+  hideAllModals();
+  deleteOverlay.classList.remove('hidden');
+  void deletePanel.offsetWidth;
+  deletePanel.classList.add('show');
 });
 
-detailsOverlay.addEventListener('click', (e) => {
-  if (e.target === detailsOverlay) {
-    detailsPanel.classList.remove('show');
-    setTimeout(() => {
-      detailsOverlay.classList.add('hidden');
-    }, 300);
+// Close buttons
+closeModifyPanel.addEventListener('click', () => {
+  modifyPanel.classList.remove('show');
+  setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+});
+
+closeDeletePanel.addEventListener('click', () => {
+  deletePanel.classList.remove('show');
+  setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+});
+
+// Close modals when clicking outside panel
+modifyOverlay.addEventListener('click', (e) => {
+  if (e.target === modifyOverlay) {
+    modifyPanel.classList.remove('show');
+    setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
   }
 });
+
+deleteOverlay.addEventListener('click', (e) => {
+  if (e.target === deleteOverlay) {
+    deletePanel.classList.remove('show');
+    setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+  }
+});
+
 
 </script>
 

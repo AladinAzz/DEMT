@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tableau de bord - Administration</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+   <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">ADMINISTRATION</span>
+      <button id="toggleSidebar" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link" data-tooltip="Tableau de bord">
+        <i class="fas fa-chart-line"></i>
+        <span>Tableau de bord</span>
+      </a>
+      <a href="projet.html" class="sidebar-link active" data-tooltip="Projets">
+        <i class="fas fa-folder"></i>
+        <span>Projets</span>
+      </a>
+      <a href="contrat.html" class="sidebar-link" data-tooltip="Contrats">
+        <i class="fas fa-file-signature"></i>
+        <span>Contrats</span>
+      </a>
+      <a href="achat_sur_facture.html" class="sidebar-link" data-tooltip="Achat sur Facture">
+        <i class="fas fa-receipt"></i>
+        <span>Achat sur Facture</span>
+      </a>
+      <a href="agent.html" class="sidebar-link" data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Agents</span>
+      </a>
+
+      
+      <a href="#" class="sidebar-link" data-tooltip="Rapports">
+        <i class="fas fa-chart-pie"></i>
+        <span>Rapports</span>
+      </a>
+      <a href="#" class="sidebar-link" data-tooltip="Notifications">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+      <a href="#" class="sidebar-link" data-tooltip="Recherche">
+        <i class="fas fa-search"></i>
+        <span>Recherche</span>
+      </a>
+    </nav>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="header">
+        <div>
+          <h1>Tableau de bord</h1>
+          <p>Aperçu des activités et statistiques d'acquisition d'équipements médicaux</p>
+        </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
+</div>
+
+        <div class="menu">
+            <h3>
+                User Account
+                <div>
+                    Operational Team
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="#">My Profile</a>
+                </li>
+                <li>
+                    
+                    <a href="#">Edit Account</a>
+                </li>
+                <li>
+                    
+                    <a href="#">Comments</a>
+                </li>
+                <li>
+                  
+                    <a href="#">Budget</a>
+                </li>
+                <li>
+                    
+                    <a href="#">Finance</a>
+                </li>
+                <li>
+                   
+                    <a href="#">Wallet</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+      </div>
+
+      <!-- Stats cards -->
+      <div class="cards">
+        <div class="card">
+          <h3>Projets Actifs</h3>
+          <p>3</p>
+          <small>Projets en cours</small>
+        </div>
+        <div class="card">
+          <h3>Contrats</h3>
+          <p>13</p>
+          <small>Contrats actifs</small>
+        </div>
+        <div class="card">
+          <h3>Rapports</h3>
+          <p>0</p>
+          <small>Rapports d'acquisition</small>
+        </div>
+        <div class="card">
+          <h3>Budget Total</h3>
+          <p style="color: green;">750 000 €</p>
+          <small>Budget total des projets</small>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts">
+        <div class="chart">[Graphique Barres]</div>
+        <div class="chart">[Diagramme Circulaire]</div>
+      </div>
+
+      <!-- Report Status -->
+      <div class="report-status">
+        <h3>État des Rapports</h3>
+        <ul>
+          <li><span class="green-dot">●</span> Rapports lus: 0 (0%)</li>
+          <li><span class="yellow-dot">●</span> Rapports non lus: 0 (100%)</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Minimal JavaScript for toggle -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const submenu = document.getElementById('submenu');
+
+    menuToggle.addEventListener('click', () => {
+      submenu.classList.toggle('show');
+      menuToggle.classList.toggle('active');
+    });
+    
+  </script>
+  <script>
+ 
+const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
+});
+
+ const toggleBtn = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.querySelector('main'); // Main content container
+
+const dropdownButton = document.getElementById('dropdown-button');
+const dropdown = document.getElementById('dropdown');
+const selectedCategory = document.getElementById('selected-category');
+const options = document.querySelectorAll('.category-option');
+const searchInput = document.getElementById('searchInput');
+const tableRows = document.querySelectorAll('tbody tr');
+
+// Map of category name to column index
+const categoryIndexMap = {
+  "ID": 0,
+  "Num De projet": 1,
+  "Periode": 2,
+  "Bureau": 3,
+  "Etat": 4
+};
+
+let currentCategory = null;
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', () => {
+  sidebar.classList.remove('collapsed');
+  mainContent.classList.remove('collapsed');
+});
+
+// Sidebar toggle button
+toggleBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+
+  if (sidebar.classList.contains('collapsed')) {
+    mainContent.classList.remove('expanded');
+    mainContent.classList.add('collapsed');
+  } else {
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  }
+});
+  window.addEventListener('DOMContentLoaded', () => {
+    sidebar.classList.remove('collapsed');
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  });
+
+
+// Toggle dropdown visibility
+dropdownButton.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent click-outside close
+  dropdown.classList.toggle('hidden');
+});
+
+// Handle dropdown option selection
+
+
+// Filter table on input
+searchInput.addEventListener('input', performSearch);
+
+function performSearch() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  tableRows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    let textToSearch = '';
+
+    if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+      const index = categoryIndexMap[currentCategory];
+      const cell = cells[index];
+      textToSearch = cell ? cell.innerText.toLowerCase() : '';
+    } else {
+      textToSearch = Array.from(cells)
+        .map(td => td.innerText.toLowerCase())
+        .join(' ');
+    }
+
+    row.style.display = textToSearch.includes(query) ? '' : 'none';
+  });
+}
+
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+    dropdown.classList.add('hidden');
+  }
+});
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    currentCategory = option.dataset.category;
+    selectedCategory.textContent = currentCategory;
+    dropdown.classList.add('hidden');
+    performSearch(); // Trigger search again with the selected category
+  });
+});
+//add projet
+const addUserBtn = document.getElementById('addUserBtn');
+const overlay = document.getElementById('overlay');
+const panel = document.getElementById('formPanel');
+const closeUserPanel = document.getElementById('closeUserPanel');
+
+addUserBtn.addEventListener('click', () => {
+  overlay.classList.remove('hidden');
+  // trigger reflow for animation to apply correctly
+  void panel.offsetWidth;
+  panel.classList.add('show');
+});
+
+closeUserPanel.addEventListener('click', () => {
+  panel.classList.remove('show');
+  // wait animation before hiding overlay
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
+});
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) {
+    panel.classList.remove('show');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+    }, 300);
+  }
+});
+//details
+
+const detailButtons = document.querySelectorAll('.btn-detail');
+
+
+
+
+
+detailButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // You could populate fields here later
+    detailsOverlay.classList.remove('hidden');
+    void detailsPanel.offsetWidth; // Trigger reflow
+    detailsPanel.classList.add('show');
+  });
+});
+
+closeDetailsPanel.addEventListener('click', () => {
+  detailsPanel.classList.remove('show');
+  setTimeout(() => {
+    detailsOverlay.classList.add('hidden');
+  }, 300);
+});
+
+detailsOverlay.addEventListener('click', (e) => {
+  if (e.target === detailsOverlay) {
+    detailsPanel.classList.remove('show');
+    setTimeout(() => {
+      detailsOverlay.classList.add('hidden');
+    }, 300);
+  }
+});
+
+ // Modify Contrat modal
+const modifyBtn = document.querySelector('button.btn-primary:nth-child(2)'); // Modify contrat button
+const modifyOverlay = document.getElementById('modifyOverlay');
+const modifyPanel = document.getElementById('modifyPanel');
+const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+// Supprimer Projet modal
+const deleteBtn = document.querySelector('button.btn-primary:nth-child(3)'); // Supprimer Projet button
+const deleteOverlay = document.getElementById('deleteOverlay');
+const deletePanel = document.getElementById('deletePanel');
+const closeDeletePanel = document.getElementById('closeDeletePanel');
+
+// Function to hide all modals
+function hideAllModals() {
+  panel.classList.remove('show');
+  overlay.classList.add('hidden');
+
+  modifyPanel.classList.remove('show');
+  modifyOverlay.classList.add('hidden');
+
+  deletePanel.classList.remove('show');
+  deleteOverlay.classList.add('hidden');
+}
+
+// Show Modify Contrat modal
+modifyBtn.addEventListener('click', () => {
+  hideAllModals();
+  modifyOverlay.classList.remove('hidden');
+  void modifyPanel.offsetWidth;
+  modifyPanel.classList.add('show');
+});
+
+// Show Supprimer Projet modal
+deleteBtn.addEventListener('click', () => {
+  hideAllModals();
+  deleteOverlay.classList.remove('hidden');
+  void deletePanel.offsetWidth;
+  deletePanel.classList.add('show');
+});
+
+// Close buttons
+closeModifyPanel.addEventListener('click', () => {
+  modifyPanel.classList.remove('show');
+  setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+});
+
+closeDeletePanel.addEventListener('click', () => {
+  deletePanel.classList.remove('show');
+  setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+});
+
+// Close modals when clicking outside panel
+modifyOverlay.addEventListener('click', (e) => {
+  if (e.target === modifyOverlay) {
+    modifyPanel.classList.remove('show');
+    setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+  }
+});
+
+deleteOverlay.addEventListener('click', (e) => {
+  if (e.target === deleteOverlay) {
+    deletePanel.classList.remove('show');
+    setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+  }
+});
+
+</script>
+
+</body>
+</html>
