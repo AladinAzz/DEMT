@@ -159,7 +159,7 @@ def update_projet(
             last_etat = hist[-1].etat
             if last_etat != projet["etat"]:
                 description_etat = projet.get("description_etat", "")
-                date_etat = projet.get("date_etat", datetime.now().date())
+                date_etat = projet.get("date_etat", date.today())
                 try:
                     create_historique = crud.HistoriqueEtatCRUD.create(
                         db,
@@ -179,7 +179,7 @@ def update_projet(
         else:
             # Case: hist is an empty list (no history at all)
             description_etat = projet.get("description_etat", "")
-            date_etat = projet.get("date_etat", datetime.now().date())
+            date_etat = projet.get("date_etat", date.today())
             try:
                 create_historique = crud.HistoriqueEtatCRUD.create(
                     db,
@@ -356,13 +356,97 @@ def get_contract(id_contrat: str, db: Session = Depends(get_db)):
     contract = crud.ContractCRUD.get(db, id_contrat)
     return get_or_404(contract, "Contract")
 
-@router.post("/contracts", response_model=schemas.ContractRead, status_code=status.HTTP_201_CREATED)
+@router.post("/contracts", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_contract(contract: schemas.ContractCreate, db: Session = Depends(get_db)):
     return crud.ContractCRUD.create(db, contract.dict())
 
 @router.put("/contracts/{id_contrat}", response_model=schemas.ContractRead)
-def update_contract(id_contrat: str, contract: schemas.ContractCreate, db: Session = Depends(get_db)):
-    updated = crud.ContractCRUD.update(db, id_contrat, contract.dict())
+def update_contract(id_contrat: str, contract: dict, db: Session = Depends(get_db),current_agent: models.Agent = Depends(security.get_current_agent)):
+    contract_to_update = crud.ContractCRUD.get_by_id_contrat(db, id_contrat)
+    
+    contract_to_update.projet_id_projet = contract.get("id_projet")
+    contract_to_update.id_projet= contract["id_projet"]
+    contract_to_update.id_fournisseur = contract["id_fournisseur"]
+    contract_to_update.description = contract["description"]
+    contract_to_update.date_debut = contract["date_debut"]
+    contract_to_update.date_de_notification = contract.get("date_de_notification")
+    contract_to_update.min = contract["min"]
+    contract_to_update.max = contract.get("max")
+    contract_to_update.duree = contract["duree"]
+    contract_to_update.etat = contract.get("etat")
+    contract_to_update.devise = contract["devise"]
+    contract_to_update.type = contract["type"]
+    contract_to_update.engagement = contract.get("engagement", 0)
+    contract_to_update.projet_chapitre_id_chapitre = contract.get("id_chapitre")
+    # Check state history
+    hist = crud.HistoriqueEtatCRUD.get_by_id_contrat(db, id_contrat)
+    
+    if isinstance(hist, list):
+        if len(hist) > 0:
+            hist.sort(key=lambda x: x.date_debut, reverse=True)
+            last_etat = hist[-1].etat
+            if last_etat != contract["etat"]:
+                description_etat = contract.get("description_etat", "")
+                date_etat = contract.get("date_etat", date.today())
+                try:
+                    create_historique = crud.HistoriqueEtatCRUD.create(
+                        db,
+                        {
+                            "etat": contract["etat"],
+                            "description": description_etat,
+                            "id_contrat": id_contrat,
+                            "date_debut": date_etat,
+                            "agent_id_agent": current_agent.id_agent
+                        }
+                    )
+                    db.commit()
+                except Exception as e:
+                    db.rollback()
+                    print(f"Error creating history: {str(e)}")
+                    raise HTTPException(500, f"History creation failed: {str(e)}")
+        else:
+            # Case: hist is an empty list (no history at all)
+            description_etat = contract.get("description_etat", "")
+            date_etat = contract.get("date_etat", date.today())
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": contract["etat"],
+                        "description": description_etat,
+                        "id_contrat": id_contrat,
+                        "date_debut": date_etat,
+                        "agent_id_agent": contract.get("agent_id_agent")
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+    else:
+        # Case: hist is None or a single object
+        if hist is None or getattr(hist, "etat", None) != contract["etat"]:
+            description_etat = contract.get("description_etat", "")
+            date_etat = contract.get("date_etat", date.today())
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": contract["etat"],
+                        "description": description_etat,
+                        "id_contrat": id_contrat,
+                        "date_debut": date_etat,
+                        "agent_id_agent": contract.get("agent_id_agent")
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+            
+    updated = crud.ContractCRUD.update(db, (contract_to_update.id_projet,contract_to_update.id_fournisseur,contract_to_update.id_contrat), contract_to_update.__dict__)
     return get_or_404(updated, "Contract")
 
 @router.delete("/contracts/{id_contrat}", status_code=status.HTTP_204_NO_CONTENT)

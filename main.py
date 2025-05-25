@@ -167,24 +167,24 @@ async def achat_page(
     })
 
 
-@app.get("/bondecommande/{id_projet}", response_class=HTMLResponse)
+@app.get("/bondecommande/{id_contrat}", response_class=HTMLResponse)
 async def bondecommande_page(
-    id_projet: int,
+    id_contrat: int,
     request: Request,
     db: Session = Depends(get_db),
     current_agent: Agent = Depends(security.get_current_agent)
 ):
-    contrats = crud.ContractCRUD.get_by_id_projet(db, id_projet)
-    bons = crud.BonDeCommandeCRUD.get_by_id_project(db, id_projet)
+    contrats = crud.ContractCRUD.get_by_id_contrat(db, id_contrat)
+    bons=[]
+    bons.extend( crud.BonDeCommandeCRUD.get_by_id_contrat(db, id_contrat))
     # Si tu veux aussi les états pour chaque contrat :
     etats = []
-    for contrat in contrats:
-        etat = crud.HistoriqueEtatCRUD.get(db, contrat.id_projet)
-        contrat.etat = etat.etat if etat else None
-        etats.append(contrat.etat)
+    etats.extend(crud.HistoriqueEtatCRUD.get_by_id_contrat(db, id_contrat))
+    contrats.etat=etats[-1].etat if etats and len(etats) > 0 else None
     return templates.TemplateResponse("bondecomande.html", {
         "request": request,
         "bons": bons,
+        "etat": etats,
         "contrats": contrats,
         "agent": current_agent
     })

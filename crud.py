@@ -159,7 +159,12 @@ class ContractCRUD:
             model = ContractCRUD.model
         # Retourne tous les contrats du projet
         return db.query(model).filter(model.id_projet == id).all()
-    
+    @staticmethod
+    def get_by_id_contrat(db: Session, id: Any, model=None):
+        if model is None:
+            model = ContractCRUD.model
+        # Retourne le contrat par son id
+        return db.query(model).filter(model.id_contrat == id).first()
     @staticmethod
     def create(db: Session, data: dict): return create(db, ContractCRUD.model, data)
     @staticmethod
@@ -186,6 +191,11 @@ class BonDeCommandeCRUD:
     def get_all(db: Session): return get_all(db, BonDeCommandeCRUD.model)
     @staticmethod
     def get(db: Session, id: int): return get_by_id(db, BonDeCommandeCRUD.model, id)
+    @staticmethod
+    def get_by_id_contrat(db: Session, id: Any, model=None):
+        if model is None:
+            model = BonDeCommandeCRUD.model
+        return db.query(model).filter(model.contract_id_contrat == id).all()
     @staticmethod
     def get_by_id_project(db: Session, id: Any, model=None):
         if model is None:

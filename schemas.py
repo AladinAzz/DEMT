@@ -174,10 +174,24 @@ class ContractCreate(ContractBase):
     devise: DeviseEnum
     type: ContractTypeEnum
     engagement: float = 0
+    projet_chapitre_id_chapitre: int
 
-class ContractRead(ContractBase):
+class ContractRead(BaseModel):
     id_contrat: str
-    id_chapitre: Optional[int]
+    type: str  # "ferme" or "commande"
+    description: str
+    date_debut: date
+    date_de_notification: date
+    duree: int # Accepts both string and integer
+    min: Optional[float] = None
+    max: Optional[float] = None
+    montant: Optional[float] = None  # Only for "ferme" type contracts
+    etat: str  # "engagement" or "instance engagé"
+    engagement: float
+    projet_chapitre_id_chapitre: int  # Accepts both string and integer
+    id_projet: int  # Accepts both string and integer
+    id_fournisseur: int  # Accepts both string and integer
+    devise: str  # "DZD", "EURO", or "DOLLAR"
     class Config:
         orm_mode = True
 

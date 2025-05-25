@@ -544,7 +544,7 @@ document.addEventListener('click', () => {
                         <td>{{ contrat.id_fournisseur }}</td>
                         <td>{{ contrat.devise.value if contrat.devise is defined else '' }}</td>
                         <td>
-                          <a href="/bondecommande/{{ contrat.id_projet }}" class="btn btn-primary">Details</a>
+                          <a href="/bondecommande/{{ contrat.id_contrat }}" class="btn btn-primary">Details</a>
                         </td>
                       </tr>
                     {% endfor %}
