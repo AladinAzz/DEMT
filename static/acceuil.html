@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accueil - DEMT</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>/* Reset */
+ 
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.logo-highlight {
+  font-size: 24px;
+  font-weight: bold;
+  color: #6f4ef2;
+}
+
+.nav-links a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: #6f4ef2;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.profile-circle {
+  width: 36px;
+  height: 36px;
+  background: #6f4ef2;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.logo-highlight {
+  font-size: 24px;
+  font-weight: bold;
+  color: #6f4ef2;
+}
+
+.nav-links a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: #6f4ef2;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.profile-circle {
+  width: 36px;
+  height: 36px;
+  background: #6f4ef2;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+/* Welcome Title */
+.welcome-title {
+  font-size: 32px;
+  margin-bottom: 30px;
+    text-align: center;   
+}
+
+.highlight {
+  color: #6f4ef2;
+}
+
+/* Cards */
+.cards3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.card3:hover {
+   background-color: #f0f4ff; /* Light blue background on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Slightly deeper shadow */
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-color:#6f4ef2;
+    border: 2px solid #6f4ef2;
+}
+
+.card3 {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+
+}
+
+.card3 h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.chapter-tag {
+  background: #d3f5e2;
+  color: #188848;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  margin-left: 10px;
+}
+
+.card3 p {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.card3-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.card3-footer a {
+  color: #6f4ef2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.card3-footer i {
+  margin-left: 5px;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+     <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Administration</span>
+      <button id="toggleSidebar" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/acceuil" class="sidebar-link" data-tooltip="Tableau de bord">
+        <i class="fas fa-chart-line"></i>
+        <span>Acceuil</span>
+      </a>
+      <a href="/project" class="sidebar-link" data-tooltip="Projets">
+        <i class="fas fa-folder"></i>
+        <span>Projets</span>
+      </a>
+      <a href="/contrat" class="sidebar-link" data-tooltip="Contrats">
+        <i class="fas fa-file-signature"></i>
+        <span>Contrats</span>
+      </a>
+      <a href="/achat" class="sidebar-link" data-tooltip="Achat sur Facture">
+        <i class="fas fa-receipt"></i>
+        <span>Achat sur Facture</span>
+      </a>
+      <a href="/users" class="sidebar-link active" data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Agents</span>
+      </a>
+
+      
+     
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+    </nav>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+       
+      <div class="header">
+        <div>
+          <h1>liste des chapitres</h1>
+          <p>Aperçu sur les chapitres</p>
+        </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
+</div>
+
+        <div class="menu">
+            <h3>
+                {{agent.nom}} {{agent.prenom}}
+                <div>
+                    {{agent.role.value}}
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="/user">My Profile</a>
+                </li>
+                <li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
+            </ul>
+        </div>
+    </div>
+
+      </div>
+
+
+
+<script>
+  const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
+});
+
+</script>
+
+      <!-- Chapter Cards -->
+      <section class="cards3">
+        {%for chapitre in chapitres%}
+
+        <div class="card3" onclick="window.location.href='/table/{{chapitre.id_chapitre}}'">
+          <h3>Chapitre: {{chapitre.nom}}<span class="chapter-tag">Id. {{chapitre.id_chapitre}}</span></h3>
+          <h4>{{chapitre.description}}</h4>
+        </div>
+        {%endfor%}
+      </section>
+    </main>
+  </div>
+  <script>
+  
+ const toggleBtn = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.querySelector('main'); // Main content container
+
+const dropdownButton = document.getElementById('dropdown-button');
+const dropdown = document.getElementById('dropdown');
+const selectedCategory = document.getElementById('selected-category');
+const options = document.querySelectorAll('.category-option');
+const searchInput = document.getElementById('searchInput');
+const tableRows = document.querySelectorAll('tbody tr');
+
+// Map of category name to column index
+const categoryIndexMap = {
+  "ID": 0,
+  "Num De projet": 1,
+  "Periode": 2,
+  "Bureau": 3,
+  "Etat": 4
+};
+
+let currentCategory = null;
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', () => {
+  sidebar.classList.remove('collapsed');
+  mainContent.classList.remove('collapsed');
+});
+
+// Sidebar toggle button
+toggleBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+
+  if (sidebar.classList.contains('collapsed')) {
+    mainContent.classList.remove('expanded');
+    mainContent.classList.add('collapsed');
+  } else {
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  }
+});
+  window.addEventListener('DOMContentLoaded', () => {
+    sidebar.classList.remove('collapsed');
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  });
+
+
+// Toggle dropdown visibility
+dropdownButton.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent click-outside close
+  dropdown.classList.toggle('hidden');
+});
+
+// Handle dropdown option selection
+
+
+// Filter table on input
+searchInput.addEventListener('input', performSearch);
+
+function performSearch() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  tableRows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    let textToSearch = '';
+
+    if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+      const index = categoryIndexMap[currentCategory];
+      const cell = cells[index];
+      textToSearch = cell ? cell.innerText.toLowerCase() : '';
+    } else {
+      textToSearch = Array.from(cells)
+        .map(td => td.innerText.toLowerCase())
+        .join(' ');
+    }
+
+    row.style.display = textToSearch.includes(query) ? '' : 'none';
+  });
+}
+
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+    dropdown.classList.add('hidden');
+  }
+});
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    currentCategory = option.dataset.category;
+    selectedCategory.textContent = currentCategory;
+    dropdown.classList.add('hidden');
+    performSearch(); // Trigger search again with the selected category
+  });
+});
+//add projet
+const addUserBtn = document.getElementById('addUserBtn');
+const overlay = document.getElementById('overlay');
+const panel = document.getElementById('formPanel');
+const closeUserPanel = document.getElementById('closeUserPanel');
+
+addUserBtn.addEventListener('click', () => {
+  overlay.classList.remove('hidden');
+  // trigger reflow for animation to apply correctly
+  void panel.offsetWidth;
+  panel.classList.add('show');
+});
+
+closeUserPanel.addEventListener('click', () => {
+  panel.classList.remove('show');
+  // wait animation before hiding overlay
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
+});
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) {
+    panel.classList.remove('show');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+    }, 300);
+  }
+});
+//details
+
+const detailButtons = document.querySelectorAll('.btn-detail');
+
+
+
+
+
+detailButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // You could populate fields here later
+    detailsOverlay.classList.remove('hidden');
+    void detailsPanel.offsetWidth; // Trigger reflow
+    detailsPanel.classList.add('show');
+  });
+});
+
+closeDetailsPanel.addEventListener('click', () => {
+  detailsPanel.classList.remove('show');
+  setTimeout(() => {
+    detailsOverlay.classList.add('hidden');
+  }, 300);
+});
+
+detailsOverlay.addEventListener('click', (e) => {
+  if (e.target === detailsOverlay) {
+    detailsPanel.classList.remove('show');
+    setTimeout(() => {
+      detailsOverlay.classList.add('hidden');
+    }, 300);
+  }
+});
+
+ // Modify Contrat modal
+const modifyBtn = document.querySelector('button.btn-primary:nth-child(2)'); // Modify contrat button
+const modifyOverlay = document.getElementById('modifyOverlay');
+const modifyPanel = document.getElementById('modifyPanel');
+const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+// Supprimer Projet modal
+const deleteBtn = document.querySelector('button.btn-primary:nth-child(3)'); // Supprimer Projet button
+const deleteOverlay = document.getElementById('deleteOverlay');
+const deletePanel = document.getElementById('deletePanel');
+const closeDeletePanel = document.getElementById('closeDeletePanel');
+
+// Function to hide all modals
+function hideAllModals() {
+  panel.classList.remove('show');
+  overlay.classList.add('hidden');
+
+  modifyPanel.classList.remove('show');
+  modifyOverlay.classList.add('hidden');
+
+  deletePanel.classList.remove('show');
+  deleteOverlay.classList.add('hidden');
+}
+
+// Show Modify Contrat modal
+modifyBtn.addEventListener('click', () => {
+  hideAllModals();
+  modifyOverlay.classList.remove('hidden');
+  void modifyPanel.offsetWidth;
+  modifyPanel.classList.add('show');
+});
+
+// Show Supprimer Projet modal
+deleteBtn.addEventListener('click', () => {
+  hideAllModals();
+  deleteOverlay.classList.remove('hidden');
+  void deletePanel.offsetWidth;
+  deletePanel.classList.add('show');
+});
+
+// Close buttons
+closeModifyPanel.addEventListener('click', () => {
+  modifyPanel.classList.remove('show');
+  setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+});
+
+closeDeletePanel.addEventListener('click', () => {
+  deletePanel.classList.remove('show');
+  setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+});
+
+// Close modals when clicking outside panel
+modifyOverlay.addEventListener('click', (e) => {
+  if (e.target === modifyOverlay) {
+    modifyPanel.classList.remove('show');
+    setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+  }
+});
+
+deleteOverlay.addEventListener('click', (e) => {
+  if (e.target === deleteOverlay) {
+    deletePanel.classList.remove('show');
+    setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+  }
+});
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -11,9 +11,10 @@ class RoleEnum(str, Enum):
     agent = 'agent'
 
 class ProjetTypeEnum(str, Enum):
-    contrat = 'contrat'
-    marche = 'marche'
+    consultation = 'consultation'
     achat = 'achat'
+    GAG = 'GAG'
+    AOON = 'AOON'
 
 class DeviseEnum(str, Enum):
     DZD = 'DZD'
@@ -24,18 +25,7 @@ class ContractTypeEnum(str, Enum):
     ferme = 'ferme'
     commande = 'a commande'
 
-class EtatEnum(str, Enum):
-    CahierDeCharge = 'Cahier de charge'
-    Pub_CC = 'Pub CC'
-    COPEO= 'COPEO'
-    VisaCF= 'VisaCF'
-    CCTP= 'CCTP'
-    VisaCahierDeChargeCSM= 'Visa Cahier de charge CSM'
-    Pub_AOON= 'Pub AOON'
-    VisaCSM= 'Visa CSM'
-    FP= 'F/P'
-    engagement= 'Engagement'
-    rejet= 'Rejet'
+
     
 # -------- Schemas --------
 
@@ -83,6 +73,8 @@ class ChapitreBase(BaseModel):
     engagement: float
     montant_initiale: float
     mondatement: float
+    nb_projets: Optional[int]
+    nb_cotrats: Optional[int]
 
 class ChapitreCreate(ChapitreBase): pass
 class ChapitreRead(ChapitreBase):
@@ -95,24 +87,53 @@ class ProjetBase(BaseModel):
     nom_projet: str
     description: Optional[str]
     date_debut: date
-    date_fin: date
+    date_fin: Optional[date]
     id_bureau: int
+    montant: float
     chapitre_id_chapitre: int
     type: ProjetTypeEnum
+    etat:Optional[str]
 
-class ProjetCreate(ProjetBase): pass
+class ProjetCreate(ProjetBase): 
+    nom_projet: str
+    description: Optional[str]
+    date_debut: date
+    id_bureau: int
+    montant: float
+    chapitre_id_chapitre: int
+    type: ProjetTypeEnum
+    etat:Optional[str]=None
+    description_etat: Optional[str]=None
 class ProjetRead(ProjetBase):
-    id_projet: int
+    nom_projet: str
+    description: Optional[str]
+    date_debut: date
+    id_bureau: int
+    montant: float
+    chapitre_id_chapitre: int
+    type: ProjetTypeEnum
+    etat:Optional[str]=None
+    description_etat: Optional[str]=None
+    
+    
+    chapitre_id_chapitre: int
+    type: ProjetTypeEnum
+    
+    
+    
     class Config:
         orm_mode = True
 
 
 class AchatSurFactureBase(BaseModel):
     montant: float
+    description: Optional[str]
     date: date
     projet_id_projet: int
     id_fournisseur: int
     devise: DeviseEnum
+    engagement: Optional[float] = 0
+    etat:Optional[str]=None
     class Config:
         extra = "allow"
 class AchatSurFactureCreate(AchatSurFactureBase):
@@ -130,16 +151,33 @@ class ContractBase(BaseModel):
     min: float
     max: Optional[float]
     duree: int
-    etat:Optional[str]
+    etat: Optional[str]
     id_projet: int
     id_fournisseur: int
     devise: DeviseEnum
     type: ContractTypeEnum
+    engagement: Optional[float] = 0
+    projet_id_projet: int
+    projet_chapitre_id_chapitre: int
 
 class ContractCreate(ContractBase):
     id_contrat: str
+    description: Optional[str]
+    date_debut: date
+    date_de_notification: Optional[date]
+    min: float
+    max: Optional[float]
+    duree: int
+    etat:Optional[str]
+    projet_id_projet: int
+    id_fournisseur: int
+    devise: DeviseEnum
+    type: ContractTypeEnum
+    engagement: float = 0
 
-class ContractRead(ContractCreate):
+class ContractRead(ContractBase):
+    id_contrat: str
+    id_chapitre: Optional[int]
     class Config:
         orm_mode = True
 
@@ -164,14 +202,18 @@ class BonDeCommandeBase(BaseModel):
     date_de_notification: Optional[date]
     delais: int
     agent_id_agent: int
-    contract_id_projet: int
-    contract_id_fournisseur: int
-    contract_id_contrat: str
+    contract_id_contrat: Optional[str] = None
+    contract_id_projet: Optional[int] = None
+    contract_id_fournisseur: Optional[int] = None
+    achat_sur_facture_id_facture: Optional[str] = None
+    achat_sur_facture_projet_id_projet: Optional[int] = None 
+    achat_sur_facture_id_fournisseur: Optional[int] = None   
 
 class BonDeCommandeCreate(BonDeCommandeBase):
     id_bon: int
 
-class BonDeCommandeRead(BonDeCommandeCreate):
+class BonDeCommandeRead(BonDeCommandeBase):
+    id_bon: int
     class Config:
         orm_mode = True
 
@@ -221,15 +263,23 @@ class FactureRead(FactureCreate):
 
 
 class HistoriqueEtatBase(BaseModel):
-    id_projet: int
-    etat: EtatEnum
+    id_projet: Optional[int]=None
+    etat: str
     date_debut: date
     date_fin: Optional[date]
     description: Optional[str]
     agent_id_agent: int
+    id_facture: Optional[str] = None
+    id_contrat: Optional[str] = None
 
-class HistoriqueEtatCreate(HistoriqueEtatBase):
-    id_historique: int
+class HistoriqueEtatCreate(BaseModel):
+    etat: str
+    date_debut: date
+    description: Optional[str]
+    agent_id_agent: int
+    id_projet: Optional[int]=None
+    id_facture: Optional[str] = None
+    id_contrat: Optional[str] = None
 
 class HistoriqueEtatRead(HistoriqueEtatCreate):
     class Config:

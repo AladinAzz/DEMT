@@ -10,13 +10,13 @@
 <body>
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">ADMINISTRATION</span>
+      <span class="sidebar-title">Fonctionnement</span>
       <button id="toggleSidebar" aria-label="Toggle sidebar">
         <i class="fas fa-bars"></i>
       </button>
     </div>
     <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link" data-tooltip="Tableau de bord">
+      <a href="table.html" class="sidebar-link" data-tooltip="Tableau de bord">
         <i class="fas fa-chart-line"></i>
         <span>Tableau de bord</span>
       </a>
@@ -24,11 +24,11 @@
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
-      <a href="contrat.html" class="sidebar-link " data-tooltip="Contrats">
+      <a href="contrat.html" class="sidebar-link active" data-tooltip="Contrats">
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
-      <a href="achat_sur_facture.html" class="sidebar-link active" data-tooltip="Achat sur Facture">
+      <a href="achat_sur_facture.html" class="sidebar-link" data-tooltip="Achat sur Facture">
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
@@ -38,10 +38,7 @@
       </a>
 
       
-      <a href="#" class="sidebar-link" data-tooltip="Rapports">
-        <i class="fas fa-chart-pie"></i>
-        <span>Rapports</span>
-      </a>
+     
       <a href="#" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
@@ -65,11 +62,28 @@
   </div>
 </div>
 <div class="header">
-  <h1>Achat sur facture </h1>
-  
+  <h1>PV De Reception</h1>
+  <button id="addUserBtn" class="btn-primary">+ Ajouter un PV</button>
 </div>
 
+<div id="overlay" class="overlay hidden">
+  <div id="formPanel" class="form-panel">
+    <button id="closeUserPanel" class="close-btn">&times;</button>
+    <h2>Ajouter un PV</h2>
+    <form >
+      <label>Date</label>
+      <input type="Date" id="dateInput" class="date-field" placeholder="Entrez la date PV" />
+       <label>Description</label>
+      <input type="text" placeholder="Entrez Description" />
+      <label>Date De Facteur</label>
+      <input type="Date" id="dateInput" class="date-field" placeholder="Entrez la date de facteur" />
+       <label>Montant</label>
+      <input type="text" placeholder="Entrez le Periode" />
 
+      <button type="submit" class="btn-submit">Ajouter</button>
+    </form>
+  </div>
+</div>
 <form class="search-form">
   <div class="search-wrapper">
     <!-- Dropdown Button -->
@@ -83,17 +97,13 @@
 
     <!-- Dropdown Menu -->
     <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
-   
+
       <ul class="dropdown-list">
-        <li><button type="button" class="category-option" data-category="ID Achat">ID Achat</button></li>
+        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option" data-category="Date">Date</button></li>
+        <li><button type="button" class="category-option" data-category="ID">ID Facteur</button></li>
         <li><button type="button" class="category-option" data-category="Montant">Montant</button></li>
-        <li><button type="button" class="category-option" data-category="Date ">Date </button></li>
-        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
-        <li><button type="button" class="category-option" data-category="ID Projet">ID Projet</button></li>
-        <li><button type="button" class="category-option" data-category="ID Fournisseur">ID Fournisseur</button></li>
-         <li><button type="button" class="category-option" data-category="Devise">Devise</button></li>
-          
-       
+
       </ul>
     </div>
 
@@ -122,48 +132,51 @@
 </form>
 <section class="section-space">
   <div class="card">
-     <h2 class="section-title">Chapitre: Équipements Médicaux</h2>
-
+    <div class="section-header">
+    <h2 class="section-title">Projet</h2>
+    <span class="montant">Montant: 150,000 DZD</span>
+  </div>
     <div class="group-space">
       <div class="group-box contrats">
         <h3 class="group-title">
-          <i class="fas fa-file-invoice-dollar icon green-icon"></i>
-          <span>Achat sur facture </span>
+         <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
+          <span>Bon De Cammande</span>
         </h3>
 
         <div class="table-wrapper">
           <table class="data-table">
             <thead>
               <tr>
-                <th class="w-1">ID Achat</th>
-                <th class="w-3">Montant</th>
-                <th class="w-2">Date </th>
-                <th class="w-1">État</th>
-                <th class="w-2">Projet</th>
+                <th class="w-1">ID</th>
+                <th class="w-3">Date</th>
+                <th class="w-2">Desctiption</th>
                 
-                <th class="w-2">ID Fournisseur</th>
-                <th class="w-2">Devise</th>
-                <th class="w-2">Actions</th>
+                 <th class="w-2">Periode</th>
+                   <th class="w-2">Delais</th>
+
+                <th class="w-2">Montant</th>
+                <th class="w-1">État</th>
+                <th class="w-3">Agent</th>
+                <th class="w-3">Fournisseur</th>
+                
+                
               </tr>
             </thead>
             <tbody>
               <tr class="row-hover">
                 <td>1</td>
                 <td>
-                  <div class="font-medium">slama</div>
-                  <div class="text-muted small">project.</div>
+                  <div class="font-medium">2003-01-20</div>
                   
                 </td>
-                <td>2023-01-01</td>
-                <td><span class="badge badge-red">CH</span></td>
-                <td>1272</td>
+                <td><div class="text-muted small">slama ibrahim</div></td>
+                <td>60</td>
+                <td>15-20-2003</td>
+                <td>20000000</td>
+                <td><span class="badge badge-red">Enc</span></td>
+                <td>155</td>
+                <td>3</td>
                 
-                
-                
-                
-                <td>300</td>
-                <td>auro</td>
-                <td><a href="/download" class="btn btn-primary">Details</a></td>
               </tr>
               <!-- Repeat rows as needed -->
             </tbody>
@@ -172,6 +185,46 @@
       </div>
 
       
+    </div>
+    
+     <div class="group-box achats">
+        <h3 class="group-title">
+            <i class="fas fa-file-signature icon red-icon"></i>
+          <span>PV De Reception</span>
+        </h3>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID</th>
+                <th class="w-2">Date De PV</th>
+                <th class="w-3">Description</th>
+                <th class="w-2">Date De Facteur</th>
+                <th class="w-2">ID Facteur</th>
+                <th class="w-2">Devise</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-hover">
+                <td>1</td>
+                <td>2023-01-01</td>
+                <td>
+                    
+                  
+                  <div class="text-muted small">Projet d'acquisition d'équipements médicaux...</div>
+                 </td>
+                <td>2022-01-01</td>
+                <td>3</td>
+                <td>auro</td>
+              </tr>
+              <!-- Repeat rows as needed -->
+            </tbody>
+          </table>
+        </div>
+  </div>
+    
   </div>
 </section>
 
@@ -193,15 +246,11 @@ const tableRows = document.querySelectorAll('tbody tr');
 
 // Map of category name to column index
 const categoryIndexMap = {
-  "ID Achat": 0,
-  "Montant": 1,
-  "Date ": 2,
-  "Etat": 3,
-  "ID Projet":4,
-  "ID Fornisseur":5,
-  "Devise": 6,
-  "ID Projet":7,
-  "ID Fornisseur":8
+  "ID": 0,
+  "Num De projet": 1,
+  "Periode": 2,
+  "Bureau": 3,
+  "Etat": 4
 };
 
 let currentCategory = null;
@@ -308,6 +357,17 @@ overlay.addEventListener('click', (e) => {
     }, 300);
   }
 });
+/*calandre*/
+const dateInput = document.getElementById('dateInput');
+
+  dateInput.addEventListener('mouseenter', () => {
+    dateInput.focus(); // Triggers the calendar popup
+  });
+
+  // Optional: Remove focus when mouse leaves, so it doesn’t stay open
+  dateInput.addEventListener('mouseleave', () => {
+    dateInput.blur(); // Optional: closes calendar when mouse leaves
+  });
 
 </script>
 

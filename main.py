@@ -53,27 +53,23 @@ app.include_router(router, dependencies=[Depends(security.get_current_agent)])
 
 @app.exception_handler(HTTPException)
 async def custom_unauthorized_handler(request: Request, exc: HTTPException):
-    if exc.status_code == 401 :
-        return RedirectResponse(url="/login")
+    if exc.status_code == 401:
+        return RedirectResponse(url="/login", status_code=302)
     return await http_exception_handler(request, exc)
-
-
-
 
 @app.get("/", response_class=RedirectResponse)
 async def root(current_agent: Agent = Depends(security.get_current_agent)):
-    return RedirectResponse(url=f"/{current_agent.role.lower()}")
+    return RedirectResponse(url=f"/{current_agent.role.value}", status_code=302)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-
 @app.get("/directeur", response_class=HTMLResponse)
 async def login_page(request: Request):
     
-    return RedirectResponse(url="/project")
+    return RedirectResponse(url="/acceuil")
 
 
 
@@ -90,7 +86,35 @@ async def project_page(request: Request, db: Session = Depends(get_db), current_
             etats.append(etat)
         else:
             etats.append(None)
-    return templates.TemplateResponse("projet.html", {"request": request, "projects": projects,"etats": etats})
+    return templates.TemplateResponse("projets.html", {"request": request, "projects": projects,"etats": etats, "agent": current_agent})
+
+@app.get("/project/{id}",response_class=HTMLResponse)
+async def project_page(id:int,request: Request, db: Session = Depends(get_db), current_agent: Agent = Depends(security.get_current_agent)):
+    projet= crud.ProjetCRUD.get(db,id)
+    contrats= crud.ContractCRUD.get_by_id_projet(db,id)
+    achats=crud.AchatSurFactureCRUD.get_by_id_projet(db,id)
+    etats=crud.HistoriqueEtatCRUD.get_all(db)
+    for achat in achats:
+        etats_f = crud.HistoriqueEtatCRUD.get_by_id_achat(db, id)
+        if not isinstance(etats, list):
+            etats_f = [etats] if etats else []
+        etats_f.sort(key=lambda x: x.date_debut, reverse=False)
+        achat.etat = etats_f[-1].etat if etats_f else None
+    if not isinstance(etats, list):
+        etats = [etats] if etats else []
+    etats.sort(key=lambda x: x.date_debut, reverse=False)
+    
+        
+    return templates.TemplateResponse("projet.html", {
+        "request": request,
+        "projet": projet,
+        "achats":achats,
+        "contracts": contrats,
+        "etats": etats ,
+        "agent": current_agent
+        })
+
+
 
 
 @app.get("/contrat", response_class=HTMLResponse)
@@ -110,7 +134,8 @@ async def contract_page(request: Request, db: Session = Depends(get_db), current
     return templates.TemplateResponse("contrat.html", {
         "request": request,
         "contracts": contracts,
-        "etats_dict": etats_dict
+        "etats_dict": etats_dict,
+        "agent": current_agent
     })
 
 
@@ -137,24 +162,31 @@ async def achat_page(
     return templates.TemplateResponse("achat.html", {
         "request": request,
         "achats": achats,
-        "etats_dict": etats_dict
+        "etats_dict": etats_dict,
+        "agent": current_agent
     })
 
 
 @app.get("/bondecommande/{id_projet}", response_class=HTMLResponse)
-async def bondecommande_page(id_projet: int,
+async def bondecommande_page(
+    id_projet: int,
     request: Request,
     db: Session = Depends(get_db),
     current_agent: Agent = Depends(security.get_current_agent)
 ):
-    contrat=crud.ContractCRUD.get_by_id_projet(db,id_projet)
-    etat = crud.HistoriqueEtatCRUD.get(db, id_projet)
-    contrat.etat=etat.etat.value
+    contrats = crud.ContractCRUD.get_by_id_projet(db, id_projet)
     bons = crud.BonDeCommandeCRUD.get_by_id_project(db, id_projet)
+    # Si tu veux aussi les états pour chaque contrat :
+    etats = []
+    for contrat in contrats:
+        etat = crud.HistoriqueEtatCRUD.get(db, contrat.id_projet)
+        contrat.etat = etat.etat if etat else None
+        etats.append(contrat.etat)
     return templates.TemplateResponse("bondecomande.html", {
         "request": request,
         "bons": bons,
-        "contrat": contrat
+        "contrats": contrats,
+        "agent": current_agent
     })
     
 @app.get("/pv/{id}", response_class=HTMLResponse)
@@ -176,5 +208,120 @@ async def pv_page(id: int,
             pv.montant = None
     return templates.TemplateResponse("pv_de_reception.html", {
         "request": request,
-        "pvs": pvs
+        "pvs": pvs,
+        "agent": current_agent
     })
+@app.get("/table/{id}", response_class=HTMLResponse)
+def table_page(id:int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    chapitre = crud.ChapitreCRUD.get(db,id)
+    if chapitre:
+        
+            projets = crud.ProjetCRUD.get_by_id_chapitre(db, chapitre.id_chapitre)
+            chapitre.nb_projets = 0
+            chapitre.nb_contrats = 0
+            if projets and len(projets) > 0:
+                chapitre.nb_projets = len(projets)
+                contrats=[]
+                for projet in projets:
+                    contrats.extend(crud.ContractCRUD.get_by_id_projet(db, projet.id_projet))
+                    if contrats and isinstance(contrats, list):
+                        chapitre.nb_contrats = chapitre.nb_contrats+ len(contrats)
+                    
+                    etats=crud.HistoriqueEtatCRUD.get_all(db)
+                    if isinstance(etats,list):
+                        etats = [etat for etat in etats if etat.id_projet is not None]
+                        etats.sort(key=lambda x: x.id_projet, reverse=True)
+                        for etat in etats:
+                            if etat.id_projet==projet.id_projet:
+                                projet.etat=etat.etat
+                                break
+                    else:
+                        projet.etat=etats.etat
+
+            else:
+                chapitre.nb_projets = 0
+                chapitre.etat = None
+    else:
+        raise HTTPException(status_code=404, detail="Chapitre not found")
+    return templates.TemplateResponse("table.html", {
+        "request": request,
+        "chapitre": chapitre,
+        "agent": current_agent,
+        "projets": projets,
+        
+        
+    })
+       
+    
+@app.get("/users",response_class=HTMLResponse)
+def users_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    agents = crud.AgentCRUD.get_all(db)
+    return templates.TemplateResponse("agent.html", {
+        "request": request,
+        "agents": agents,
+        "agent": current_agent
+    })
+    
+    
+
+
+@app.get("/acceuil", response_class=HTMLResponse)
+def acceuil_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    # Get all chapters
+    chapters = crud.ChapitreCRUD.get_all(db)
+    
+    return templates.TemplateResponse("acceuil.html", {
+        "request": request,
+        "chapitres": chapters,
+        "agent": current_agent
+    })
+    
+@app.get("/bondecommandef/{id}", response_class=HTMLResponse)
+async def bondecommande_achat_page(
+    id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    achat= crud.AchatSurFactureCRUD.get_by_id_facture(db, id)
+    bons = crud.BonDeCommandeCRUD.get_by_id_achat(db, id)
+    # Si tu veux aussi les états pour chaque contrat :
+    etats = []
+    etats.extend( crud.HistoriqueEtatCRUD.get_by_id_achat(db, id))
+    if  len(etats) > 0:
+        etat = max(etats, key=lambda e: e.date_debut)
+    else:
+        etat = None
+        etats=None
+    achat.etat = etat.etat if etat else None
+    
+    return templates.TemplateResponse("bondecommandef.html", {
+        "request": request,
+        "bons": bons,
+        "achat": achat,
+        "etats": etats,
+        "agent": current_agent
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

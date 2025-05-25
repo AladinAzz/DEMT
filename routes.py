@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import date
 from sqlalchemy.orm import Session
 from typing import List
-
+import security
 import crud, models, schemas
 from database import get_db
 
@@ -133,8 +134,92 @@ def create_projet(projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
     return crud.ProjetCRUD.create(db, projet.dict())
 
 @router.put("/projets/{projet_id}", response_model=schemas.ProjetRead)
-def update_projet(projet_id: int, projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
-    updated = crud.ProjetCRUD.update(db, projet_id, projet.dict())
+def update_projet(
+    projet_id: int, 
+    projet: dict,
+    db: Session = Depends(get_db),
+    current_user: models.Agent = Depends(security.get_current_agent)
+):
+    # Get the projet to update
+    projet_to_update = crud.ProjetCRUD.get(db, projet_id)
+    
+    # Update fields
+    projet_to_update.chapitre_id_chapitre = projet["chapitre_id_chapitre"]
+    projet_to_update.nom_projet = projet["nom_projet"]
+    projet_to_update.date_debut = projet["date_debut"]
+    projet_to_update.montant = projet["montant"]
+    projet_to_update.description = projet["description"]
+    projet_to_update.type = projet["type"]
+    
+    # Check state history
+    hist = crud.HistoriqueEtatCRUD.get(db, projet_id)
+    if isinstance(hist, list):
+        if len(hist) > 0:
+            hist.sort(key=lambda x: x.date_debut, reverse=True)
+            last_etat = hist[-1].etat
+            if last_etat != projet["etat"]:
+                description_etat = projet.get("description_etat", "")
+                date_etat = projet.get("date_etat", datetime.now().date())
+                try:
+                    create_historique = crud.HistoriqueEtatCRUD.create(
+                        db,
+                        {
+                            "etat": projet["etat"],
+                            "description": description_etat,
+                            "id_projet": projet_id,
+                            "date_debut": date_etat,
+                            "agent_id_agent": current_user.id_agent
+                        }
+                    )
+                    db.commit()
+                except Exception as e:
+                    db.rollback()
+                    print(f"Error creating history: {str(e)}")
+                    raise HTTPException(500, f"History creation failed: {str(e)}")
+        else:
+            # Case: hist is an empty list (no history at all)
+            description_etat = projet.get("description_etat", "")
+            date_etat = projet.get("date_etat", datetime.now().date())
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": projet["etat"],
+                        "description": description_etat,
+                        "id_projet": projet_id,
+                        "date_debut": date_etat,
+                        "agent_id_agent": current_user.id_agent
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+    else:
+        # Case: hist is None or a single object
+        if hist is None or getattr(hist, "etat", None) != projet["etat"]:
+            description_etat = projet.get("description_etat", "")
+            date_etat = projet.get("date_etat", date.today())
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": projet["etat"],
+                        "description": description_etat,
+                        "id_projet": projet_id,
+                        "date_debut": date_etat,
+                        "agent_id_agent": current_user.id_agent
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+    
+    updated = crud.ProjetCRUD.update(db, projet_id, projet_to_update.__dict__)
+    
     return get_or_404(updated, "Projet")
 
 @router.delete("/projets/{projet_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -151,17 +236,108 @@ def list_achats(db: Session = Depends(get_db)):
 
 @router.get("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
 def get_achat(id_facture: str, db: Session = Depends(get_db)):
-    achat = crud.AchatSurFactureCRUD.get(db, id_facture)
+    achat = crud.AchatSurFactureCRUD.get_by_id_facture(db, id_facture)
     return get_or_404(achat, "AchatSurFacture")
 
 @router.post("/achats_sur_facture", response_model=schemas.AchatSurFactureRead, status_code=status.HTTP_201_CREATED)
 def create_achat(achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
     return crud.AchatSurFactureCRUD.create(db, achat.dict())
 
+
 @router.put("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
-def update_achat(id_facture: str, achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
-    updated = crud.AchatSurFactureCRUD.update(db, id_facture, achat.dict())
+def update_achat(
+    id_facture: str,
+    achat: dict,
+    db: Session = Depends(get_db),
+    current_user: models.Agent = Depends(security.get_current_agent)
+):
+    # Get the achat to update
+    achat_to_update = crud.AchatSurFactureCRUD.get_by_id_facture(db, id_facture)
+    
+    # Update fields
+    achat_to_update.montant = achat["montant"]
+    achat_to_update.description = achat["description"]
+    achat_to_update.date = achat["date"]
+    achat_to_update.projet_id_projet = achat["projet_id_projet"]
+    achat_to_update.id_fournisseur = achat["id_fournisseur"]
+    achat_to_update.devise = achat["devise"]
+    achat_to_update.engagement = achat["engagement"]
+    
+    # Check state history
+    hist = crud.HistoriqueEtatCRUD.get_by_id_achat(db, id_facture)
+    if isinstance(hist, list):
+        if len(hist) > 0:
+            hist.sort(key=lambda x: x.date_debut, reverse=True)
+            last_etat = hist[-1].etat
+            if last_etat != achat["etat"]:
+                description_etat = achat.get("description_etat", "")
+                date_etat = achat.get("dateetat", achat["date"])
+                try:
+                    create_historique = crud.HistoriqueEtatCRUD.create(
+                        db,
+                        {
+                            "etat": achat["etat"],
+                            "description": description_etat,
+                            "id_facture": id_facture,
+                            "date_debut": date_etat,
+                            "agent_id_agent": current_user.id_agent
+                        }
+                    )
+                    db.commit()
+                except Exception as e:
+                    db.rollback()
+                    print(f"Error creating history: {str(e)}")
+                    raise HTTPException(500, f"History creation failed: {str(e)}")
+        else:
+            # Case: hist is an empty list (no history at all)
+            description_etat = achat.get("description_etat", "")
+            date_etat = achat.get("dateetat", achat["date"])
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": achat["etat"],
+                        "description": description_etat,
+                        "id_facture": id_facture,
+                        "date_debut": date_etat,
+                        "agent_id_agent": current_user.id_agent
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+    else:
+        # Case: hist is None or a single object
+        if hist is None or getattr(hist, "etat", None) != achat["etat"]:
+            description_etat = achat.get("description_etat", "")
+            date_etat = achat.get("dateetat", achat["date"])
+            try:
+                create_historique = crud.HistoriqueEtatCRUD.create(
+                    db,
+                    {
+                        "etat": achat["etat"],
+                        "description": description_etat,
+                        "id_facture": id_facture,
+                        "date_debut": date_etat,
+                        "agent_id_agent": current_user.id_agent
+                    }
+                )
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                print(f"Error creating history: {str(e)}")
+                raise HTTPException(500, f"History creation failed: {str(e)}")
+    
+    updated = crud.AchatSurFactureCRUD.update(
+        db, 
+        (id_facture, achat["projet_id_projet"], achat["id_fournisseur"]), 
+        achat_to_update.__dict__
+    )
     return get_or_404(updated, "AchatSurFacture")
+
+
 
 @router.delete("/achats_sur_facture/{id_facture}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_achat(id_facture: str, db: Session = Depends(get_db)):

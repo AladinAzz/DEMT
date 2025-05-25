@@ -3,56 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tableau de bord - Administration</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <title>details chapitre</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .dashboard {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+    }
+
+    .card h3 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <!-- Sidebar -->
    <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">ADMINISTRATION</span>
+      <span class="sidebar-title">Administration</span>
       <button id="toggleSidebar" aria-label="Toggle sidebar">
         <i class="fas fa-bars"></i>
       </button>
     </div>
     <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link" data-tooltip="Tableau de bord">
+      <a href="/acceuil" class="sidebar-link active" data-tooltip="Acceuil">
         <i class="fas fa-chart-line"></i>
-        <span>Tableau de bord</span>
+        <span>Acceuil</span>
       </a>
-      <a href="projet.html" class="sidebar-link active" data-tooltip="Projets">
+      <a href="/project" class="sidebar-link " data-tooltip="Projets">
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
-      <a href="contrat.html" class="sidebar-link" data-tooltip="Contrats">
+      <a href="/contrat" class="sidebar-link" data-tooltip="Contrats">
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
-      <a href="achat_sur_facture.html" class="sidebar-link" data-tooltip="Achat sur Facture">
+      <a href="/achat" class="sidebar-link" data-tooltip="Achat sur Facture">
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="agent.html" class="sidebar-link" data-tooltip="Agents">
+      <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
 
-      
-      <a href="#" class="sidebar-link" data-tooltip="Rapports">
-        <i class="fas fa-chart-pie"></i>
-        <span>Rapports</span>
-      </a>
-      <a href="#" class="sidebar-link" data-tooltip="Notifications">
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      <a href="#" class="sidebar-link" data-tooltip="Recherche">
-        <i class="fas fa-search"></i>
-        <span>Recherche</span>
-      </a>
+      
     </nav>
   </aside>
 
@@ -60,8 +81,8 @@
     <main class="main">
       <div class="header">
         <div>
-          <h1>Tableau de bord</h1>
-          <p>Aperçu des activités et statistiques d'acquisition d'équipements médicaux</p>
+          <h1>Tableau de bord du chapitre</h1>
+          <p>Aperçu des activités et statistiques</p>
         </div>
         <div class="action">
        <div class="profile">
@@ -70,82 +91,287 @@
 
         <div class="menu">
             <h3>
-                User Account
+                {{agent.nom}} {{agent.prenom}}
                 <div>
-                    Operational Team
+                    {{agent.role.value}}
                 </div>
             </h3>
             <ul>
                 <li>
                    
-                    <a href="#">My Profile</a>
+                    <a href="/user">My Profile</a>
                 </li>
                 <li>
-                    
-                    <a href="#">Edit Account</a>
-                </li>
-                <li>
-                    
-                    <a href="#">Comments</a>
-                </li>
-                <li>
-                  
-                    <a href="#">Budget</a>
-                </li>
-                <li>
-                    
-                    <a href="#">Finance</a>
-                </li>
-                <li>
-                   
-                    <a href="#">Wallet</a>
-                </li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
             </ul>
         </div>
     </div>
 
       </div>
 
+      
+<h1 class="section-title">chapitre: {{chapitre.nom}} </h1>
+<br>
       <!-- Stats cards -->
       <div class="cards">
-        <div class="card">
+        <div class="card1">
           <h3>Projets Actifs</h3>
-          <p>3</p>
+          <p>{{ chapitre.nb_projets or 0 }}</p>
           <small>Projets en cours</small>
         </div>
-        <div class="card">
+        <div class="card1">
           <h3>Contrats</h3>
-          <p>13</p>
+          <p>{{ chapitre.nb_contrats or 0 }}</p>
           <small>Contrats actifs</small>
         </div>
-        <div class="card">
-          <h3>Rapports</h3>
-          <p>0</p>
-          <small>Rapports d'acquisition</small>
-        </div>
-        <div class="card">
-          <h3>Budget Total</h3>
-          <p style="color: green;">750 000 €</p>
-          <small>Budget total des projets</small>
+        <div class="card1">
+          <h3>Le Reste</h3>
+          <p style="color: green;">{{ chapitre.montant_initiale-chapitre.engagement-chapitre.mondatement or "non specifié" }}</p>
+          <small>Budget restant des projets</small>
         </div>
       </div>
 
       <!-- Charts -->
-      <div class="charts">
-        <div class="chart">[Graphique Barres]</div>
-        <div class="chart">[Diagramme Circulaire]</div>
-      </div>
-
-      <!-- Report Status -->
-      <div class="report-status">
-        <h3>État des Rapports</h3>
-        <ul>
-          <li><span class="green-dot">●</span> Rapports lus: 0 (0%)</li>
-          <li><span class="yellow-dot">●</span> Rapports non lus: 0 (100%)</li>
-        </ul>
-      </div>
-    </main>
+    
+<div class="dashboard">
+  <!-- Bar Chart Card -->
+  <div class="card">
+    <h3>Avancement d'engagement</h3>
+    <canvas id="progressChart{{ chapitre.id_chapitre }}"></canvas>
   </div>
+
+  <!-- Pie Chart Card -->
+  <div class="card">
+    <h3>Répartition Financière</h3>
+    <canvas id="financeChart{{ chapitre.id_chapitre }}"></canvas>
+  </div>
+</div>
+  <script>
+    const projectProgress{{ chapitre.id_chapitre }} = {
+      labels: ['modatement', 'engagement'],
+      data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement or 0 }}]
+    };
+    const financeData{{ chapitre.id_chapitre }} = {
+      labels: [ 'engagement','reste'],
+      data: [ {{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale-(chapitre.engagement+chapitre.mondatement) or 0 }} ],
+      colors: ['#007bff', '#17a2b8']
+    };
+    new Chart(document.getElementById('progressChart{{ chapitre.id_chapitre }}'), {
+      type: 'bar',
+      data: {
+        labels: projectProgress{{ chapitre.id_chapitre }}.labels,
+        datasets: [{
+          label: 'Progression (%)',
+          data: projectProgress{{ chapitre.id_chapitre }}.data,
+          backgroundColor: '#3399ff'
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: {{chapitre.engagement or 100 }},
+          }
+        }
+      }
+    });
+    const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};
+    const percentages{{ chapitre.id_chapitre }} = financeData{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / total{{ chapitre.id_chapitre }}) * 100).toFixed(1) : 0);
+    new Chart(document.getElementById('financeChart{{ chapitre.id_chapitre }}'), {
+      type: 'pie',
+      data: {
+      labels: financeData{{ chapitre.id_chapitre }}.labels.map((label, i) => `${label}: ${percentages{{ chapitre.id_chapitre }}[i]}%`),
+      datasets: [{
+        data: financeData{{ chapitre.id_chapitre }}.data,
+        backgroundColor: financeData{{ chapitre.id_chapitre }}.colors
+      }]
+      }
+    });
+  </script>
+  {% if projets %}
+        
+
+       
+          
+           
+            <div class="group-space">
+              <div class="group-box projets">
+                <h3 class="group-title">
+                  <i class="fas fa-folder icon blue-icon"></i>
+                  <span>Consultation</span>
+                </h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Chapitre</th>
+                        <th>Nom du projet</th>
+                        <th>date debut</th>
+                        <th>Type</th>
+                        <th>etat</th>
+                        <th>Bureau</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for projet in projets %}
+                        {% if projet.type == 'consultation' %}
+                          <tr class="row-hover">
+                            <td>{{ projet.id_projet }}</td>
+                            <td>{{ projet.chapitre_id_chapitre }}</td>
+                            <td>
+                              <div class="font-medium">{{ projet.nom_projet }}</div>
+                              <div class="text-muted small">{{ projet.description }}</div>
+                            </td>
+                            <td>
+                                {{ projet.date_debut|format_date_fr }}
+                            </td>
+                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>
+                              {{projet.etat}}
+                            </td>
+                            <td>{{ projet.id_bureau }}</td>
+                            <td>
+                              <a href="/project/{{projet.id_projet}}" class="btn btn-primary">Details</a>
+                            </td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          
+            <div class="group-space">
+              <div class="group-box projets">
+                <h3 class="group-title">
+                  <i class="fas fa-folder icon blue-icon"></i>
+                  <span>AOON</span>
+                </h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Chapitre</th>
+                        <th>Nom du projet</th>
+                        <th>date debut</th>
+                        <th>Type</th>
+                        <th>etat</th>
+                        <th>Bureau</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for projet in projets %}
+                        {% if projet.type == 'AOON' %}
+                          <tr class="row-hover">
+                            <td>{{ projet.id_projet }}</td>
+                            <td>{{ projet.chapitre_id_chapitre }}</td>
+                            <td>
+                              <div class="font-medium">{{ projet.nom_projet }}</div>
+                              <div class="text-muted small">{{ projet.description }}</div>
+                            </td>
+                            <td>
+                              {% if projet.date_debut  %}
+                                {{ projet.date_debut|format_date_fr }}  
+                              {% else %}
+                                Non spécifié
+                              {% endif %}
+                            </td>
+                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>
+                              {{projet.etat}}
+                            </td>
+                            <td>{{ projet.id_bureau }}</td>
+                            <td>
+                              <a href="/project/{{projet.id_projet}}" class="btn btn-primary">Details</a>
+                            </td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          
+            <div class="group-space">
+              <div class="group-box projets">
+                <h3 class="group-title">
+                  <i class="fas fa-folder icon blue-icon"></i>
+                  <span>achat sur facture</span>
+                </h3>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Chapitre</th>
+                        <th>Nom du projet</th>
+                        <th>date debut</th>
+                        <th>Type</th>
+                        <th>etat</th>
+                        <th>Bureau</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for projet in projets %}
+                        {% if projet.type == 'achat sur facture' %}
+                          <tr class="row-hover">
+                            <td>{{ projet.id_projet }}</td>
+                            <td>{{ projet.chapitre_id_chapitre }}</td>
+                            <td>
+                              <div class="font-medium">{{ projet.nom_projet }}</div>
+                              <div class="text-muted small">{{ projet.description }}</div>
+                            </td>
+                            <td>
+                              {% if projet.date_debut  %}
+                                {{ projet.date_debut|format_date_fr }}
+                              {% else %}
+                                Non spécifié
+                              {% endif %}
+                            </td>
+                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>
+                              {{projet.etat}}
+                            </td>
+                            <td>{{ projet.id_bureau }}</td>
+                            <td>
+                              <a href="/project/{{projet.id_projet}}" class="btn btn-primary">Details</a>
+                            </td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          
+        
+      {% else %}
+        <div class="card">
+          <h2 class="section-title">Aucun projet trouvé</h2>
+        </div>
+      {% endif %}
+
+
+
+
+
+
+
+
+
 
   <!-- Minimal JavaScript for toggle -->
   <script>
@@ -301,9 +527,6 @@ overlay.addEventListener('click', (e) => {
 const detailButtons = document.querySelectorAll('.btn-detail');
 
 
-
-
-
 detailButtons.forEach(button => {
   button.addEventListener('click', () => {
     // You could populate fields here later
@@ -395,7 +618,7 @@ deleteOverlay.addEventListener('click', (e) => {
   }
 });
 
-</script>
 
+</script>
 </body>
 </html>

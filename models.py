@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, String, Text, Float, Date, Enum as SqlEnum, ForeignKey,
-    UniqueConstraint, PrimaryKeyConstraint
+    UniqueConstraint, PrimaryKeyConstraint, ForeignKeyConstraint
 )
 from sqlalchemy.orm import relationship, declarative_base
 from enum import Enum
@@ -16,9 +16,10 @@ class RoleEnum(str, Enum):
     agent = 'agent'
 
 class ProjetTypeEnum(str, Enum):
-    contrat = 'contrat'
-    marche = 'marche'
+    consultation = 'consultation'
     achat = 'achat'
+    GAG = 'GAG'
+    AOON = 'AOON'
 
 class DeviseEnum(str, Enum):
     DZD = 'DZD'
@@ -29,19 +30,6 @@ class ContractTypeEnum(str, Enum):
     ferme = 'ferme'
     commande = 'a commande'
 
-class EtatEnum(str, Enum):
-    CahierDeCharge = 'Cahier de charge'
-    Pub_CC = 'Pub CC'
-    COPEO= 'COPEO'
-    VisaCF= 'VisaCF'
-    CCTP= 'CCTP'
-    VisaCahierDeChargeCSM= 'Visa Cahier de charge CSM'
-    Pub_AOON= 'Pub AOON'
-    VisaCSM= 'Visa CSM'
-    FP= 'F/P'
-    engagement= 'Engagement'
-    rejet= 'Rejet'
-    
 # ---------------------- TABLES ----------------------
 
 class Direction(Base):
@@ -92,7 +80,8 @@ class Projet(Base):
     nom_projet = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     date_debut = Column(Date, nullable=False)
-    date_fin = Column(Date, nullable=False)
+    date_fin = Column(Date, nullable=True)
+    montant = Column(Float, nullable=True)
     id_bureau = Column(Integer, ForeignKey('bureau.id_bureau'), nullable=False)
     chapitre_id_chapitre = Column(Integer, ForeignKey('chapitre.id_chapitre'), nullable=False)
     type = Column(SqlEnum(ProjetTypeEnum), nullable=False)
@@ -105,13 +94,18 @@ class Projet(Base):
 
 class AchatSurFacture(Base):
     __tablename__ = 'achat_sur_facture'
-    id_facture = Column(String(45), primary_key=True)
+    id_facture = Column(String(45))
     montant = Column(Float, nullable=False)
+    engagement = Column(Float, nullable=True, default=0)
     date = Column(Date, nullable=False)
     projet_id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=False)
     id_fournisseur = Column(Integer, ForeignKey('fournisseur.id_fournisseur'), nullable=False)
-    devise= Column(SqlEnum(DeviseEnum), nullable=False)
-    
+    devise = Column(SqlEnum(DeviseEnum), nullable=True)
+    description = Column(Text, nullable=True)
+    __table_args__ = (
+        PrimaryKeyConstraint('id_facture', 'projet_id_projet', 'id_fournisseur'),
+    )
+
     projet = relationship("Projet", back_populates="achats")
     
 class Fournisseur(Base):
@@ -125,17 +119,33 @@ class Fournisseur(Base):
 
 class Contract(Base):
     __tablename__ = 'contract'
-    id_contrat = Column(String(45), primary_key=True)
+    id_contrat = Column(String(45), nullable=False)
     description = Column(Text, nullable=True)
     date_debut = Column(Date, nullable=False)
     date_de_notification = Column(Date, nullable=True)
     min = Column(Float, nullable=False)
     max = Column(Float, nullable=True)
     duree = Column(Integer, nullable=False)
-    id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=False)
+    id_projet = Column(Integer, nullable=False)
     id_fournisseur = Column(Integer, ForeignKey('fournisseur.id_fournisseur'), nullable=False)
     devise = Column(SqlEnum(DeviseEnum), nullable=False)
     type = Column(SqlEnum(ContractTypeEnum), nullable=False)
+    engagement = Column(Float, nullable=True, default=0)
+    projet_id_projet = Column(Integer, nullable=False)
+    projet_chapitre_id_chapitre = Column(Integer, nullable=False)
+    etat = Column(String(45), nullable=True)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('id_projet', 'id_fournisseur', 'id_contrat'),
+        ForeignKeyConstraint(
+            ['id_fournisseur'],
+            ['fournisseur.id_fournisseur']
+        ),
+        ForeignKeyConstraint(
+            ['projet_id_projet', 'projet_chapitre_id_chapitre'],
+            ['projet.id_projet', 'projet.chapitre_id_chapitre']
+        ),
+    )
 
     projet = relationship("Projet", back_populates="contrats")
     fournisseur = relationship("Fournisseur", back_populates="contrats")
@@ -152,9 +162,23 @@ class BonDeCommande(Base):
     date_de_notification = Column(Date, nullable=True)
     delais = Column(Integer, nullable=False)
     agent_id_agent = Column(Integer, ForeignKey('agent.id_agent'), nullable=False)
-    contract_id_projet = Column(Integer, nullable=False)
-    contract_id_fournisseur = Column(Integer, nullable=False)
-    contract_id_contrat = Column(String(45), ForeignKey('contract.id_contrat'), nullable=False)
+    contract_id_projet = Column(Integer, nullable=True)
+    contract_id_fournisseur = Column(Integer, nullable=True)
+    contract_id_contrat = Column(String(45), nullable=True)
+    achat_sur_facture_id_facture = Column(String(45), nullable=True)
+    achat_sur_facture_projet_id_projet = Column(Integer, nullable=True)
+    achat_sur_facture_id_fournisseur = Column(Integer, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['contract_id_projet', 'contract_id_fournisseur', 'contract_id_contrat'],
+            ['contract.id_projet', 'contract.id_fournisseur', 'contract.id_contrat']
+        ),
+        ForeignKeyConstraint(
+            ['achat_sur_facture_id_facture', 'achat_sur_facture_projet_id_projet', 'achat_sur_facture_id_fournisseur'],
+            ['achat_sur_facture.id_facture', 'achat_sur_facture.projet_id_projet', 'achat_sur_facture.id_fournisseur']
+        ),
+    )
 
     agent = relationship("Agent")
     contract = relationship("Contract", back_populates="bons")
@@ -186,16 +210,20 @@ class Facture(Base):
 class HistoriqueEtat(Base):
     __tablename__ = 'historique_etat'
     id_historique = Column(Integer, primary_key=True)
-    id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=False)
-    etat = Column(SqlEnum(EtatEnum), nullable=False)
+    id_projet = Column(Integer, ForeignKey('projet.id_projet'), nullable=True)
+    etat = Column(String, nullable=False)
     date_debut = Column(Date, nullable=False)
     date_fin = Column(Date, nullable=True)
     description = Column(Text, nullable=True)
     agent_id_agent = Column(Integer, ForeignKey('agent.id_agent'), nullable=False)
-
+    id_contrat = Column(String(45), ForeignKey('contract.id_contrat'), nullable=True)
+    id_facture = Column(String(45), ForeignKey('achat_sur_facture.id_facture'), nullable=True)
+    
     projet = relationship("Projet", back_populates="historiques")
     agent = relationship("Agent")
-
+    contract = relationship("Contract")
+    facture = relationship("AchatSurFacture")
+    
 class PVDeReceptionDifinitive(Base):
     __tablename__ = 'pv_de_reception_difinitive'
     id_pv_de_rec_difinitive = Column(String(45), primary_key=True)

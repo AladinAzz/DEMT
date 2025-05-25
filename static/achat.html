@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Sidebar</title>
+  <title>Achats sur facture</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="static/styles.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">ADMINISTRATION</span>
+      <span class="sidebar-title">Administration</span>
       <button id="toggleSidebar" aria-label="Toggle sidebar">
         <i class="fas fa-bars"></i>
       </button>
     </div>
     <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link" data-tooltip="Tableau de bord">
+      <a href="/acceuil" class="sidebar-link" data-tooltip="Accueil">
         <i class="fas fa-chart-line"></i>
-        <span>Tableau de bord</span>
+        <span>Acceuil</span>
       </a>
       <a href="/project" class="sidebar-link" data-tooltip="Projets">
         <i class="fas fa-folder"></i>
@@ -32,34 +33,67 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="/agents" class="sidebar-link" data-tooltip="Agents">
+      <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-      <a href="#" class="sidebar-link" data-tooltip="Rapports">
-        <i class="fas fa-chart-pie"></i>
-        <span>Rapports</span>
-      </a>
-      <a href="#" class="sidebar-link" data-tooltip="Notifications">
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      <a href="#" class="sidebar-link" data-tooltip="Recherche">
-        <i class="fas fa-search"></i>
-        <span>Recherche</span>
-      </a>
+      
     </nav>
   </aside>
   <main>
-    <div class="user-profile">
-      <div class="user-info">
-        <i class="fas fa-bell icon-bell" aria-hidden="true"></i>
-        <div class="user-details">
-          <span class="user-name">Administrateur</span>
-          <div class="user-avatar">A</div>
+    <div class="header">
+        <div>
+          <h1>Tableau des achats sur facture</h1>
+          <p>Aperçu sur les achats sur facture</p>
         </div>
-      </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
+</div>
+
+        <div class="menu">
+            <h3>
+                {{agent.nom}} {{agent.prenom}}
+                <div>
+                    {{agent.role.value}}
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="/user">My Profile</a>
+                </li>
+                <li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
+            </ul>
+        </div>
     </div>
+
+      </div>
+    <script>
+  const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
+});
+
+</script>
+    
     <div class="header">
       <h1>Achat sur facture</h1>
     </div>
@@ -146,7 +180,7 @@
                         <td>{{ achat.id_fournisseur if achat.id_fournisseur is defined else '' }}</td>
                         <td>{{ achat.devise.value if achat.devise is defined else '' }}</td>
                         <td>
-                          <a href="/download/{{ achat.id_facture }}" class="btn btn-primary">Details</a>
+                          <a href="/bondecommande/{{ achat.id_facture }}" class="btn btn-primary">Details</a>
                         </td>
                       </tr>
                     {% endfor %}

@@ -527,6 +527,9 @@ main.expanded {
 .badge-green{
   background-color: #41e25e;
 }
+.badge-orange{
+  background-color: #edbb3d;
+}
 
 /* Button style */
 .btn {
@@ -838,7 +841,18 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+}.charts {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
-
-
-/* profile and table*/
+.chart {
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
+}
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}

@@ -115,7 +115,7 @@
 <body>
   <div class="container">
     <div class="login-panel">
-      <img src="/static/logo.png" alt="UNH Logo" class="logo">
+      <img src="/static/user.png" alt="UNH Logo" class="logo">
       <h2>DEMT</h2>
       <p class="subtitle">connectez-vous pour continuer</p>
 
@@ -170,7 +170,11 @@
         const token = data.access_token;
 
         // Store token in secure cookie
-        document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
+         document.cookie =
+        `access_token=${token}` +
+        `; Path=/` +
+       
+        `; SameSite=Lax`;
 
         // Redirect to home, where the token will be validated
         window.location.href = "/";

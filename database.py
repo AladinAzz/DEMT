@@ -12,7 +12,7 @@ engine = create_engine(
 )
 
 # SessionLocal class to instantiate DB sessions
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine,expire_on_commit=False)
 
 
 def get_db():

@@ -15,7 +15,7 @@ def create(db: Session, model, data: dict):
     obj = model(**data)
     db.add(obj)
     db.commit()
-    db.refresh(obj)
+    
     return obj
 
 def update(db: Session, model, id: Any, data: dict):
@@ -62,6 +62,11 @@ class AgentCRUD:
 class ProjetCRUD:
     model = models.Projet
     @staticmethod
+    def get_by_id_chapitre(db: Session, id: int, model=None):
+        if model is None:
+            model = ProjetCRUD.model
+        return db.query(model).filter(model.chapitre_id_chapitre == id).all()
+    @staticmethod
     def get_all(db: Session): return get_all(db, ProjetCRUD.model)
     @staticmethod
     def get(db: Session, id: int): return get_by_id(db, ProjetCRUD.model, id)
@@ -101,6 +106,11 @@ class DirectionCRUD:
 class ChapitreCRUD:
     model = models.Chapitre
     @staticmethod
+    def get_by_id_chapitre(db: Session, id: int, model=None):
+        if model is None:
+            model = ChapitreCRUD.model
+        return db.query(model).filter(model.id_chapitre == id).all()
+    @staticmethod
     def get_all(db: Session): return get_all(db, ChapitreCRUD.model)
     @staticmethod
     def get(db: Session, id: int): return get_by_id(db, ChapitreCRUD.model, id)
@@ -116,13 +126,26 @@ class AchatSurFactureCRUD:
     @staticmethod
     def get_all(db: Session): return get_all(db, AchatSurFactureCRUD.model)
     @staticmethod
-    def get(db: Session, id: str): return get_by_id(db, AchatSurFactureCRUD.model, id)
+    def get_by_id_projet(db: Session, id: Any, model=None):
+        if model is None:
+            model = AchatSurFactureCRUD.model
+        # Retourne tous les achats sur facture du projet
+        return db.query(model).filter(model.projet_id_projet == id).all()
+    @staticmethod
+    def get_by_id_facture(db: Session, id: Any, model=None):
+        if model is None:
+            model = AchatSurFactureCRUD.model
+        # Retourne tous les achats sur facture du projet
+        return db.query(model).filter(model.id_facture == id).first()
+                          
+    @staticmethod
+    def get(db: Session, id: Any): return get_by_id(db, AchatSurFactureCRUD.model, id)
     @staticmethod
     def create(db: Session, data: dict): return create(db, AchatSurFactureCRUD.model, data)
     @staticmethod
-    def update(db: Session, id: str, data: dict): return update(db, AchatSurFactureCRUD.model, id, data)
+    def update(db: Session, id: any, data: dict): return update(db, AchatSurFactureCRUD.model, id, data)
     @staticmethod
-    def delete(db: Session, id: str): return delete(db, AchatSurFactureCRUD.model, id)
+    def delete(db: Session, id: any): return delete(db, AchatSurFactureCRUD.model, id)
 
 class ContractCRUD:
     model = models.Contract
@@ -134,7 +157,8 @@ class ContractCRUD:
     def get_by_id_projet(db: Session, id: Any, model=None):
         if model is None:
             model = ContractCRUD.model
-        return db.query(model).filter(model.id_projet == id).first()
+        # Retourne tous les contrats du projet
+        return db.query(model).filter(model.id_projet == id).all()
     
     @staticmethod
     def create(db: Session, data: dict): return create(db, ContractCRUD.model, data)
@@ -166,7 +190,12 @@ class BonDeCommandeCRUD:
     def get_by_id_project(db: Session, id: Any, model=None):
         if model is None:
             model = BonDeCommandeCRUD.model
-        return db.query(model).filter(model.contract_id_projet == id).all()
+        return db.query(model).filter(model.contract_id_projet == id and model.achat_sur_facture_projet_id_projet==None or model.achat_sur_facture_projet_id_projet == id).all()
+    @staticmethod
+    def get_by_id_achat(db: Session, id: Any, model=None):
+        if model is None:
+            model = BonDeCommandeCRUD.model
+        return db.query(model).filter(model.achat_sur_facture_id_facture == id).all()
     @staticmethod
     def create(db: Session, data: dict): return create(db, BonDeCommandeCRUD.model, data)
     @staticmethod
@@ -230,6 +259,21 @@ class HistoriqueEtatCRUD:
     def get_all(db: Session): return get_all(db, HistoriqueEtatCRUD.model)
     @staticmethod
     def get(db: Session, id: int): return get_by_id(db, HistoriqueEtatCRUD.model, id)
+    @staticmethod
+    def get_by_id_projet(db: Session, id: Any, model=None):
+        if model is None:
+            model = HistoriqueEtatCRUD.model
+        return db.query(model).filter(model.id_projet == id).all()
+    @staticmethod
+    def get_by_id_contrat(db: Session, id: Any, model=None):
+        if model is None:
+            model = HistoriqueEtatCRUD.model
+        return db.query(model).filter(model.id_contrat == id).all()
+    @staticmethod
+    def get_by_id_achat(db: Session, id: Any, model=None):
+        if model is None:
+            model = HistoriqueEtatCRUD.model
+        return db.query(model).filter(model.id_facture == id).all()
     @staticmethod
     def create(db: Session, data: dict): return create(db, HistoriqueEtatCRUD.model, data)
     @staticmethod
