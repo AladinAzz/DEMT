@@ -5,371 +5,495 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Sidebar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">Fonctionnement</span>
+      <span class="sidebar-title">ADMINISTRATION</span>
       <button id="toggleSidebar" aria-label="Toggle sidebar">
         <i class="fas fa-bars"></i>
       </button>
     </div>
     <nav class="sidebar-nav">
-      <a href="table.html" class="sidebar-link" data-tooltip="Tableau de bord">
+      <a href="acceuil" class="sidebar-link" data-tooltip="Tableau de bord">
         <i class="fas fa-chart-line"></i>
         <span>Tableau de bord</span>
       </a>
-      <a href="projet.html" class="sidebar-link" data-tooltip="Projets">
+      <a href="/project" class="sidebar-link" data-tooltip="Projets">
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
-      <a href="contrat.html" class="sidebar-link active" data-tooltip="Contrats">
+      <a href="/contrat" class="sidebar-link" data-tooltip="Contrats">
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
-      <a href="achat_sur_facture.html" class="sidebar-link" data-tooltip="Achat sur Facture">
+      <a href="/achat" class="sidebar-link" data-tooltip="Achat sur Facture">
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="agent.html" class="sidebar-link" data-tooltip="Agents">
+      <a href="/agent" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-
       
-     
-      <a href="#" class="sidebar-link" data-tooltip="Notifications">
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
-      </a>
-      <a href="#" class="sidebar-link" data-tooltip="Recherche">
-        <i class="fas fa-search"></i>
-        <span>Recherche</span>
       </a>
     </nav>
   </aside>
   <main>
-
-    
-    <div class="user-profile">
-  <div class="user-info">
-    <i class="fas fa-bell icon-bell" aria-hidden="true"></i>
-    <div class="user-details">
-      <span class="user-name">Administrateur</span>
-      <div class="user-avatar">A</div>
-    </div>
-  </div>
-</div>
-<div class="header">
-  <h1>PV De Reception</h1>
-  <button id="addUserBtn" class="btn-primary">+ Ajouter un PV</button>
-</div>
-
-<div id="overlay" class="overlay hidden">
-  <div id="formPanel" class="form-panel">
-    <button id="closeUserPanel" class="close-btn">&times;</button>
-    <h2>Ajouter un PV</h2>
-    <form >
-      <label>Date</label>
-      <input type="Date" id="dateInput" class="date-field" placeholder="Entrez la date PV" />
-       <label>Description</label>
-      <input type="text" placeholder="Entrez Description" />
-      <label>Date De Facteur</label>
-      <input type="Date" id="dateInput" class="date-field" placeholder="Entrez la date de facteur" />
-       <label>Montant</label>
-      <input type="text" placeholder="Entrez le Periode" />
-
-      <button type="submit" class="btn-submit">Ajouter</button>
-    </form>
-  </div>
-</div>
-<form class="search-form">
-  <div class="search-wrapper">
-    <!-- Dropdown Button -->
-    <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
-
-      <span id="selected-category">All categories</span>
-      <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
-      </svg>
-    </button>
-
-    <!-- Dropdown Menu -->
-    <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
-
-      <ul class="dropdown-list">
-        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
-        <li><button type="button" class="category-option" data-category="Date">Date</button></li>
-        <li><button type="button" class="category-option" data-category="ID">ID Facteur</button></li>
-        <li><button type="button" class="category-option" data-category="Montant">Montant</button></li>
-
-      </ul>
-    </div>
-
-    <!-- Search Input -->
-    <div class="search-input-wrapper">
-      <input
-        type="search"
-        id="searchInput"
-        placeholder="Rechercher..."
-        class="search-input"
-        aria-label="Search"
-      />
-      <button type="submit" class="search-button" aria-label="Search">
-        <svg class="search-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
-</form>
-<section class="section-space">
-  <div class="card">
-    <div class="section-header">
-    <h2 class="section-title">Projet</h2>
-    <span class="montant">Montant: 150,000 DZD</span>
-  </div>
-    <div class="group-space">
-      <div class="group-box contrats">
-        <h3 class="group-title">
-         <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
-          <span>Bon De Cammande</span>
-        </h3>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="w-1">ID</th>
-                <th class="w-3">Date</th>
-                <th class="w-2">Desctiption</th>
-                
-                 <th class="w-2">Periode</th>
-                   <th class="w-2">Delais</th>
-
-                <th class="w-2">Montant</th>
-                <th class="w-1">État</th>
-                <th class="w-3">Agent</th>
-                <th class="w-3">Fournisseur</th>
-                
-                
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="row-hover">
-                <td>1</td>
-                <td>
-                  <div class="font-medium">2003-01-20</div>
-                  
-                </td>
-                <td><div class="text-muted small">slama ibrahim</div></td>
-                <td>60</td>
-                <td>15-20-2003</td>
-                <td>20000000</td>
-                <td><span class="badge badge-red">Enc</span></td>
-                <td>155</td>
-                <td>3</td>
-                
-              </tr>
-              <!-- Repeat rows as needed -->
-            </tbody>
-          </table>
+    <div class="header">
+        <div>
+          <h1>Tableau de bord du chapitre</h1>
+          <p>Aperçu des activités et statistiques</p>
         </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
+</div>
+
+        <div class="menu">
+            <h3>
+                {{agent.nom}} {{agent.prenom}}
+                <div>
+                    {{agent.role.value}}
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="/user">My Profile</a>
+                </li>
+                <li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
+            </ul>
+        </div>
+    </div>
+
       </div>
 
-      
-    </div>
-    
-     <div class="group-box achats">
-        <h3 class="group-title">
-            <i class="fas fa-file-signature icon red-icon"></i>
-          <span>PV De Reception</span>
-        </h3>
+      <script>
+  const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
 
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="w-1">ID</th>
-                <th class="w-2">Date De PV</th>
-                <th class="w-3">Description</th>
-                <th class="w-2">Date De Facteur</th>
-                <th class="w-2">ID Facteur</th>
-                <th class="w-2">Devise</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="row-hover">
-                <td>1</td>
-                <td>2023-01-01</td>
-                <td>
-                    
-                  
-                  <div class="text-muted small">Projet d'acquisition d'équipements médicaux...</div>
-                 </td>
-                <td>2022-01-01</td>
-                <td>3</td>
-                <td>auro</td>
-              </tr>
-              <!-- Repeat rows as needed -->
-            </tbody>
-          </table>
-        </div>
-  </div>
-    
-  </div>
-</section>
-
-
-
-  </main>
-  <script>
-  
- const toggleBtn = document.getElementById('toggleSidebar');
-const sidebar = document.getElementById('sidebar');
-const mainContent = document.querySelector('main'); // Main content container
-
-const dropdownButton = document.getElementById('dropdown-button');
-const dropdown = document.getElementById('dropdown');
-const selectedCategory = document.getElementById('selected-category');
-const options = document.querySelectorAll('.category-option');
-const searchInput = document.getElementById('searchInput');
-const tableRows = document.querySelectorAll('tbody tr');
-
-// Map of category name to column index
-const categoryIndexMap = {
-  "ID": 0,
-  "Num De projet": 1,
-  "Periode": 2,
-  "Bureau": 3,
-  "Etat": 4
-};
-
-let currentCategory = null;
-
-// Initialize on page load
-window.addEventListener('DOMContentLoaded', () => {
-  sidebar.classList.remove('collapsed');
-  mainContent.classList.remove('collapsed');
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
 });
 
-// Sidebar toggle button
-toggleBtn.addEventListener('click', () => {
-  sidebar.classList.toggle('collapsed');
-
-  if (sidebar.classList.contains('collapsed')) {
-    mainContent.classList.remove('expanded');
-    mainContent.classList.add('collapsed');
-  } else {
-    mainContent.classList.remove('collapsed');
-    mainContent.classList.add('expanded');
-  }
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
 });
-  window.addEventListener('DOMContentLoaded', () => {
-    sidebar.classList.remove('collapsed');
-    mainContent.classList.remove('collapsed');
-    mainContent.classList.add('expanded');
-  });
-
-
-// Toggle dropdown visibility
-dropdownButton.addEventListener('click', (e) => {
-  e.stopPropagation(); // Prevent click-outside close
-  dropdown.classList.toggle('hidden');
-});
-
-// Handle dropdown option selection
-
-
-// Filter table on input
-searchInput.addEventListener('input', performSearch);
-
-function performSearch() {
-  const query = searchInput.value.toLowerCase().trim();
-
-  tableRows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    let textToSearch = '';
-
-    if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
-      const index = categoryIndexMap[currentCategory];
-      const cell = cells[index];
-      textToSearch = cell ? cell.innerText.toLowerCase() : '';
-    } else {
-      textToSearch = Array.from(cells)
-        .map(td => td.innerText.toLowerCase())
-        .join(' ');
-    }
-
-    row.style.display = textToSearch.includes(query) ? '' : 'none';
-  });
-}
-
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-  if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
-    dropdown.classList.add('hidden');
-  }
-});
-options.forEach(option => {
-  option.addEventListener('click', () => {
-    currentCategory = option.dataset.category;
-    selectedCategory.textContent = currentCategory;
-    dropdown.classList.add('hidden');
-    performSearch(); // Trigger search again with the selected category
-  });
-});
-//add projet
-const addUserBtn = document.getElementById('addUserBtn');
-const overlay = document.getElementById('overlay');
-const panel = document.getElementById('formPanel');
-const closeUserPanel = document.getElementById('closeUserPanel');
-
-addUserBtn.addEventListener('click', () => {
-  overlay.classList.remove('hidden');
-  // trigger reflow for animation to apply correctly
-  void panel.offsetWidth;
-  panel.classList.add('show');
-});
-
-closeUserPanel.addEventListener('click', () => {
-  panel.classList.remove('show');
-  // wait animation before hiding overlay
-  setTimeout(() => {
-    overlay.classList.add('hidden');
-  }, 300);
-});
-
-overlay.addEventListener('click', (e) => {
-  if (e.target === overlay) {
-    panel.classList.remove('show');
-    setTimeout(() => {
-      overlay.classList.add('hidden');
-    }, 300);
-  }
-});
-/*calandre*/
-const dateInput = document.getElementById('dateInput');
-
-  dateInput.addEventListener('mouseenter', () => {
-    dateInput.focus(); // Triggers the calendar popup
-  });
-
-  // Optional: Remove focus when mouse leaves, so it doesn’t stay open
-  dateInput.addEventListener('mouseleave', () => {
-    dateInput.blur(); // Optional: closes calendar when mouse leaves
-  });
 
 </script>
+    <div class="header">
+      <h1>PV de Réception</h1>
+      <div class="button-group">
+        <button id="addUserBtn" class="btn-primary">Ajouter un PV</button>
+        <button id="modifyBtn" class="btn-primary">Modifier PV</button>
+        <button id="deleteBtn" class="btn-primary">Supprimer PV</button>
+      </div>
+    </div>
+    <!-- Modal Ajout Bon de Commande -->
+    <div id="overlay" class="overlay hidden">
+      <div id="formPanel" class="form-panel">
+        <button id="closeUserPanel" class="close-btn">&times;</button>
+        <h2>Ajouter un bon de commande</h2>
+        <form>
+          <label>Date</label>
+          <input type="date" placeholder="Entrez la date" />
+          <label>Description</label>
+          <input type="text" placeholder="Entrez la description" />
+          <label>Montant</label>
+          <input type="number" placeholder="Entrez le montant" />
+          <label>État</label>
+          <input type="text" placeholder="Entrez l'état" />
+          <label>Date de notification</label>
+          <input type="date" placeholder="Entrez la date de notification" />
+          <label>Délais</label>
+          <input type="number" placeholder="Entrez le délais" />
+          <label>Agent</label>
+          <input type="text" placeholder="Entrez l'agent" />
+          <label>Projet</label>
+          <input type="text" placeholder="Entrez le projet" />
+          <label>Fournisseur</label>
+          <input type="text" placeholder="Entrez le fournisseur" />
+          <label>achat</label>
+          <input type="text" placeholder="Entrez le contrat" />
+          <button type="submit" class="btn-submit">Ajouter</button>
+        </form>
+      </div>
+    </div>
+    <!-- Modal Ajout PV -->
+    <div id="overlay" class="overlay hidden">
+      <div id="formPanel" class="form-panel">
+        <button id="closeUserPanel" class="close-btn">&times;</button>
+        <h2>Ajouter un PV</h2>
+        <form>
+          <label>Date</label>
+          <input type="date" placeholder="Entrez la date du PV" />
+          <label>Description</label>
+          <input type="text" placeholder="Entrez la description" />
+          <label>Date de Facture</label>
+          <input type="date" placeholder="Entrez la date de facture" />
+          <label>Montant</label>
+          <input type="number" placeholder="Entrez le montant" />
+          <button type="submit" class="btn-submit">Ajouter</button>
+        </form>
+      </div>
+    </div>
 
+    <!-- Modal Détails PV -->
+    <div id="detailsOverlay" class="overlay hidden">
+      <div id="detailsPanel" class="form-panel">
+        <button id="closeDetailsPanel" class="close-btn">&times;</button>
+        <h2>Détails du PV</h2>
+        <form>
+          <label>Date</label>
+          <input type="date" id="detailDate" readonly />
+          <label>Description</label>
+          <input type="text" id="detailDescription" readonly />
+          <label>Date de Facture</label>
+          <input type="date" id="detailFactureDate" readonly />
+          <label>Montant</label>
+          <input type="number" id="detailMontant" readonly />
+          <button type="submit" class="btn-submit">Modifier</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Modifier PV -->
+    <div id="modifyOverlay" class="overlay hidden">
+      <div id="modifyPanel" class="form-panel">
+        <button id="closeModifyPanel" class="close-btn">&times;</button>
+        <h2>Modifier PV</h2>
+        <form>
+          <label>ID PV</label>
+          <input type="text" placeholder="Entrez l'ID PV" />
+          <label>Date</label>
+          <input type="date" />
+          <label>Description</label>
+          <input type="text" />
+          <label>Date de Facture</label>
+          <input type="date" />
+          <label>Montant</label>
+          <input type="number" />
+          <button type="submit" class="btn-submit">Modifier</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Supprimer PV -->
+    <div id="deleteOverlay" class="overlay hidden">
+      <div id="deletePanel" class="form-panel">
+        <button id="closeDeletePanel" class="close-btn">&times;</button>
+        <h2>Supprimer PV</h2>
+        <form>
+          <label>ID PV</label>
+          <input type="text" placeholder="Entrez l'ID PV à supprimer" />
+          <p>Êtes-vous sûr de vouloir supprimer ce PV ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+      </div>
+    </div>
+
+    <form class="search-form">
+      <div class="search-wrapper">
+        <!-- Dropdown Button -->
+        <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
+          <span id="selected-category">All categories</span>
+          <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
+          </svg>
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
+          <ul class="dropdown-list">
+            <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+            <li><button type="button" class="category-option" data-category="Date">Date</button></li>
+            <li><button type="button" class="category-option" data-category="Description">Description</button></li>
+            <li><button type="button" class="category-option" data-category="Date de Facture">Date de Facture</button></li>
+            <li><button type="button" class="category-option" data-category="Montant">Montant</button></li>
+          </ul>
+        </div>
+        <!-- Search Input -->
+        <div class="search-input-wrapper">
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Rechercher..."
+            class="search-input"
+            aria-label="Search"
+          />
+        </div>
+      </div>
+    </form>
+    <section class="section-space">
+      <div class="card mb-6">
+        <h2 class="section-title">Liste des PV de Réception</h2>
+        <div class="group-space">
+          <div class="group-box pv">
+            <h3 class="group-title">
+              <i class="fas fa-file-signature icon red-icon"></i>
+              <span>PV de Réception</span>
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Date de Facture</th>
+                    <th>Montant</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if pvs %}
+                    {% for pv in pvs %}
+                      <tr class="row-hover">
+                        <td>{{ pv.id_PV }}</td>
+                        <td>
+                          {% if pv.date %}
+                            {{ pv.date|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ pv.description }}</td>
+                        
+                        {% if pv.date_facture %}
+                        <td>
+                            {{ pv.date_facture|format_date_fr }}
+                        </td>
+                        <td>
+                          {{ pv.montant }}
+                        </td>
+                        {% else %}
+                          <td>Non spécifié</td>  
+                          <td>Non spécifié</td>  
+                          {% endif %}
+                        
+                        <td>
+                          <button class="btn btn-primary btn-detail">Détails</button>
+                        </td>
+                      </tr>
+                      
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="6" class="text-center text-gray-500">Aucun PV trouvé</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('main');
+
+    const dropdownButton = document.getElementById('dropdown-button');
+    const dropdown = document.getElementById('dropdown');
+    const selectedCategory = document.getElementById('selected-category');
+    const options = document.querySelectorAll('.category-option');
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    // Map of category name to column index
+    const categoryIndexMap = {
+      "ID": 0,
+      "Date": 1,
+      "Description": 2,
+      "Date de Facture": 3,
+      "Montant": 4
+    };
+
+    let currentCategory = null;
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      sidebar.classList.remove('collapsed');
+      mainContent.classList.remove('collapsed');
+      mainContent.classList.add('expanded');
+    });
+
+    // Sidebar toggle button
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      if (sidebar.classList.contains('collapsed')) {
+        mainContent.classList.remove('expanded');
+        mainContent.classList.add('collapsed');
+      } else {
+        mainContent.classList.remove('collapsed');
+        mainContent.classList.add('expanded');
+      }
+    });
+
+    // Toggle dropdown visibility
+    dropdownButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    // Handle dropdown option selection
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        currentCategory = option.dataset.category;
+        selectedCategory.textContent = currentCategory;
+        dropdown.classList.add('hidden');
+        performSearch();
+      });
+    });
+
+    // Filter table on input
+    searchInput.addEventListener('input', performSearch);
+
+    function performSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      tableRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        let textToSearch = '';
+        if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+          const index = categoryIndexMap[currentCategory];
+          const cell = cells[index];
+          textToSearch = cell ? cell.innerText.toLowerCase() : '';
+        } else {
+          textToSearch = Array.from(cells)
+            .map(td => td.innerText.toLowerCase())
+            .join(' ');
+        }
+        row.style.display = textToSearch.includes(query) ? '' : 'none';
+      });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // Add PV modal
+    const addUserBtn = document.getElementById('addUserBtn');
+    const overlay = document.getElementById('overlay');
+    const panel = document.getElementById('formPanel');
+    const closeUserPanel = document.getElementById('closeUserPanel');
+
+    addUserBtn.addEventListener('click', () => {
+      overlay.classList.remove('hidden');
+      void panel.offsetWidth;
+      panel.classList.add('show');
+    });
+
+    closeUserPanel.addEventListener('click', () => {
+      panel.classList.remove('show');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        panel.classList.remove('show');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 300);
+      }
+    });
+
+    // Détails modal
+    const detailButtons = document.querySelectorAll('.btn-detail');
+    const detailsOverlay = document.getElementById('detailsOverlay');
+    const detailsPanel = document.getElementById('detailsPanel');
+    const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+
+    detailButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        detailsOverlay.classList.remove('hidden');
+        void detailsPanel.offsetWidth;
+        detailsPanel.classList.add('show');
+      });
+    });
+
+    closeDetailsPanel.addEventListener('click', () => {
+      detailsPanel.classList.remove('show');
+      setTimeout(() => {
+        detailsOverlay.classList.add('hidden');
+      }, 300);
+    });
+
+    detailsOverlay.addEventListener('click', (e) => {
+      if (e.target === detailsOverlay) {
+        detailsPanel.classList.remove('show');
+        setTimeout(() => {
+          detailsOverlay.classList.add('hidden');
+        }, 300);
+      }
+    });
+
+    // Modify modal
+    const modifyBtn = document.getElementById('modifyBtn');
+    const modifyOverlay = document.getElementById('modifyOverlay');
+    const modifyPanel = document.getElementById('modifyPanel');
+    const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+    modifyBtn.addEventListener('click', () => {
+      modifyOverlay.classList.remove('hidden');
+      void modifyPanel.offsetWidth;
+      modifyPanel.classList.add('show');
+    });
+
+    closeModifyPanel.addEventListener('click', () => {
+      modifyPanel.classList.remove('show');
+      setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+    });
+
+    modifyOverlay.addEventListener('click', (e) => {
+      if (e.target === modifyOverlay) {
+        modifyPanel.classList.remove('show');
+        setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+      }
+    });
+
+    // Delete modal
+    const deleteBtn = document.getElementById('deleteBtn');
+    const deleteOverlay = document.getElementById('deleteOverlay');
+    const deletePanel = document.getElementById('deletePanel');
+    const closeDeletePanel = document.getElementById('closeDeletePanel');
+
+    deleteBtn.addEventListener('click', () => {
+      deleteOverlay.classList.remove('hidden');
+      void deletePanel.offsetWidth;
+      deletePanel.classList.add('show');
+    });
+
+    closeDeletePanel.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteOverlay) {
+        deletePanel.classList.remove('show');
+        setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+      }
+    });
+
+  </script>
 </body>
 </html>

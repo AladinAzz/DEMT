@@ -520,7 +520,7 @@ def get_pv(id_pv: str, db: Session = Depends(get_db)):
 
 @router.post("/pvs", response_model=schemas.PVDeReceptionRead, status_code=status.HTTP_201_CREATED)
 def create_pv(pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
-    return crud.PVDeReceptionCRUD.create(db, pv.dict())
+    return crud.PVDeReceptionCRUD.create(db, pv.__dict__)
 
 @router.put("/pvs/{id_pv}", response_model=schemas.PVDeReceptionRead)
 def update_pv(id_pv: str, pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
@@ -558,32 +558,6 @@ def delete_pv_dif(id_pv: str, db: Session = Depends(get_db)):
     success = crud.PVDeReceptionDifinitiveCRUD.delete(db, id_pv)
     if not success:
         raise HTTPException(status_code=404, detail="PVDeReceptionDifinitive not found")
-    return
-
-# ----- Facture -----
-@router.get("/factures", response_model=List[schemas.FactureRead])
-def list_factures(db: Session = Depends(get_db)):
-    return crud.FactureCRUD.get_all(db)
-
-@router.get("/factures/{id_facture}", response_model=schemas.FactureRead)
-def get_facture(id_facture: str, db: Session = Depends(get_db)):
-    facture = crud.FactureCRUD.get(db, id_facture)
-    return get_or_404(facture, "Facture")
-
-@router.post("/factures", response_model=schemas.FactureRead, status_code=status.HTTP_201_CREATED)
-def create_facture(facture: schemas.FactureCreate, db: Session = Depends(get_db)):
-    return crud.FactureCRUD.create(db, facture.dict())
-
-@router.put("/factures/{id_facture}", response_model=schemas.FactureRead)
-def update_facture(id_facture: str, facture: schemas.FactureCreate, db: Session = Depends(get_db)):
-    updated = crud.FactureCRUD.update(db, id_facture, facture.dict())
-    return get_or_404(updated, "Facture")
-
-@router.delete("/factures/{id_facture}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_facture(id_facture: str, db: Session = Depends(get_db)):
-    success = crud.FactureCRUD.delete(db, id_facture)
-    if not success:
-        raise HTTPException(status_code=404, detail="Facture not found")
     return
 
 # ----- HistoriqueEtat -----

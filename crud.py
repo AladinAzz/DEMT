@@ -244,24 +244,6 @@ class PVDeReceptionDifinitiveCRUD:
     @staticmethod
     def delete(db: Session, id: str): return delete(db, PVDeReceptionDifinitiveCRUD.model, id)
 
-class FactureCRUD:
-    model = models.Facture
-    @staticmethod
-    def get_all(db: Session): return get_all(db, FactureCRUD.model)
-    @staticmethod
-    def get(db: Session, id: str): return get_by_id(db, FactureCRUD.model, id)
-    @staticmethod
-    def create(db: Session, data: dict): return create(db, FactureCRUD.model, data)
-    @staticmethod
-    def get_by_id_pv(db: Session, id: Any, model=None):
-        if model is None:
-            model = FactureCRUD.model
-        return db.query(model).filter(model.id_PV == id).all()
-    
-    @staticmethod
-    def update(db: Session, id: str, data: dict): return update(db, FactureCRUD.model, id, data)
-    @staticmethod
-    def delete(db: Session, id: str): return delete(db, FactureCRUD.model, id)
 
 class HistoriqueEtatCRUD:
     model = models.HistoriqueEtat

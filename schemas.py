@@ -233,10 +233,10 @@ class BonDeCommandeRead(BonDeCommandeBase):
 
 
 class PVDeReceptionBase(BaseModel):
-    date: date
+    date_pv: date
     description: Optional[str]
     id_bon: int
-    date_f: Optional[date]
+    date_facture: Optional[date]
     montant: Optional[float]
     agent_id_agent: int
 
@@ -262,18 +262,7 @@ class PVDeReceptionDifinitiveRead(PVDeReceptionDifinitiveCreate):
         orm_mode = True
 
 
-class FactureBase(BaseModel):
-    date: date
-    montant: float
-    id_PV: str
-    agent_id_agent: int
 
-class FactureCreate(FactureBase):
-    id_facture: str
-
-class FactureRead(FactureCreate):
-    class Config:
-        orm_mode = True
 
 
 class HistoriqueEtatBase(BaseModel):

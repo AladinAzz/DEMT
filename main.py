@@ -195,21 +195,17 @@ async def pv_page(id: int,
     db: Session = Depends(get_db),
     current_agent: Agent = Depends(security.get_current_agent)
 ):
+    bons=[]
+    bons.append(crud.BonDeCommandeCRUD.get(db, id))
+    
     pvs = crud.PVDeReceptionCRUD.get_by_id_commande(db, id)
 
-    for pv in pvs:
-        factures = crud.FactureCRUD.get_by_id_pv(db, pv.id_bon)
-        if factures and len(factures) > 0:
-            facture = factures[0]
-            pv.date_f = facture.date
-            pv.montant = facture.montant
-        else:
-            pv.date_f = None
-            pv.montant = None
+        
     return templates.TemplateResponse("pv_de_reception.html", {
         "request": request,
         "pvs": pvs,
-        "agent": current_agent
+        "agent": current_agent,
+        "bons": bons
     })
 @app.get("/table/{id}", response_class=HTMLResponse)
 def table_page(id:int,

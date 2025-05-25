@@ -187,25 +187,17 @@ class BonDeCommande(Base):
 class PVDeReception(Base):
     __tablename__ = 'pv_de_reception'
     id_PV = Column(String(45), primary_key=True)
-    date = Column(Date, nullable=False)
+    date_pv = Column(Date, nullable=False)
+    date_facture= Column(Date, nullable=True)
+    montant = Column(Float, nullable=True)
     description = Column(Text, nullable=True)
     id_bon = Column(Integer, ForeignKey('bon_de_commande.id_bon'), nullable=False)
     agent_id_agent = Column(Integer, ForeignKey('agent.id_agent'), nullable=False)
 
     bon = relationship("BonDeCommande", back_populates="pvs")
     agent = relationship("Agent")
-    factures = relationship("Facture", back_populates="pv")
+    
 
-class Facture(Base):
-    __tablename__ = 'facture'
-    id_facture = Column(String(45), primary_key=True)
-    date = Column(Date, nullable=False)
-    montant = Column(Float, nullable=False)
-    id_PV = Column(String(45), ForeignKey('pv_de_reception.id_PV'), nullable=False)
-    agent_id_agent = Column(Integer, ForeignKey('agent.id_agent'), nullable=False)
-
-    pv = relationship("PVDeReception", back_populates="factures")
-    agent = relationship("Agent")
 
 class HistoriqueEtat(Base):
     __tablename__ = 'historique_etat'

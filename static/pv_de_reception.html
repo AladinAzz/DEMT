@@ -98,7 +98,7 @@ document.addEventListener('click', () => {
       <h1>PV de Réception</h1>
       <div class="button-group">
         <button id="addUserBtn" class="btn-primary">Ajouter un PV</button>
-        <button id="modifyBtn" class="btn-primary">Modifier PV</button>
+        <button id="modifyBtn" class="btn-primary" hidden>Modifier PV</button>
         <button id="deleteBtn" class="btn-primary">Supprimer PV</button>
       </div>
     </div>
@@ -106,30 +106,72 @@ document.addEventListener('click', () => {
     <div id="overlay" class="overlay hidden">
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
-        <h2>Ajouter un bon de commande</h2>
-        <form>
-          <label>Date</label>
-          <input type="date" placeholder="Entrez la date" />
-          <label>Description</label>
-          <input type="text" placeholder="Entrez la description" />
-          <label>Montant</label>
-          <input type="number" placeholder="Entrez le montant" />
-          <label>État</label>
-          <input type="text" placeholder="Entrez l'état" />
-          <label>Date de notification</label>
-          <input type="date" placeholder="Entrez la date de notification" />
-          <label>Délais</label>
-          <input type="number" placeholder="Entrez le délais" />
-          <label>Agent</label>
-          <input type="text" placeholder="Entrez l'agent" />
-          <label>Projet</label>
-          <input type="text" placeholder="Entrez le projet" />
-          <label>Fournisseur</label>
-          <input type="text" placeholder="Entrez le fournisseur" />
-          <label>achat</label>
-          <input type="text" placeholder="Entrez le contrat" />
+        <h2>Ajouter un pv de reception</h2>
+      <form id="addPvForm">
+        <div class="input-group">
+          <div class="input-row">
+            <label>ID PV</label>
+            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+          </div>
+          <div class="input-row">
+            <label>ID Bon</label>
+            <input type="text" name="id_bon" placeholder="Entrez l'ID Bon de Commande"  value="{{bons[0].id_bon}}" readonly/>
+          </div>
+          <div class="input-row">
+            <label>Date</label>
+            <input type="date" name="date_pv" placeholder="Entrez la date" />
+          </div>
+          <div class="input-row">
+            <label>Description</label>
+            <input type="text" name="description" placeholder="Entrez la description" />
+          </div>
+          <div class="input-row">
+            <label>Date facture</label>
+            <input type="date" placeholder="Entrez la date de facture" name="date_facture" />
+          </div>
+          <div class="input-row">
+            <label>Montant</label>
+            <input type="number" placeholder="Entrez le montant" name="montant" />
+          </div>
+          <div class="input-row">
+            <label>Agent</label>
+            <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly/>
+          </div>
           <button type="submit" class="btn-submit">Ajouter</button>
-        </form>
+        </div>
+      </form>
+      <script>
+      document.getElementById('addPvForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          id_PV: form.id_PV.value,
+          id_bon: form.id_bon.value,
+          date_pv: form.date_pv.value,
+          description: form.description.value,
+          date_facture: form.date_facture.value,
+          montant: form.montant.value,
+          agent_id_agent: form.agent_id_agent.value
+        };
+        try {
+          const response = await fetch('/pvs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if (response.ok) {
+            alert('PV ajouté avec succès');
+            window.location.reload(); // Reload the page to see changes
+          } else {
+            alert('Erreur lors de l\'ajout du PV');
+          }
+        } catch (err) {
+          alert('Erreur réseau');
+        }
+      });
+      </script>
       </div>
     </div>
     <!-- Modal Ajout PV -->
@@ -137,17 +179,71 @@ document.addEventListener('click', () => {
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
         <h2>Ajouter un PV</h2>
-        <form>
-          <label>Date</label>
-          <input type="date" placeholder="Entrez la date du PV" />
-          <label>Description</label>
-          <input type="text" placeholder="Entrez la description" />
-          <label>Date de Facture</label>
-          <input type="date" placeholder="Entrez la date de facture" />
-          <label>Montant</label>
-          <input type="number" placeholder="Entrez le montant" />
+        <form id="modifyPvForm">
+        <div class="input-group">
+          <div class="input-row">
+            <label>ID PV</label>
+            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+          </div>
+          <div class="input-row">
+            <label>ID Bon</label>
+            <input type="text" name="id_bon" placeholder="Entrez l'ID Bon de Commande"  value="{{bons[0].id_bon}}" readonly/>
+          </div>
+          <div class="input-row">
+            <label>Date</label>
+            <input type="date" name="date_pv" placeholder="Entrez la date" />
+          </div>
+          <div class="input-row">
+            <label>Description</label>
+            <input type="text" name="description" placeholder="Entrez la description" />
+          </div>
+          <div class="input-row">
+            <label>Date facture</label>
+            <input type="date" placeholder="Entrez la date de facture" name="date_facture" />
+          </div>
+          <div class="input-row">
+            <label>Montant</label>
+            <input type="number" placeholder="Entrez le montant" name="montant" />
+          </div>
+          <div class="input-row">
+            <label>Agent</label>
+            <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly/>
+          </div>
           <button type="submit" class="btn-submit">Ajouter</button>
-        </form>
+        </div>
+      </form>
+      <script>
+      document.getElementById('modifyPvForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          id_PV: form.id_PV.value,
+          id_bon: form.id_bon.value,
+          date_pv: form.date_pv.value,
+          description: form.description.value,
+          date_facture: form.date_facture.value,
+          montant: form.montant.value,
+          agent_id_agent: form.agent_id_agent.value
+        };
+        try {
+          const response = await fetch('/pvs/'+form.id_PV.value, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if (response.ok) {
+            alert('PV modifier avec succès');
+            window.location.reload(); // Reload the page to see changes
+          } else {
+            alert('Erreur lors de l\'ajout du PV');
+          }
+        } catch (err) {
+          alert('Erreur réseau');
+        }
+      });
+      </script>
       </div>
     </div>
 
@@ -156,17 +252,72 @@ document.addEventListener('click', () => {
       <div id="detailsPanel" class="form-panel">
         <button id="closeDetailsPanel" class="close-btn">&times;</button>
         <h2>Détails du PV</h2>
-        <form>
-          <label>Date</label>
-          <input type="date" id="detailDate" readonly />
-          <label>Description</label>
-          <input type="text" id="detailDescription" readonly />
-          <label>Date de Facture</label>
-          <input type="date" id="detailFactureDate" readonly />
-          <label>Montant</label>
-          <input type="number" id="detailMontant" readonly />
-          <button type="submit" class="btn-submit">Modifier</button>
+        <form id="DetailPvForm" method="post">
+          <div class="input-group">
+            <div class="input-row">
+              <label>ID PV</label>
+              <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+            </div>
+            <div class="input-row">
+              <label>ID Bon</label>
+              <input type="text" name="id_bon" placeholder="Entrez l'ID Bon de Commande"  value="{{bons[0].id_bon}}" readonly/>
+            </div>
+            <div class="input-row">
+              <label>Date</label>
+              <input type="date" name="date_pv" placeholder="Entrez la date" />
+            </div>
+            <div class="input-row">
+              <label>Description</label>
+              <input type="text" name="description" placeholder="Entrez la description" />
+            </div>
+            <div class="input-row">
+              <label>Date facture</label>
+              <input type="date" placeholder="Entrez la date de facture" name="date_facture" />
+            </div>
+            <div class="input-row">
+              <label>Montant</label>
+              <input type="number" placeholder="Entrez le montant" name="montant" />
+            </div>
+            <div class="input-row">
+              <label>Agent</label>
+              <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly/>
+            </div>
+            <button type="submit" class="btn-submit">Modifier</button>
+          </div>
         </form>
+        <script>
+        document.getElementById('DetailPvForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            id_PV: form.id_PV.value,
+            id_bon: form.id_bon.value,
+            date_pv: form.date_pv.value,
+            description: form.description.value,
+            date_facture: form.date_facture.value,
+            montant: form.montant.value,
+            agent_id_agent: form.agent_id_agent.value
+          };
+          try {
+            const response = await fetch('/pvs/'+form.id_PV.value, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            if (response.ok) {
+              alert('PV modifié avec succès');
+              window.location.reload(); // Reload the page to see changes
+            } else {
+              alert('Erreur lors de la modification du PV');
+            }
+          } catch (err) {
+            alert('Erreur réseau');
+          }
+        });
+        </script>
+            
       </div>
     </div>
 
@@ -176,17 +327,37 @@ document.addEventListener('click', () => {
         <button id="closeModifyPanel" class="close-btn">&times;</button>
         <h2>Modifier PV</h2>
         <form>
-          <label>ID PV</label>
-          <input type="text" placeholder="Entrez l'ID PV" />
-          <label>Date</label>
-          <input type="date" />
-          <label>Description</label>
-          <input type="text" />
-          <label>Date de Facture</label>
-          <input type="date" />
-          <label>Montant</label>
-          <input type="number" />
+          <div class="input-group">
+          <div class="input-row">
+            <label>ID PV</label>
+            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+          </div>
+          <div class="input-row">
+            <label>ID Bon</label>
+            <input type="text" name="id_bon" placeholder="Entrez l'ID Bon de Commande"  value="{{bons[0].id_bon}}" readonly/>
+          </div>
+          <div class="input-row">
+            <label>Date</label>
+            <input type="date" name="date_pv" placeholder="Entrez la date" />
+          </div>
+          <div class="input-row">
+            <label>Description</label>
+            <input type="text" name="description" placeholder="Entrez la description" />
+          </div>
+          <div class="input-row">
+            <label>Date facture</label>
+            <input type="date" placeholder="Entrez la date de facture" name="date_facture" />
+          </div>
+          <div class="input-row">
+            <label>Montant</label>
+            <input type="number" placeholder="Entrez le montant" name="montant" />
+          </div>
+          <div class="input-row">
+            <label>Agent</label>
+            <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly/>
+          </div>
           <button type="submit" class="btn-submit">Modifier</button>
+        </div>
         </form>
       </div>
     </div>
@@ -196,12 +367,36 @@ document.addEventListener('click', () => {
       <div id="deletePanel" class="form-panel">
         <button id="closeDeletePanel" class="close-btn">&times;</button>
         <h2>Supprimer PV</h2>
-        <form>
+        <form id="deletePvForm">
           <label>ID PV</label>
-          <input type="text" placeholder="Entrez l'ID PV à supprimer" />
+          <input type="text" name="id_PV" placeholder="Entrez l'ID PV à supprimer" required />
           <p>Êtes-vous sûr de vouloir supprimer ce PV ? Cette action est irréversible.</p>
           <button type="submit" class="btn-submit btn-danger">Supprimer</button>
         </form>
+        <script>
+        document.getElementById('deletePvForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = this.id_PV.value;
+          if (!id) {
+            alert("Veuillez entrer l'ID PV à supprimer.");
+            return;
+          }
+          if (!confirm("Confirmez-vous la suppression de ce PV ?")) return;
+          try {
+            const response = await fetch('/pvs/' + encodeURIComponent(id), {
+              method: 'DELETE'
+            });
+            if (response.ok) {
+              alert('PV supprimé avec succès');
+              window.location.reload();
+            } else {
+              alert('Erreur lors de la suppression du PV');
+            }
+          } catch (err) {
+            alert('Erreur réseau');
+          }
+        });
+        </script>
       </div>
     </div>
 
@@ -238,6 +433,76 @@ document.addEventListener('click', () => {
     </form>
     <section class="section-space">
       <div class="card mb-6">
+
+        <div class="group-space">
+          <div class="group-box bons">
+            <h3 class="group-title">
+              <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
+              <span>Bons de Commande</span>
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>État</th>
+                    <th>Date de notification</th>
+                    <th>Délais</th>
+                    <th>Agent</th>
+                    <th>Projet</th>
+                    <th>Fournisseur</th>
+                    {%if bons[0].achat_sur_facture_id_facture != None%}
+                    <th>id achat</th>
+                    {%else%}
+                    <th>id contrat</th>
+                    {%endif%}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if bons %}
+                    {% for bon in bons %}
+                      <tr class="row-hover">
+                        <td>{{ bon.id_bon }}</td>
+                        <td>
+                          {% if bon.date_bon %}
+                            {{ bon.date_bon|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.description }}</td>
+                        <td>{{ bon.montant }}</td>
+                        <td>{{ bon.etat }}</td>
+                        <td>
+                          {% if bon.date_de_notification %}
+                            {{ bon.date_de_notification|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.delais }}</td>
+                        <td>{{ bon.agent_id_agent }}</td>
+                        <td>{{ bon.achat_sur_facture_projet_id_projet }}</td>
+                        <td>{{ bon.achat_sur_facture_id_fournisseur }}</td>
+                        <td>{{ bon.achat_sur_facture_id_facture }}</td>
+                        
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="12" class="text-center text-gray-500">Aucun bon de commande trouvé</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
         <h2 class="section-title">Liste des PV de Réception</h2>
         <div class="group-space">
           <div class="group-box pv">
@@ -263,8 +528,8 @@ document.addEventListener('click', () => {
                       <tr class="row-hover">
                         <td>{{ pv.id_PV }}</td>
                         <td>
-                          {% if pv.date %}
-                            {{ pv.date|format_date_fr }}
+                          {% if pv.date_pv %}
+                            {{ pv.date_pv|format_date_fr }}
                           {% else %}
                             Non spécifié
                           {% endif %}
@@ -284,7 +549,34 @@ document.addEventListener('click', () => {
                           {% endif %}
                         
                         <td>
-                          <button class="btn btn-primary btn-detail">Détails</button>
+                          <button class="btn btn-primary btn-detail"
+                            data-id="{{ pv.id_PV }}"
+                            data-date="{{ pv.date_pv }}"
+                            data-description="{{ pv.description }}"
+                            data-date-facture="{{ pv.date_facture }}"
+                            data-montant="{{ pv.montant }}"
+                            onclick="fillModifyForm(this)"
+                          >
+                            modifier
+                          </button>
+                          <script>
+                          function fillModifyForm(btn) {
+                            // Ouvre le modal de modification
+                            document.getElementById('detailsOverlay').classList.remove('hidden');
+                            const panel = document.getElementById('detailsPanel');
+                            void panel.offsetWidth;
+                            panel.classList.add('show');
+
+                            // Remplit les champs du formulaire
+                            const form = panel.querySelector('form');
+                            form.elements['id_PV'].value = btn.getAttribute('data-id') || '';
+                            form.elements['date_pv'].value = btn.getAttribute('data-date') || '';
+                            form.elements['description'].value = btn.getAttribute('data-description') || '';
+                            form.elements['date_facture'].value = btn.getAttribute('data-date-facture') || '';
+                            form.elements['montant'].value = btn.getAttribute('data-montant') || '';
+                            
+                          }
+                          </script>
                         </td>
                       </tr>
                       
@@ -448,6 +740,7 @@ document.addEventListener('click', () => {
 
     // Modify modal
     const modifyBtn = document.getElementById('modifyBtn');
+    
     const modifyOverlay = document.getElementById('modifyOverlay');
     const modifyPanel = document.getElementById('modifyPanel');
     const closeModifyPanel = document.getElementById('closeModifyPanel');
@@ -457,6 +750,7 @@ document.addEventListener('click', () => {
       void modifyPanel.offsetWidth;
       modifyPanel.classList.add('show');
     });
+    
 
     closeModifyPanel.addEventListener('click', () => {
       modifyPanel.classList.remove('show');
