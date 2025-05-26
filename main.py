@@ -104,6 +104,13 @@ async def project_page(id:int,request: Request, db: Session = Depends(get_db), c
         etats = [etats] if etats else []
     etats.sort(key=lambda x: x.date_debut, reverse=False)
     
+    setats = []
+    setat=crud.EtatCRUD.get_all(db)
+    if isinstance(setat,list):
+        setats.extend(setat)
+    else:
+        setats.append(setat)
+    
         
     return templates.TemplateResponse("projet.html", {
         "request": request,
@@ -111,6 +118,7 @@ async def project_page(id:int,request: Request, db: Session = Depends(get_db), c
         "achats":achats,
         "contracts": contrats,
         "etats": etats ,
+        "setats": setats,
         "agent": current_agent
         })
 
@@ -179,8 +187,17 @@ async def bondecommande_page(
     bons.extend( crud.BonDeCommandeCRUD.get_by_id_contrat(db, id_contrat))
     # Si tu veux aussi les états pour chaque contrat :
     etats = []
-    etats.extend(crud.HistoriqueEtatCRUD.get_by_id_contrat(db, id_contrat))
-    contrats.etat=etats[-1].etat if etats and len(etats) > 0 else None
+    etat=crud.HistoriqueEtatCRUD.get_by_id_contrat(db, id_contrat)
+    if isinstance(etat, list) and len(etat) > 0:
+        etats.extend(etat)
+        contrats.etat=etats[-1].etat
+    else:
+        if etat:
+            etats.append(etat)
+        else:
+            contrats.etat=""
+            
+    
     return templates.TemplateResponse("bondecomande.html", {
         "request": request,
         "bons": bons,
@@ -310,6 +327,49 @@ async def bondecommande_achat_page(
         "etats": etats,
         "agent": current_agent
     })
+    
+@app.get("/settings",response_class=HTMLResponse)
+def settings_page (
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    chapitres = []
+    ch = crud.ChapitreCRUD.get_all(db)
+    if isinstance(ch, list):
+        chapitres.extend(ch)
+    elif ch:
+        chapitres.append(ch)
+
+    directions = []
+    dir_ = crud.DirectionCRUD.get_all(db)
+    if isinstance(dir_, list):
+        directions.extend(dir_)
+    elif dir_:
+        directions.append(dir_)
+
+    bureaux = []
+    bur = crud.BureauCRUD.get_all(db)
+    if isinstance(bur, list):
+        bureaux.extend(bur)
+    elif bur:
+        bureaux.append(bur)
+
+    etats = []
+    et = crud.EtatCRUD.get_all(db)
+    if isinstance(et, list):
+        etats.extend(et)
+    elif et:
+        etats.append(et)
+    return templates.TemplateResponse("parametre.html", {
+        "request": request,
+        "agent": current_agent,
+        "chapitres": chapitres,
+        "directions": directions,
+        "bureaux": bureaux,
+        "etats": etats 
+    })
+    
     
     
     

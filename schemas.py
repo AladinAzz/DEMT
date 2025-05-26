@@ -70,13 +70,19 @@ class DirectionRead(DirectionBase):
 class ChapitreBase(BaseModel):
     nom: str
     description: Optional[str]
-    engagement: float
+    engagement: float=0
     montant_initiale: float
-    mondatement: float
-    nb_projets: Optional[int]
-    nb_cotrats: Optional[int]
+    mondatement: float=0
+    nb_projets: Optional[int]=None
+    nb_cotrats: Optional[int]=None
 
-class ChapitreCreate(ChapitreBase): pass
+class ChapitreCreate(BaseModel):
+    id_chapitre: int
+    nom: str
+    description: Optional[str]
+    engagement: float=0
+    montant_initiale: float
+    mondatement: float=0
 class ChapitreRead(ChapitreBase):
     id_chapitre: int
     class Config:
@@ -285,5 +291,19 @@ class HistoriqueEtatCreate(BaseModel):
     id_contrat: Optional[str] = None
 
 class HistoriqueEtatRead(HistoriqueEtatCreate):
+    class Config:
+        orm_mode = True
+
+
+
+class EtatBase(BaseModel):
+    nom:str
+    type:str
+    
+class EtatCreate(EtatBase):pass
+    
+    
+class EtatRead(EtatCreate):
+    id_etat:int
     class Config:
         orm_mode = True

@@ -26,11 +26,11 @@ def get_agent(agent_id: int, db: Session = Depends(get_db)):
 
 @router.post("/agents", response_model=schemas.AgentRead, status_code=status.HTTP_201_CREATED)
 def create_agent(agent: schemas.AgentCreate, db: Session = Depends(get_db)):
-    return crud.AgentCRUD.create(db, agent.dict())
+    return crud.AgentCRUD.create(db, agent.__dict__)
 
 @router.put("/agents/{agent_id}", response_model=schemas.AgentRead)
 def update_agent(agent_id: int, agent: schemas.AgentCreate, db: Session = Depends(get_db)):
-    updated = crud.AgentCRUD.update(db, agent_id, agent.dict())
+    updated = crud.AgentCRUD.update(db, agent_id, agent.__dict__)
     return get_or_404(updated, "Agent")
 
 @router.delete("/agents/{agent_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -52,11 +52,11 @@ def get_bureau(bureau_id: int, db: Session = Depends(get_db)):
 
 @router.post("/bureaux", response_model=schemas.BureauRead, status_code=status.HTTP_201_CREATED)
 def create_bureau(bureau: schemas.BureauCreate, db: Session = Depends(get_db)):
-    return crud.BureauCRUD.create(db, bureau.dict())
+    return crud.BureauCRUD.create(db, bureau.__dict__)
 
 @router.put("/bureaux/{bureau_id}", response_model=schemas.BureauRead)
 def update_bureau(bureau_id: int, bureau: schemas.BureauCreate, db: Session = Depends(get_db)):
-    updated = crud.BureauCRUD.update(db, bureau_id, bureau.dict())
+    updated = crud.BureauCRUD.update(db, bureau_id, bureau.__dict__)
     return get_or_404(updated, "Bureau")
 
 @router.delete("/bureaux/{bureau_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -78,11 +78,11 @@ def get_direction(direction_id: int, db: Session = Depends(get_db)):
 
 @router.post("/directions", response_model=schemas.DirectionRead, status_code=status.HTTP_201_CREATED)
 def create_direction(direction: schemas.DirectionCreate, db: Session = Depends(get_db)):
-    return crud.DirectionCRUD.create(db, direction.dict())
+    return crud.DirectionCRUD.create(db, direction.__dict__)
 
 @router.put("/directions/{direction_id}", response_model=schemas.DirectionRead)
 def update_direction(direction_id: int, direction: schemas.DirectionCreate, db: Session = Depends(get_db)):
-    updated = crud.DirectionCRUD.update(db, direction_id, direction.dict())
+    updated = crud.DirectionCRUD.update(db, direction_id, direction.__dict__)
     return get_or_404(updated, "Direction")
 
 @router.delete("/directions/{direction_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -102,13 +102,13 @@ def get_chapitre(chapitre_id: int, db: Session = Depends(get_db)):
     chapitre = crud.ChapitreCRUD.get(db, chapitre_id)
     return get_or_404(chapitre, "Chapitre")
 
-@router.post("/chapitres", response_model=schemas.ChapitreRead, status_code=status.HTTP_201_CREATED)
+@router.post("/chapitres", response_model=schemas.ChapitreCreate, status_code=status.HTTP_201_CREATED)
 def create_chapitre(chapitre: schemas.ChapitreCreate, db: Session = Depends(get_db)):
-    return crud.ChapitreCRUD.create(db, chapitre.dict())
+    return crud.ChapitreCRUD.create(db, chapitre.__dict__)
 
 @router.put("/chapitres/{chapitre_id}", response_model=schemas.ChapitreRead)
 def update_chapitre(chapitre_id: int, chapitre: schemas.ChapitreCreate, db: Session = Depends(get_db)):
-    updated = crud.ChapitreCRUD.update(db, chapitre_id, chapitre.dict())
+    updated = crud.ChapitreCRUD.update(db, chapitre_id, chapitre.__dict__)
     return get_or_404(updated, "Chapitre")
 
 @router.delete("/chapitres/{chapitre_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -131,7 +131,7 @@ def get_projet(projet_id: int, db: Session = Depends(get_db)):
 
 @router.post("/projets", response_model=schemas.ProjetRead, status_code=status.HTTP_201_CREATED)
 def create_projet(projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
-    return crud.ProjetCRUD.create(db, projet.dict())
+    return crud.ProjetCRUD.create(db, projet.__dict__)
 
 @router.put("/projets/{projet_id}", response_model=schemas.ProjetRead)
 def update_projet(
@@ -241,7 +241,7 @@ def get_achat(id_facture: str, db: Session = Depends(get_db)):
 
 @router.post("/achats_sur_facture", response_model=schemas.AchatSurFactureRead, status_code=status.HTTP_201_CREATED)
 def create_achat(achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
-    return crud.AchatSurFactureCRUD.create(db, achat.dict())
+    return crud.AchatSurFactureCRUD.create(db, achat.__dict__)
 
 
 @router.put("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
@@ -358,7 +358,7 @@ def get_contract(id_contrat: str, db: Session = Depends(get_db)):
 
 @router.post("/contracts", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_contract(contract: schemas.ContractCreate, db: Session = Depends(get_db)):
-    return crud.ContractCRUD.create(db, contract.dict())
+    return crud.ContractCRUD.create(db, contract.__dict__)
 
 @router.put("/contracts/{id_contrat}", response_model=schemas.ContractRead)
 def update_contract(id_contrat: str, contract: dict, db: Session = Depends(get_db),current_agent: models.Agent = Depends(security.get_current_agent)):
@@ -468,11 +468,11 @@ def get_fournisseur(id_fournisseur: int, db: Session = Depends(get_db)):
 
 @router.post("/fournisseurs", response_model=schemas.FournisseurRead, status_code=status.HTTP_201_CREATED)
 def create_fournisseur(fournisseur: schemas.FournisseurCreate, db: Session = Depends(get_db)):
-    return crud.FournisseurCRUD.create(db, fournisseur.dict())
+    return crud.FournisseurCRUD.create(db, fournisseur.__dict__)
 
 @router.put("/fournisseurs/{id_fournisseur}", response_model=schemas.FournisseurRead)
 def update_fournisseur(id_fournisseur: int, fournisseur: schemas.FournisseurCreate, db: Session = Depends(get_db)):
-    updated = crud.FournisseurCRUD.update(db, id_fournisseur, fournisseur.dict())
+    updated = crud.FournisseurCRUD.update(db, id_fournisseur, fournisseur.__dict__)
     return get_or_404(updated, "Fournisseur")
 
 @router.delete("/fournisseurs/{id_fournisseur}", status_code=status.HTTP_204_NO_CONTENT)
@@ -494,11 +494,11 @@ def get_bon(id_bon: int, db: Session = Depends(get_db)):
 
 @router.post("/bons_de_commande", response_model=schemas.BonDeCommandeRead, status_code=status.HTTP_201_CREATED)
 def create_bon(bon: schemas.BonDeCommandeCreate, db: Session = Depends(get_db)):
-    return crud.BonDeCommandeCRUD.create(db, bon.dict())
+    return crud.BonDeCommandeCRUD.create(db, bon.__dict__)
 
 @router.put("/bons_de_commande/{id_bon}", response_model=schemas.BonDeCommandeRead)
 def update_bon(id_bon: int, bon: schemas.BonDeCommandeCreate, db: Session = Depends(get_db)):
-    updated = crud.BonDeCommandeCRUD.update(db, id_bon, bon.dict())
+    updated = crud.BonDeCommandeCRUD.update(db, id_bon, bon.__dict__)
     return get_or_404(updated, "BonDeCommande")
 
 @router.delete("/bons_de_commande/{id_bon}", status_code=status.HTTP_204_NO_CONTENT)
@@ -524,7 +524,7 @@ def create_pv(pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
 
 @router.put("/pvs/{id_pv}", response_model=schemas.PVDeReceptionRead)
 def update_pv(id_pv: str, pv: schemas.PVDeReceptionCreate, db: Session = Depends(get_db)):
-    updated = crud.PVDeReceptionCRUD.update(db, id_pv, pv.dict())
+    updated = crud.PVDeReceptionCRUD.update(db, id_pv, pv.__dict__)
     return get_or_404(updated, "PVDeReception")
 
 @router.delete("/pvs/{id_pv}", status_code=status.HTTP_204_NO_CONTENT)
@@ -546,11 +546,11 @@ def get_pv_dif(id_pv: str, db: Session = Depends(get_db)):
 
 @router.post("/pvs_difinitive", response_model=schemas.PVDeReceptionDifinitiveRead, status_code=status.HTTP_201_CREATED)
 def create_pv_dif(pv: schemas.PVDeReceptionDifinitiveCreate, db: Session = Depends(get_db)):
-    return crud.PVDeReceptionDifinitiveCRUD.create(db, pv.dict())
+    return crud.PVDeReceptionDifinitiveCRUD.create(db, pv.__dict__)
 
 @router.put("/pvs_difinitive/{id_pv}", response_model=schemas.PVDeReceptionDifinitiveRead)
 def update_pv_dif(id_pv: str, pv: schemas.PVDeReceptionDifinitiveCreate, db: Session = Depends(get_db)):
-    updated = crud.PVDeReceptionDifinitiveCRUD.update(db, id_pv, pv.dict())
+    updated = crud.PVDeReceptionDifinitiveCRUD.update(db, id_pv, pv.__dict__)
     return get_or_404(updated, "PVDeReceptionDifinitive")
 
 @router.delete("/pvs_difinitive/{id_pv}", status_code=status.HTTP_204_NO_CONTENT)
@@ -572,11 +572,11 @@ def get_historique(id_historique: int, db: Session = Depends(get_db)):
 
 @router.post("/historiques_etat", response_model=schemas.HistoriqueEtatRead, status_code=status.HTTP_201_CREATED)
 def create_historique(historique: schemas.HistoriqueEtatCreate, db: Session = Depends(get_db)):
-    return crud.HistoriqueEtatCRUD.create(db, historique.dict())
+    return crud.HistoriqueEtatCRUD.create(db, historique.__dict__)
 
 @router.put("/historiques_etat/{id_historique}", response_model=schemas.HistoriqueEtatRead)
 def update_historique(id_historique: int, historique: schemas.HistoriqueEtatCreate, db: Session = Depends(get_db)):
-    updated = crud.HistoriqueEtatCRUD.update(db, id_historique, historique.dict())
+    updated = crud.HistoriqueEtatCRUD.update(db, id_historique, historique.__dict__)
     return get_or_404(updated, "HistoriqueEtat")
 
 @router.delete("/historiques_etat/{id_historique}", status_code=status.HTTP_204_NO_CONTENT)
@@ -585,3 +585,30 @@ def delete_historique(id_historique: int, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(status_code=404, detail="HistoriqueEtat not found")
     return
+
+#---------- Etat -----------
+@router.get("/etats", response_model=List[schemas.EtatRead])
+def list_etats(db: Session = Depends(get_db)):
+    return crud.EtatCRUD.get_all(db)
+
+@router.get("/etats/{id_etat}", response_model=schemas.EtatRead)
+def get_etat(id_etat: int, db: Session = Depends(get_db)):
+    etat = crud.EtatCRUD.get(db, id_etat)
+    return get_or_404(etat, "Etat")
+
+@router.post("/etats", response_model=schemas.EtatCreate, status_code=status.HTTP_201_CREATED)
+def create_etat(etat: schemas.EtatCreate, db: Session = Depends(get_db)):
+    return crud.EtatCRUD.create(db, etat.__dict__)
+
+@router.put("/etats/{id_etat}", response_model=schemas.EtatRead)
+def update_etat(id_etat: int, etat: schemas.EtatCreate, db: Session = Depends(get_db)):
+    updated = crud.EtatCRUD.update(db, id_etat, etat.__dict__)
+    return get_or_404(updated, "Etat")
+
+@router.delete("/etats/{id_etat}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_etat(id_etat: int, db: Session = Depends(get_db)):
+    success = crud.EtatCRUD.delete(db, id_etat)
+    if not success:
+        raise HTTPException(status_code=404, detail="Etat not found")
+    return
+

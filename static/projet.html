@@ -38,14 +38,17 @@
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-      
-      <a href="#" class="sidebar-link" data-tooltip="Notifications">
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      <a href="#" class="sidebar-link" data-tooltip="Recherche">
-        <i class="fas fa-search"></i>
-        <span>Recherche</span>
+      <a href="/settings" class="sidebar-link" data-tooltip="settings">
+        <i class="fas fa-cog"></i>
+        <span>paramétre</span>
       </a>
     </nav>
   </aside>
@@ -200,34 +203,25 @@ document.addEventListener('click', () => {
         // Mapping des états par type
         const etatsByType = {
           "AOON": [
-        "en cours de preparation",
-        "CCTP",
-        "CC instance visa CSM",
-        "CC visa CSM",
-        "visa sous résevrve",
-        "ajournement",
-        "COPEO",
-        "visa CSM",
-        "instance Visa CSM",
-        "demande engagement",
-        "instance engagement",
-        "engagement"
+            {% for setat in setats %}
+              {% if setat.type == "AOON" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
           ],
           "consultation": [
-        "en cours de preparation",
-        "Cahier des charges",
-        "COPEO",
-        "demande engagement",
-        "instance engagement",
-        "engagement"
+            {% for setat in setats %}
+              {% if setat.type == "consultation" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
           ],
           "achat sur facture": [
-        "en cours de preparation",
-        "demande de facture proforma",
-        "certification",
-        "demande engagement",
-        "instance engagement",
-        "engagement"
+            {% for setat in setats %}
+              {% if setat.type == "projet achat sur facture" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
           ]
         };
 

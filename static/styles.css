@@ -321,6 +321,7 @@ main.expanded {
   width: max-content;         /* allow card to grow wider than viewport */
   min-width: 100%;            /* ensure it fills at least the screen */
   font-size: 0.85rem;
+  margin-bottom: 15px;
 }
 
 
@@ -403,6 +404,7 @@ main.expanded {
   padding: 1.5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 20px;
 }
 
 /* Section title */

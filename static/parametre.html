@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEMT - Agents</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Administration</span>
+      <button id="toggleSidebar" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/acceuil" class="sidebar-link" data-tooltip="Tableau de bord">
+        <i class="fas fa-chart-line"></i>
+        <span>Acceuil</span>
+      </a>
+      <a href="/project" class="sidebar-link" data-tooltip="Projets">
+        <i class="fas fa-folder"></i>
+        <span>Projets</span>
+      </a>
+      <a href="/contrat" class="sidebar-link" data-tooltip="Contrats">
+        <i class="fas fa-file-signature"></i>
+        <span>Contrats</span>
+      </a>
+      <a href="/achat" class="sidebar-link" data-tooltip="Achat sur Facture">
+        <i class="fas fa-receipt"></i>
+        <span>Achat sur Facture</span>
+      </a>
+      <a href="/users" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Agents</span>
+      </a>
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
+      
+     
+      <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+      </a>
+      <a href="/settings" class="sidebar-link active" data-tooltip="settings">
+        <i class="fas fa-cog"></i>
+        <span>paramétre</span>
+      </a>
+      
+    </nav>
+  </aside>
+  <main>
+
+    
+    <div class="header">
+        <div>
+          <h1>Tableau des Chapitre</h1>
+          <p>Aperçu sur les Chapitre</p>
+        </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
+</div>
+
+        <div class="menu">
+            <h3>
+                {{agent.nom}} {{agent.prenom}}
+                <div>
+                    {{agent.role.value}}
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="/user">My Profile</a>
+                </li>
+                <li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
+            </ul>
+        </div>
+    </div>
+
+      </div>
+
+<script>
+  const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
+});
+
+</script>
+
+<div class="header">
+  <h1>Chapitres</h1>
+  
+  <div class="button-group">
+     <button id="addUserBtn" class="btn-primary">+ Ajouter un Chapitre</button>
+       
+         
+        
+        <button id="deleteBtn" class="btn-primary">Supprimer Chapitre</button>
+      </div>
+</div>
+
+<div id="overlay" class="overlay hidden">
+  <div id="formPanel" class="form-panel">
+    <button id="closeUserPanel" class="close-btn">&times;</button>
+    <h2>Ajouter un Chapitre</h2>
+    <br>
+    <form id="addChapitreForm">
+      <label>ID Chapitre</label>
+      <input type="number" placeholder="Entrez l'ID Chapitre" name="id_chapitre" required />
+
+      <label>Nom</label>
+      <input type="text" placeholder="Entrez le nom du nom" name="nom" required />
+
+      <label>Description</label>
+      <input type="text" placeholder="Entrez la description" name="description" required />
+
+      <label>Montant Initiale</label>
+      <input type="text" placeholder="Entrez le Montant Initiale" name="montant_initiale" required />
+
+      <label>Engagement</label>
+      <input type="text" placeholder="Entrez l'engagement" name="engagement" required />
+
+      <label>Mondatement</label>
+      <input type="text" placeholder="Entrez le mondatement" name="mondatement" required />
+
+      <button type="submit" class="btn-submit">Ajouter</button>
+    </form>
+    <script>
+    document.getElementById('addChapitreForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        id_chapitre: form.id_chapitre.value,
+        nom: form.nom.value,
+        description: form.description.value,
+        montant_initiale: form.montant_initiale.value,
+        engagement: form.engagement.value,
+        mondatement: form.mondatement.value
+      };
+      try {
+        const response = await fetch('/chapitres', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          alert('Chapitre ajouté avec succès.');
+          location.reload();
+        } else {
+          alert('Erreur lors de l\'ajout du chapitre.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+    });
+    </script>
+  </div>
+</div>
+<div id="detailsOverlay" class="overlay hidden">
+  <div id="detailsPanel" class="form-panel">
+    <button id="closeDetailsPanel" class="close-btn">&times;</button>
+    <h2>Modifier du Agent</h2>
+    <script>
+      // Attach event listeners after DOMContentLoaded to ensure elements exist
+      document.addEventListener('DOMContentLoaded', function() {
+      const detailButtons = document.querySelectorAll('.btn-detail');
+      const detailsOverlay = document.getElementById('detailsOverlay');
+      const detailsPanel = document.getElementById('detailsPanel');
+      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+
+      detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        // Find the row of the clicked button
+        const row = button.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Fill the form fields with the row data
+        document.getElementById('detailName').value = cells[0].innerText; // ID
+        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
+        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
+
+        // Username
+        const usernameInput = detailsPanel.querySelectorAll('input')[3];
+        if (usernameInput) usernameInput.value = cells[3].innerText;
+
+        // Role
+        const roleSelect = detailsPanel.querySelector('select');
+        if (roleSelect) {
+          for (let i = 0; i < roleSelect.options.length; i++) {
+          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
+            roleSelect.selectedIndex = i;
+            break;
+          }
+          }
+        }
+        });
+      });
+      });
+    </script>
+    <form>
+      <label>ID</label>
+      <input type="text" id="detailName" readonly />
+
+      <label>Nom</label>
+      <input type="text" id="detailPeriod" readonly />
+
+      <label>Prenom</label>
+      <input type="text" id="detailBureau" readonly />
+
+      <label>Nom d'utilisation</label>
+      <input type="text" id="detailBureau" readonly />
+      <label>Role</label>
+      <select required>
+        <option value="directeur">Chef Direction</option>
+        <option value="chef_direction"> Chef Bureau</option>
+        <option value="chef_bureau">Agent</option>
+        </select>
+       <button type="submit" class="btn-submit">Modifier</button>
+      <!-- Add more fields if needed -->
+    </form>
+  </div>
+</div>
+<!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay" class="overlay hidden">
+      <div id="deletePanel" class="form-panel">
+        <button id="closeDeletePanel" class="close-btn">&times;</button>
+        <h2>Supprimer Chapitre</h2>
+        <form id="deleteContratForm">
+          <label>ID Chapitre</label>
+          <input type="text" id="deleteContratId" placeholder="Entrez l'ID Chapitre à supprimer" />
+          <p>Êtes-vous sûr de vouloir supprimer cette Chapitre ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+        <script>
+        document.getElementById('deleteContratForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = document.getElementById('deleteContratId').value.trim();
+          if (!id) return;
+          try {
+            const response = await fetch(`/chapitres/${encodeURIComponent(id)}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              alert('Chapitre supprimé avec succès.');
+              location.reload();
+            } else {
+              alert('Erreur lors de la suppression du chapitre.');
+            }
+          } catch (err) {
+            alert('Erreur réseau.');
+          }
+        });
+        </script>
+        
+      </div>
+    </div>
+<form class="search-form">
+  <div class="search-wrapper">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
+
+      <span id="selected-category">All categories</span>
+      <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
+
+      <ul class="dropdown-list">
+        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
+        <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
+        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-input-wrapper">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Rechercher..."
+        class="search-input"
+        aria-label="Search"
+      />
+    </div>
+  </div>
+</form>
+<section class="section-space">
+  {%if chapitres%}
+  <div class="card">
+    <h2 class="section-title">Listes des chapitres</h2>
+
+<div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID Chapitre</th>
+                <th class="w-3">Nom </th>
+                <th class="w-2">Description</th>
+                <th class="w-2">Montatn Initial</th>
+                <th class="w-1">Engagement</th>
+                <th class="w-1">Mondatement</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {%for chapitre in chapitres%}
+              <tr class="row-hover">
+                <td>{{chapitre.id_chapitre}}</td>
+                <td>
+                  <div >{{chapitre.nom}}</div>
+                  
+                </td>
+                <td>{{chapitre.description}}</td>
+                <td >{{chapitre.montant_initiale}}</td>
+                <td> {{chapitre.engagement}}</td>
+                <td>{{chapitre.mondatement}}</td>
+    
+               
+               </tr>
+               {%endfor%} 
+            </tbody>
+          </table>
+        </div>
+    
+  </div>
+  {%else%}
+  <div class="card">
+    <h2 class="section-title">Pas de chapitre</h2>
+  </div>
+  {%endif%}
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="header">
+  <h1>Direction</h1>
+  
+  <div class="button-group">
+     <button id="addUserBtn1" class="btn-primary">+ Ajouter un Direction</button>
+       
+         
+        
+        <button id="deleteBtn1" class="btn-primary">Supprimer Direction</button>
+      </div>
+</div>
+
+<div id="overlay1" class="overlay hidden">
+  <div id="formPanel1" class="form-panel">
+    <button id="closeUserPanel1" class="close-btn">&times;</button>
+    <h2>Ajouter un Direction</h2>
+    <form id="addDirectionForm">
+      <label>Nom</label>
+      <input type="text" placeholder="Entrez le nom du nom" name="nom_direction" required />
+      <button type="submit" class="btn-submit">Ajouter</button>
+    </form>
+    <script>
+      document.getElementById('addDirectionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        nom_direction: form.nom_direction.value
+      };
+      try {
+        const response = await fetch('/directions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+        });
+        if (response.ok) {
+        alert('Direction ajoutée avec succès.');
+        location.reload();
+        } else {
+        alert('Erreur lors de l\'ajout de la direction.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+      });
+    </script>
+  </div>
+</div>
+<div id="detailsOverlay" class="overlay hidden">
+  <div id="detailsPanel" class="form-panel">
+    <button id="closeDetailsPanel" class="close-btn">&times;</button>
+    <h2>Modifier du Agent</h2>
+    <script>
+      // Attach event listeners after DOMContentLoaded to ensure elements exist
+      document.addEventListener('DOMContentLoaded', function() {
+      const detailButtons = document.querySelectorAll('.btn-detail');
+      const detailsOverlay = document.getElementById('detailsOverlay');
+      const detailsPanel = document.getElementById('detailsPanel');
+      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+
+      detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        // Find the row of the clicked button
+        const row = button.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Fill the form fields with the row data
+        document.getElementById('detailName').value = cells[0].innerText; // ID
+        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
+        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
+
+        // Username
+        const usernameInput = detailsPanel.querySelectorAll('input')[3];
+        if (usernameInput) usernameInput.value = cells[3].innerText;
+
+        // Role
+        const roleSelect = detailsPanel.querySelector('select');
+        if (roleSelect) {
+          for (let i = 0; i < roleSelect.options.length; i++) {
+          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
+            roleSelect.selectedIndex = i;
+            break;
+          }
+          }
+        }
+        });
+      });
+      });
+    </script>
+    <form>
+      <label>ID</label>
+      <input type="text" id="detailName" readonly />
+
+      <label>Nom</label>
+      <input type="text" id="detailPeriod" readonly />
+
+      <label>Prenom</label>
+      <input type="text" id="detailBureau" readonly />
+
+      <label>Nom d'utilisation</label>
+      <input type="text" id="detailBureau" readonly />
+      <label>Role</label>
+      <select required>
+        <option value="directeur">Chef Direction</option>
+        <option value="chef_direction"> Chef Bureau</option>
+        <option value="chef_bureau">Agent</option>
+        </select>
+       <button type="submit" class="btn-submit">Modifier</button>
+      <!-- Add more fields if needed -->
+    </form>
+  </div>
+</div>
+<!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay1" class="overlay hidden">
+      <div id="deletePanel1" class="form-panel">
+        <button id="closeDeletePanel1" class="close-btn">&times;</button>
+        <h2>Supprimer Direction</h2>
+        <form id="deleteContratForm1">
+          <label>ID Direction</label>
+          <input type="text" id="deleteContratId1" placeholder="Entrez l'ID de Direction à supprimer" />
+          <p>Êtes-vous sûr de vouloir supprimer cette Direction ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+        <script>
+        document.getElementById('deleteContratForm1').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = document.getElementById('deleteContratId1').value.trim();
+          if (!id) return;
+          try {
+            const response = await fetch(`/directions/${encodeURIComponent(id)}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              alert('Direction supprimée avec succès.');
+              location.reload();
+            } else {
+              alert('Erreur lors de la suppression de la direction.');
+            }
+          } catch (err) {
+            alert('Erreur réseau.');
+          }
+        });
+        </script>
+      </div>
+    </div>
+<form class="search-form">
+  <div class="search-wrapper">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
+
+      <span id="selected-category">All categories</span>
+      <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
+
+      <ul class="dropdown-list">
+        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
+        <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
+        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-input-wrapper">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Rechercher..."
+        class="search-input"
+        aria-label="Search"
+      />
+    </div>
+  </div>
+</form>
+<section class="section-space">
+  <div class="card">
+   <h2>Liste des Directions</h2>
+
+<div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID Direction</th>
+                <th class="w-3">Nom </th>
+                
+                
+              </tr>
+            </thead>
+            <tbody>
+              {%for direction in directions%}
+              <tr class="row-hover">
+                <td>{{direction.id_direction}}</td>
+                <td>
+                  <div >{{direction.nom_direction}}</div>
+                  
+                </td>
+                
+               
+               
+               </tr>
+               {%endfor%} 
+            </tbody>
+          </table>
+        </div>
+    
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="header">
+  <h1>Bureaux</h1>
+  
+  <div class="button-group">
+     <button id="addUserBtn2" class="btn-primary">+ Ajouter un Bureau</button>
+       
+         
+        
+        <button id="deleteBtn2" class="btn-primary">Supprimer Bureau</button>
+      </div>
+</div>
+
+<div id="overlay2" class="overlay hidden">
+  <div id="formPanel2" class="form-panel">
+    <button id="closeUserPanel2" class="close-btn">&times;</button>
+    <h2>Ajouter un Bureau</h2>
+    <form id="addBureauForm">
+      <label>Nom</label>
+      <input type="text" placeholder="Entrez le nom du bureau" name="nom_bureau" required />
+
+      <label>Direction</label>
+      <input type="text" placeholder="Entrez la Direction" name="id_direction" required />
+
+      <button type="submit" class="btn-submit">Ajouter</button>
+    </form>
+    <script>
+      document.getElementById('addBureauForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        nom_bureau: form.nom_bureau.value,
+        id_direction: form.id_direction.value
+      };
+      try {
+        const response = await fetch('/bureaux', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+        });
+        if (response.ok) {
+        alert('Bureau ajouté avec succès.');
+        location.reload();
+        } else {
+        alert('Erreur lors de l\'ajout du bureau.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+      });
+    </script>
+  </div>
+</div>
+<div id="detailsOverlay" class="overlay hidden">
+  <div id="detailsPanel" class="form-panel">
+    <button id="closeDetailsPanel" class="close-btn">&times;</button>
+    <h2>Modifier du Bureau</h2>
+    <script>
+      // Attach event listeners after DOMContentLoaded to ensure elements exist
+      document.addEventListener('DOMContentLoaded', function() {
+      const detailButtons = document.querySelectorAll('.btn-detail');
+      const detailsOverlay = document.getElementById('detailsOverlay');
+      const detailsPanel = document.getElementById('detailsPanel');
+      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+
+      detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        // Find the row of the clicked button
+        const row = button.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Fill the form fields with the row data
+        document.getElementById('detailName').value = cells[0].innerText; // ID
+        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
+        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
+
+        // Username
+        const usernameInput = detailsPanel.querySelectorAll('input')[3];
+        if (usernameInput) usernameInput.value = cells[3].innerText;
+
+        // Role
+        const roleSelect = detailsPanel.querySelector('select');
+        if (roleSelect) {
+          for (let i = 0; i < roleSelect.options.length; i++) {
+          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
+            roleSelect.selectedIndex = i;
+            break;
+          }
+          }
+        }
+        });
+      });
+      });
+    </script>
+    <form>
+      <label>ID</label>
+      <input type="text" id="detailName" readonly />
+
+      <label>Nom</label>
+      <input type="text" id="detailPeriod" readonly />
+
+      <label>Prenom</label>
+      <input type="text" id="detailBureau" readonly />
+
+      <label>Nom d'utilisation</label>
+      <input type="text" id="detailBureau" readonly />
+      <label>Role</label>
+      <select required>
+        <option value="directeur">Chef Direction</option>
+        <option value="chef_direction"> Chef Bureau</option>
+        <option value="chef_bureau">Agent</option>
+        </select>
+       <button type="submit" class="btn-submit">Modifier</button>
+      <!-- Add more fields if needed -->
+    </form>
+  </div>
+</div>
+<!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay2" class="overlay hidden">
+      <div id="deletePanel2" class="form-panel">
+        <button id="closeDeletePanel2" class="close-btn">&times;</button>
+        <h2>Supprimer Bureau</h2>
+        <form id="deleteContratForm2">
+          <label>ID Bureau</label>
+          <input type="text" id="deleteContratId2" placeholder="Entrez l'ID Bureau à supprimer" required />
+          <p>Êtes-vous sûr de vouloir supprimer ce Bureau ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+        <script>
+        document.getElementById('deleteContratForm2').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = document.getElementById('deleteContratId2').value.trim();
+          if (!id) return;
+          try {
+            const response = await fetch(`/bureaux/${encodeURIComponent(id)}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              alert('Bureau supprimé avec succès.');
+              location.reload();
+            } else {
+              alert('Erreur lors de la suppression du bureau.');
+            }
+          } catch (err) {
+            alert('Erreur réseau.');
+          }
+        });
+        </script>
+        
+      </div>
+    </div>
+<form class="search-form">
+  <div class="search-wrapper">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
+
+      <span id="selected-category">All categories</span>
+      <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
+
+      <ul class="dropdown-list">
+        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
+        <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
+        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-input-wrapper">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Rechercher..."
+        class="search-input"
+        aria-label="Search"
+      />
+    </div>
+  </div>
+</form>
+<section class="section-space">
+  <div class="card">
+    <h2 class="section-title">les listes des Bureaux</h2>
+
+<div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID Bureau</th>
+                <th class="w-3">Nom </th>
+                <th class="w-2">ID Direction</th>
+                
+              
+                <th class="w-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%for bureau in bureaux%}
+              <tr class="row-hover">
+                <td>{{bureau.id_bureau}}</td>
+                <td>
+                  <div >{{bureau.nom_bureau}}</div>
+                  
+                </td>
+                <td >{{bureau.id_direction}}</td>
+                
+                
+               <td><a  class="btn btn-primary btn-detail">Modifier</a></td>
+               </tr>
+               {%endfor%} 
+            </tbody>
+          </table>
+        </div>
+    
+  </div>
+</section>
+
+
+
+<div class="header">
+  <h1>Etat</h1>
+  
+  <div class="button-group">
+     <button id="addUserBtn3" class="btn-primary">+ Ajouter un Etat</button>
+       
+         
+        
+        <button id="deleteBtn3" class="btn-primary">Supprimer Etat</button>
+      </div>
+</div>
+
+<div id="overlay3" class="overlay hidden">
+  <div id="formPanel3" class="form-panel">
+    <button id="closeUserPanel3" class="close-btn">&times;</button>
+    <h2>Ajouter un Etat</h2>
+    <form id="addEtatForm">
+      <label>Nom</label>
+      <input type="text" placeholder="Entrez le nom du nom" name="nom" required />
+      <label>Type</label>
+      <select required name="type">
+      <option value="Projer">Projet</option>
+      <option value="Projet achat sur facture ">Projet Achat sur Facture</option>
+      <option value="achat sur facture ">Achat sur Facture</option>
+      <option value="Contrat">Contrat</option>
+      <option value="AOON">AOON</option>
+      <option value="Consultation">Consultation</option>
+      </select>
+      <button type="submit" class="btn-submit">Ajouter</button>
+    </form>
+    <script>
+      document.getElementById('addEtatForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        nom: form.nom.value,
+        type: form.type.value
+      };
+      try {
+        const response = await fetch('/etats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+        });
+        if (response.ok) {
+        alert('État ajouté avec succès.');
+        location.reload();
+        } else {
+        alert('Erreur lors de l\'ajout de l\'état.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+      });
+    </script>
+  </div>
+</div>
+<div id="detailsOverlay" class="overlay hidden">
+  <div id="detailsPanel" class="form-panel">
+    <button id="closeDetailsPanel" class="close-btn">&times;</button>
+    <h2>Modifier du Agent</h2>
+    <script>
+      // Attach event listeners after DOMContentLoaded to ensure elements exist
+      document.addEventListener('DOMContentLoaded', function() {
+      const detailButtons = document.querySelectorAll('.btn-detail');
+      const detailsOverlay = document.getElementById('detailsOverlay');
+      const detailsPanel = document.getElementById('detailsPanel');
+      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+
+      detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+        // Find the row of the clicked button
+        const row = button.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Fill the form fields with the row data
+        document.getElementById('detailName').value = cells[0].innerText; // ID
+        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
+        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
+
+        // Username
+        const usernameInput = detailsPanel.querySelectorAll('input')[3];
+        if (usernameInput) usernameInput.value = cells[3].innerText;
+
+        // Role
+        const roleSelect = detailsPanel.querySelector('select');
+        if (roleSelect) {
+          for (let i = 0; i < roleSelect.options.length; i++) {
+          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
+            roleSelect.selectedIndex = i;
+            break;
+          }
+          }
+        }
+        });
+      });
+      });
+    </script>
+    <form>
+      <label>ID</label>
+      <input type="text" id="detailName" readonly />
+
+      <label>Nom</label>
+      <input type="text" id="detailPeriod" readonly />
+
+      <label>Prenom</label>
+      <input type="text" id="detailBureau" readonly />
+
+      <label>Nom d'utilisation</label>
+      <input type="text" id="detailBureau" readonly />
+      <label>Role</label>
+      <select required>
+        <option value="directeur">Chef Direction</option>
+        <option value="chef_direction"> Chef Bureau</option>
+        <option value="chef_bureau">Agent</option>
+        </select>
+       <button type="submit" class="btn-submit">Modifier</button>
+      <!-- Add more fields if needed -->
+    </form>
+  </div>
+</div>
+<!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay3" class="overlay hidden">
+      <div id="deletePanel3" class="form-panel">
+        <button id="closeDeletePanel3" class="close-btn">&times;</button>
+        <h2>Supprimer Etat</h2>
+        <form id="deleteetatForm">
+          <label>ID Etat</label>
+          <input type="text" id="deleteetatId" placeholder="Entrez l'ID Etat à supprimer" required />
+          <p>Êtes-vous sûr de vouloir supprimer cet Etat ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+        <script>
+        document.getElementById('deleteetatForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = document.getElementById('deleteetatId').value.trim();
+          if (!id) return;
+          try {
+            const response = await fetch(`/etats/${encodeURIComponent(id)}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              alert('État supprimé avec succès.');
+              location.reload();
+            } else {
+              alert('Erreur lors de la suppression de l\'état.');
+            }
+          } catch (err) {
+            alert('Erreur réseau.');
+          }
+        });
+        </script>
+        
+      </div>
+    </div>
+<form class="search-form">
+  <div class="search-wrapper">
+    <!-- Dropdown Button -->
+    <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
+
+      <span id="selected-category">All categories</span>
+      <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="dropdown" class="dropdown-menu hidden" role="listbox" aria-labelledby="dropdown-button">
+
+      <ul class="dropdown-list">
+        <li><button type="button" class="category-option" data-category="ID">ID</button></li>
+        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
+        <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
+        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
+        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+      </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-input-wrapper">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Rechercher..."
+        class="search-input"
+        aria-label="Search"
+      />
+    </div>
+  </div>
+</form>
+<section class="section-space">
+  <div class="card">
+    <h2 class="section-title">liste des etats</h2>
+
+<div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-1">ID Etat</th>
+                <th class="w-3">Nom </th>
+               
+                <th class="w-1">Type</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {%for etat in etats%}
+              <tr class="row-hover">
+                <td>{{etat.id_etat}}</td>
+                <td>
+                  <div >{{etat.nom}}</div>
+                  
+                </td>
+                
+                
+                <td>{{etat.type}}</td>
+               
+               </tr>
+               {%endfor%} 
+            </tbody>
+          </table>
+        </div>
+    
+  </div>
+</section>
+
+
+
+
+
+
+  </main>
+  <script>
+  
+ const toggleBtn = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.querySelector('main'); // Main content container
+
+const dropdownButton = document.getElementById('dropdown-button');
+const dropdown = document.getElementById('dropdown');
+const selectedCategory = document.getElementById('selected-category');
+const options = document.querySelectorAll('.category-option');
+const searchInput = document.getElementById('searchInput');
+const tableRows = document.querySelectorAll('tbody tr');
+
+// Map of category name to column index
+const categoryIndexMap = {
+  "ID": 0,
+  "Num": 1,
+  "Prenom": 2,
+  "Nom d'utilisation": 3,
+  "Role": 4
+};
+
+let currentCategory = null;
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', () => {
+  sidebar.classList.remove('collapsed');
+  mainContent.classList.remove('collapsed');
+});
+
+// Sidebar toggle button
+toggleBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+
+  if (sidebar.classList.contains('collapsed')) {
+    mainContent.classList.remove('expanded');
+    mainContent.classList.add('collapsed');
+  } else {
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  }
+});
+  window.addEventListener('DOMContentLoaded', () => {
+    sidebar.classList.remove('collapsed');
+    mainContent.classList.remove('collapsed');
+    mainContent.classList.add('expanded');
+  });
+
+
+// Toggle dropdown visibility
+dropdownButton.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent click-outside close
+  dropdown.classList.toggle('hidden');
+});
+
+// Handle dropdown option selection
+
+
+// Filter table on input
+searchInput.addEventListener('input', performSearch);
+
+function performSearch() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  tableRows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    let textToSearch = '';
+
+    if (currentCategory && categoryIndexMap[currentCategory] !== undefined) {
+      const index = categoryIndexMap[currentCategory];
+      const cell = cells[index];
+      textToSearch = cell ? cell.innerText.toLowerCase() : '';
+    } else {
+      textToSearch = Array.from(cells)
+        .map(td => td.innerText.toLowerCase())
+        .join(' ');
+    }
+
+    row.style.display = textToSearch.includes(query) ? '' : 'none';
+  });
+}
+
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!dropdown.contains(e.target) && !dropdownButton.contains(e.target)) {
+    dropdown.classList.add('hidden');
+  }
+});
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    currentCategory = option.dataset.category;
+    selectedCategory.textContent = currentCategory;
+    dropdown.classList.add('hidden');
+    performSearch(); // Trigger search again with the selected category
+  });
+});
+//add projet
+const addUserBtn = document.getElementById('addUserBtn');
+const overlay = document.getElementById('overlay');
+const panel = document.getElementById('formPanel');
+const closeUserPanel = document.getElementById('closeUserPanel');
+
+addUserBtn.addEventListener('click', () => {
+  overlay.classList.remove('hidden');
+  // trigger reflow for animation to apply correctly
+  void panel.offsetWidth;
+  panel.classList.add('show');
+});
+
+closeUserPanel.addEventListener('click', () => {
+  panel.classList.remove('show');
+  // wait animation before hiding overlay
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
+});
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) {
+    panel.classList.remove('show');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+    }, 300);
+  }
+});
+//Modify button
+const detailButtons = document.querySelectorAll('.btn-detail');
+
+
+
+
+
+detailButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // You could populate fields here later
+    detailsOverlay.classList.remove('hidden');
+    void detailsPanel.offsetWidth; // Trigger reflow
+    detailsPanel.classList.add('show');
+  });
+});
+
+closeDetailsPanel.addEventListener('click', () => {
+  detailsPanel.classList.remove('show');
+  setTimeout(() => {
+    detailsOverlay.classList.add('hidden');
+  }, 300);
+});
+
+detailsOverlay.addEventListener('click', (e) => {
+  if (e.target === detailsOverlay) {
+    detailsPanel.classList.remove('show');
+    setTimeout(() => {
+      detailsOverlay.classList.add('hidden');
+    }, 300);
+  }
+});
+
+</script>
+<script>
+// Ajouter ce script pour gérer la suppression
+document.addEventListener('DOMContentLoaded', function() {
+  const deleteBtn = document.getElementById('deleteBtn');
+  const deleteOverlay = document.getElementById('deleteOverlay');
+  const deletePanel = document.getElementById('deletePanel');
+  const closeDeletePanel = document.getElementById('closeDeletePanel');
+  const cancelDelete = document.getElementById('cancelDelete');
+  const deleteForm = document.getElementById('deleteForm');
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+      deleteOverlay.classList.remove('hidden');
+      void deletePanel.offsetWidth;
+      deletePanel.classList.add('show');
+    });
+  }
+
+  if (closeDeletePanel) {
+    closeDeletePanel.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (cancelDelete) {
+    cancelDelete.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (deleteForm) {
+    deleteForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const projectId = document.getElementById('deleteProjectId').value;
+      
+      try {
+        const response = await fetch(`/project/${projectId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          window.location.href = '/project'; // Rediriger après suppression
+        } else {
+          alert('Erreur lors de la suppression du projet');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Une erreur est survenue');
+      }
+    });
+  }
+
+  if (deleteOverlay) {
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteOverlay) {
+        deletePanel.classList.remove('show');
+        setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+});
+</script>
+
+<script>
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+  // ADD DIRECTION
+  const addDirectionBtn = document.getElementById('addUserBtn1');
+  const addDirectionOverlay = document.getElementById('overlay1'); // Assumes overlay1 is defined in HTML
+  const addDirectionPanel = document.getElementById('formPanel1'); // Assumes formPanel1 exists
+  const closeAddDirectionPanel = document.getElementById('closeUserPanel1'); // Close button for add modal
+
+  if (addDirectionBtn && addDirectionOverlay && addDirectionPanel) {
+    addDirectionBtn.addEventListener('click', () => {
+      addDirectionOverlay.classList.remove('hidden');
+      void addDirectionPanel.offsetWidth;
+      addDirectionPanel.classList.add('show');
+    });
+
+    closeAddDirectionPanel.addEventListener('click', () => {
+      addDirectionPanel.classList.remove('show');
+      setTimeout(() => addDirectionOverlay.classList.add('hidden'), 300);
+    });
+
+    addDirectionOverlay.addEventListener('click', (e) => {
+      if (e.target === addDirectionOverlay) {
+        addDirectionPanel.classList.remove('show');
+        setTimeout(() => addDirectionOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // DELETE DIRECTION
+  const deleteDirectionBtn = document.getElementById('deleteBtn1');
+  const deleteDirectionOverlay = document.getElementById('deleteOverlay1');
+  const deleteDirectionPanel = document.getElementById('deletePanel1');
+  const closeDeleteDirectionPanel = document.getElementById('closeDeletePanel1');
+  const deleteDirectionForm = document.getElementById('deleteContratForm1');
+  const deleteDirectionIdInput = document.getElementById('deleteContratId1');
+
+  if (deleteDirectionBtn && deleteDirectionOverlay && deleteDirectionPanel) {
+    deleteDirectionBtn.addEventListener('click', () => {
+      deleteDirectionOverlay.classList.remove('hidden');
+      void deleteDirectionPanel.offsetWidth;
+      deleteDirectionPanel.classList.add('show');
+    });
+
+    closeDeleteDirectionPanel.addEventListener('click', () => {
+      deleteDirectionPanel.classList.remove('show');
+      setTimeout(() => deleteDirectionOverlay.classList.add('hidden'), 300);
+    });
+
+    deleteDirectionOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteDirectionOverlay) {
+        deleteDirectionPanel.classList.remove('show');
+        setTimeout(() => deleteDirectionOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // HANDLE DELETE FORM SUBMISSION
+  if (deleteDirectionForm) {
+    deleteDirectionForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = deleteDirectionIdInput.value.trim();
+      if (!id) return;
+
+      try {
+        const response = await fetch(`/directions/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+          alert('Direction supprimée avec succès.');
+          location.reload();
+        } else {
+          alert('Erreur lors de la suppression de la direction.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // === ADD BUREAU ===
+  const addBureauBtn = document.getElementById('addUserBtn2');
+  const addBureauOverlay = document.getElementById('overlay2');      // Should match your add bureau modal overlay
+  const addBureauPanel = document.getElementById('formPanel2');      // Panel inside the overlay
+  const closeAddBureauPanel = document.getElementById('closeUserPanel2'); // Close button inside modal
+
+  if (addBureauBtn && addBureauOverlay && addBureauPanel) {
+    addBureauBtn.addEventListener('click', () => {
+      addBureauOverlay.classList.remove('hidden');
+      void addBureauPanel.offsetWidth;
+      addBureauPanel.classList.add('show');
+    });
+
+    closeAddBureauPanel.addEventListener('click', () => {
+      addBureauPanel.classList.remove('show');
+      setTimeout(() => addBureauOverlay.classList.add('hidden'), 300);
+    });
+
+    addBureauOverlay.addEventListener('click', (e) => {
+      if (e.target === addBureauOverlay) {
+        addBureauPanel.classList.remove('show');
+        setTimeout(() => addBureauOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // === DELETE BUREAU ===
+  const deleteBureauBtn = document.getElementById('deleteBtn2');
+  const deleteBureauOverlay = document.getElementById('deleteOverlay2');
+  const deleteBureauPanel = document.getElementById('deletePanel2');
+  const closeDeleteBureauPanel = document.getElementById('closeDeletePanel2');
+  const deleteBureauForm = document.getElementById('deleteContratForm2');
+  const deleteBureauIdInput = document.getElementById('deleteContratId2');
+
+  if (deleteBureauBtn && deleteBureauOverlay && deleteBureauPanel) {
+    deleteBureauBtn.addEventListener('click', () => {
+      deleteBureauOverlay.classList.remove('hidden');
+      void deleteBureauPanel.offsetWidth;
+      deleteBureauPanel.classList.add('show');
+    });
+
+    closeDeleteBureauPanel.addEventListener('click', () => {
+      deleteBureauPanel.classList.remove('show');
+      setTimeout(() => deleteBureauOverlay.classList.add('hidden'), 300);
+    });
+
+    deleteBureauOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteBureauOverlay) {
+        deleteBureauPanel.classList.remove('show');
+        setTimeout(() => deleteBureauOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // === SUBMIT DELETE BUREAU FORM ===
+  if (deleteBureauForm) {
+    deleteBureauForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = deleteBureauIdInput.value.trim();
+      if (!id) return;
+
+      try {
+        const response = await fetch(`/bureaux/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+          alert('Bureau supprimé avec succès.');
+          location.reload();
+        } else {
+          alert('Erreur lors de la suppression du bureau.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+    });
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // === AJOUTER ETAT ===
+  const addEtatBtn = document.getElementById('addUserBtn3');
+  const addEtatOverlay = document.getElementById('overlay3');            // Overlay du modal
+  const addEtatPanel = document.getElementById('formPanel3');            // Panel du formulaire
+  const closeAddEtatPanel = document.getElementById('closeUserPanel3');  // Bouton de fermeture
+
+  if (addEtatBtn && addEtatOverlay && addEtatPanel) {
+    addEtatBtn.addEventListener('click', () => {
+      addEtatOverlay.classList.remove('hidden');
+      void addEtatPanel.offsetWidth;
+      addEtatPanel.classList.add('show');
+    });
+
+    closeAddEtatPanel.addEventListener('click', () => {
+      addEtatPanel.classList.remove('show');
+      setTimeout(() => addEtatOverlay.classList.add('hidden'), 300);
+    });
+
+    addEtatOverlay.addEventListener('click', (e) => {
+      if (e.target === addEtatOverlay) {
+        addEtatPanel.classList.remove('show');
+        setTimeout(() => addEtatOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // === SUPPRIMER ETAT ===
+  const deleteEtatBtn = document.getElementById('deleteBtn3');
+  const deleteEtatOverlay = document.getElementById('deleteOverlay3');
+  const deleteEtatPanel = document.getElementById('deletePanel3');
+  const closeDeleteEtatPanel = document.getElementById('closeDeletePanel3');
+  const deleteEtatForm = document.getElementById('deleteContratForm3');
+  const deleteEtatIdInput = document.getElementById('deleteContratId3');
+
+  if (deleteEtatBtn && deleteEtatOverlay && deleteEtatPanel) {
+    deleteEtatBtn.addEventListener('click', () => {
+      deleteEtatOverlay.classList.remove('hidden');
+      void deleteEtatPanel.offsetWidth;
+      deleteEtatPanel.classList.add('show');
+    });
+
+    closeDeleteEtatPanel.addEventListener('click', () => {
+      deleteEtatPanel.classList.remove('show');
+      setTimeout(() => deleteEtatOverlay.classList.add('hidden'), 300);
+    });
+
+    deleteEtatOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteEtatOverlay) {
+        deleteEtatPanel.classList.remove('show');
+        setTimeout(() => deleteEtatOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+
+  // === SOUMETTRE LE FORMULAIRE DE SUPPRESSION D'ETAT ===
+  if (deleteEtatForm) {
+    deleteEtatForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const id = deleteEtatIdInput.value.trim();
+      if (!id) return;
+
+      try {
+        const response = await fetch(`/etats/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+          alert('État supprimé avec succès.');
+          location.reload();
+        } else {
+          alert('Erreur lors de la suppression de l\'état.');
+        }
+      } catch (err) {
+        alert('Erreur réseau.');
+      }
+    });
+  }
+});
+</script>
+
+
+
+</body>
+</html>

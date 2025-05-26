@@ -225,3 +225,11 @@ class PVDeReceptionDifinitive(Base):
     contract_id_contract = Column(String(45), ForeignKey('contract.id_contrat'), nullable=False)
 
     contract = relationship("Contract", back_populates="pv_definitifs")
+
+
+class etat(Base):
+    __tablename__ = 'etat'
+    id_etat=Column(Integer,primary_key=True)
+    nom=Column(String,nullable=False)
+    type=Column(String,nullable=False)
+    

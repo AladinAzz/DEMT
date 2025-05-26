@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DEMT - Agents</title>
+  <title>Admin Sidebar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="/static/styles.css" />
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <aside id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">Administration</span>
+      <span class="sidebar-title">Fonctionnement</span>
       <button id="toggleSidebar" aria-label="Toggle sidebar">
         <i class="fas fa-bars"></i>
       </button>
@@ -33,15 +32,17 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="/users" class="sidebar-link active" data-tooltip="Agents">
+      <a href="/users" class="sidebar-link " data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+      <a href="/fournisseur" class="sidebar-link active" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Fournisseur</span>
       </a>
+
+
+      
      
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
@@ -52,98 +53,50 @@
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-
-
     </nav>
   </aside>
   <main>
 
     
-    <div class="header">
-        <div>
-          <h1>Tableau des Agents</h1>
-          <p>Aperçu sur les Agents</p>
-        </div>
-        <div class="action">
-       <div class="profile">
-  <img src="/static/user.png" alt="User">
-</div>
-
-        <div class="menu">
-            <h3>
-                {{agent.nom}} {{agent.prenom}}
-                <div>
-                    {{agent.role.value}}
-                </div>
-            </h3>
-            <ul>
-                <li>
-                   
-                    <a href="/user">My Profile</a>
-                </li>
-                <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
-                    <script>
-                    function destroyAccessTokenCookie() {
-                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-                    </script>
-            </ul>
-        </div>
+    <div class="user-profile">
+  <div class="user-info">
+    <i class="fas fa-bell icon-bell" aria-hidden="true"></i>
+    <div class="user-details">
+      <span class="user-name">Administrateur</span>
+      <div class="user-avatar">A</div>
     </div>
-
-      </div>
-
-<script>
-  const profile = document.querySelector('.profile');
-const toggleMenu = document.querySelector('.menu');
-
-profile.addEventListener('click', (e) => {
-    e.stopPropagation(); // prevent the click from bubbling to document
-    toggleMenu.classList.toggle('active');
-});
-
-document.addEventListener('click', () => {
-    toggleMenu.classList.remove('active');
-});
-
-</script>
-
+  </div>
+</div>
 <div class="header">
-  <h1>Agents</h1>
-  <button id="addUserBtn" class="btn-primary">+ Ajouter un Agent</button>
+  <h1>Fournisseur</h1>
+  <button id="addUserBtn" class="btn-primary">+ Ajouter un Fournisseur</button>
 </div>
 
 <div id="overlay" class="overlay hidden">
   <div id="formPanel" class="form-panel">
     <button id="closeUserPanel" class="close-btn">&times;</button>
-    <h2>Ajouter un agent</h2>
-    <form action="/agent" method="POST">
+    <h2>Ajouter un Fournisseur</h2>
+    <form >
       <label>Nom</label>
-      <input type="text" placeholder="Entrez le nom du nom" name="nom" />
+      <input type="text" placeholder="Entrez le nom " />
       
-      <label>Prenom</label>
-      <input type="text" placeholder="Entrez le prenom" name="prenom"/>
-      <label>Nom d'utilisation</label>
-      <input type="text" placeholder="Entrez le nom d'utilisation" name="username"/>
-      <label>Mot De Passe</label>
-      <input type="password" placeholder="Entrez le mot de passe" name="password"/>
+      <label>Address</label>
+      <input type="text" placeholder="Entrez l'address" />
+      <label>Contact</label>
+      <input type="text" placeholder="Entrez Contact" />
+      <label>Email</label>
+      <input type="email" placeholder="Entrez l'email" />
       
       
       <label>Role</label>
-      <select required name="role">
-        <option value="directeur"> Directeur</option>
-        <option value="chef_direction">Chef Direction</option>
-        <option value="chef_bureau">Chef Bureau</option>
-        <option value="chef_bureau">Agent</option>
+      <select required>
+        <option value="directeur"> White</option>
+        <option value="chef direction">Black</option>
+        
         
       </select>
       
-      <label>Direction</label>
-      <input type="text" placeholder="Entrez la Direction" name="direction_id_direction"/>
       
-      <label>Bureau</label>
-      <input type="text" placeholder="Entrez le Bureau" name="bureau_id_bureau"/>
       
       <button type="submit" class="btn-submit">Ajouter</button>
     </form>
@@ -152,63 +105,26 @@ document.addEventListener('click', () => {
 <div id="detailsOverlay" class="overlay hidden">
   <div id="detailsPanel" class="form-panel">
     <button id="closeDetailsPanel" class="close-btn">&times;</button>
-    <h2>Modifier du Agent</h2>
-    <script>
-      // Attach event listeners after DOMContentLoaded to ensure elements exist
-      document.addEventListener('DOMContentLoaded', function() {
-      const detailButtons = document.querySelectorAll('.btn-detail');
-      const detailsOverlay = document.getElementById('detailsOverlay');
-      const detailsPanel = document.getElementById('detailsPanel');
-      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
-
-      detailButtons.forEach(button => {
-        button.addEventListener('click', function() {
-        // Find the row of the clicked button
-        const row = button.closest('tr');
-        const cells = row.querySelectorAll('td');
-
-        // Fill the form fields with the row data
-        document.getElementById('detailName').value = cells[0].innerText; // ID
-        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
-        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
-
-        // Username
-        const usernameInput = detailsPanel.querySelectorAll('input')[3];
-        if (usernameInput) usernameInput.value = cells[3].innerText;
-
-        // Role
-        const roleSelect = detailsPanel.querySelector('select');
-        if (roleSelect) {
-          for (let i = 0; i < roleSelect.options.length; i++) {
-          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
-            roleSelect.selectedIndex = i;
-            break;
-          }
-          }
-        }
-        });
-      });
-      });
-    </script>
+    <h2>Modify du fournisseur</h2>
     <form>
-      <label>ID</label>
+      <label>Nom</label>
       <input type="text" id="detailName" readonly />
 
-      <label>Nom</label>
-      <input type="text" id="detailPeriod" readonly />
+      <label>Address</label>
+      <input type="text" id="detailaddress" readonly />
 
-      <label>Prenom</label>
-      <input type="text" id="detailBureau" readonly />
+      <label>Contact</label>
+      <input type="text" id="detailcontact" readonly />
 
-      <label>Nom d'utilisation</label>
-      <input type="text" id="detailBureau" readonly />
+      <label>Email</label>
+      <input type="email" id="detailemail" readonly />
       <label>Role</label>
       <select required>
-        <option value="directeur">Chef Direction</option>
-        <option value="chef_direction"> Chef Bureau</option>
-        <option value="chef_bureau">Agent</option>
+        <option value="white">white</option>
+        <option value="black"> Black</option>
+      
         </select>
-       <button type="submit" class="btn-submit">Modifier</button>
+       <button type="submit" class="btn-submit">Modify</button>
       <!-- Add more fields if needed -->
     </form>
   </div>
@@ -229,10 +145,10 @@ document.addEventListener('click', () => {
 
       <ul class="dropdown-list">
         <li><button type="button" class="category-option" data-category="ID">ID</button></li>
-        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom De Projet</button></li>
-        <li><button type="button" class="category-option" data-category="Periode">Periode</button></li>
-        <li><button type="button" class="category-option" data-category="Bureau">Bureau</button></li>
-        <li><button type="button" class="category-option" data-category="Etat">Etat</button></li>
+        <li><button type="button" class="category-option" data-category="Nom De Projet">Nom </button></li>
+        <li><button type="button" class="category-option" data-category="Periode">Address</button></li>
+        <li><button type="button" class="category-option" data-category="Bureau">Contact</button></li>
+        <li><button type="button" class="category-option" data-category="Etat">Email</button></li>
       </ul>
     </div>
 
@@ -245,12 +161,23 @@ document.addEventListener('click', () => {
         class="search-input"
         aria-label="Search"
       />
+      <button type="submit" class="search-button" aria-label="Search">
+        <svg class="search-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </form>
 <section class="section-space">
   <div class="card">
-    <h2 class="section-title">Direction:DEMT</h2>
+    <h2 class="section-title">white Fournisseur</h2>
 
 <div class="table-wrapper">
           <table class="data-table">
@@ -258,30 +185,78 @@ document.addEventListener('click', () => {
               <tr>
                 <th class="w-1">ID</th>
                 <th class="w-3">Nom </th>
-                <th class="w-2">Prenom</th>
-                <th class="w-2">Nom d'utlisateur</th>
-                <th class="w-1">Role</th>
+                <th class="w-2">Address</th>
+                <th class="w-2">Contact</th>
+                <th class="w-2">Email</th>
+               
                 <th class="w-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {%for agent in agents%}
               <tr class="row-hover">
-                <td>{{agent.id_agent}}</td>
+                <td>1</td>
                 <td>
-                  <div >{{agent.nom}}</div>
+                  <div >slama</div>
                   
                 </td>
-                <td >{{agent.prenom}}</td>
-                <td> {{agent.username}}</td>
-                <td><span class="badge badge-{%if agent.role.value == "directeur" %}red{%else%} {%if agent.role.value == "chef_bureau" %}green  {%else%} {%if agent.role.value == "agent" %}blue{%endif%} {%endif%} {%endif%}"> {{agent.role.value}}</span></td>
-               <td><a  class="btn btn-primary btn-detail">Modifier</a></td>
-               </tr>
-               {%endfor%} 
+                <td >ibrahim</td>
+                <td> slama</td>
+                <td> slama</td>
+              
+               <td><a  class="btn btn-primary btn-detail">Modify</a></td>
+              </tr>
+
+              
+     
+              <!-- Repeat rows as needed -->
             </tbody>
           </table>
         </div>
-    
+      
+
+
+    </div>
+
+    <div class="card">
+    <h2 class="section-title">Black Fourinsseur</h2>
+
+<div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                 <th class="w-1">ID</th>
+                <th class="w-3">Nom </th>
+                <th class="w-2">Address</th>
+                <th class="w-2">Contact</th>
+                <th class="w-2">Email</th>
+               
+                <th class="w-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-hover">
+                <td>1</td>
+                <td>
+                  <div >slama</div>
+                  
+                </td>
+                <td >ibrahim</td>
+                <td> slama</td>
+                <td> slama</td>
+                
+               <td><a  class="btn btn-primary btn-detail">Modify</a></td>
+              </tr>
+
+              
+     
+              <!-- Repeat rows as needed -->
+            </tbody>
+          </table>
+        </div>
+      
+
+
+    </div>
   </div>
 </section>
 
@@ -304,10 +279,11 @@ const tableRows = document.querySelectorAll('tbody tr');
 // Map of category name to column index
 const categoryIndexMap = {
   "ID": 0,
-  "Num": 1,
-  "Prenom": 2,
-  "Nom d'utilisation": 3,
-  "Role": 4
+  "Nom": 1,
+  "Address": 2,
+  "Contact": 3,
+  "Email": 4,
+  "Role": 5
 };
 
 let currentCategory = null;

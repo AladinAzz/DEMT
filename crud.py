@@ -272,3 +272,27 @@ class HistoriqueEtatCRUD:
     def update(db: Session, id: int, data: dict): return update(db, HistoriqueEtatCRUD.model, id, data)
     @staticmethod
     def delete(db: Session, id: int): return delete(db, HistoriqueEtatCRUD.model, id)
+
+class EtatCRUD:
+    model = models.etat
+
+    @staticmethod
+    def get_all(db: Session):
+        return get_all(db, EtatCRUD.model)
+
+    @staticmethod
+    def get(db: Session, id: int):
+        return get_by_id(db, EtatCRUD.model, id)
+
+    @staticmethod
+    def create(db: Session, data: dict):
+        return create(db, EtatCRUD.model, data)
+
+    @staticmethod
+    def update(db: Session, id: int, data: dict):
+        return update(db, EtatCRUD.model, id, data)
+
+    @staticmethod
+    def delete(db: Session, id: int):
+        return delete(db, EtatCRUD.model, id)
+
