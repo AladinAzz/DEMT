@@ -205,6 +205,7 @@ class ContractRead(BaseModel):
 class FournisseurBase(BaseModel):
     nom: str
     adresse: Optional[str]
+    email: Optional[str]
     contact: Optional[str]
 
 class FournisseurCreate(FournisseurBase): pass

@@ -112,6 +112,7 @@ class Fournisseur(Base):
     __tablename__ = 'fournisseur'
     id_fournisseur = Column(Integer, primary_key=True)
     nom = Column(String(100), nullable=False)
+    email= Column(String(100), nullable=True)
     adresse = Column(Text, nullable=True)
     contact = Column(Text, nullable=True)
 

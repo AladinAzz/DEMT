@@ -7,7 +7,7 @@ DATABASE_URL = "mysql+pymysql://root:admin@localhost:3306/demt1"
 # Create the engine
 engine = create_engine(
     DATABASE_URL,
-    echo=True,         # Log SQL queries — set to False in production
+    echo=False,         # Log SQL queries — set to False in production
     pool_pre_ping=True # Helps with stale connections
 )
 

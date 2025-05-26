@@ -371,7 +371,27 @@ def settings_page (
     })
     
     
+@app.get("/fournisseur", response_class=HTMLResponse)
+async def fournisseur_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    fournisseurs = []
+    f = crud.FournisseurCRUD.get_all(db)
     
+    if isinstance(f, list):
+        fournisseurs.extend(f)
+    elif f:
+        fournisseurs.append(f)
+    
+    
+    
+    return templates.TemplateResponse("fournisseur.html", {
+        "request": request,
+        "fournisseurs": fournisseurs,
+        "agent": current_agent
+    })
     
     
     
