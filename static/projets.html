@@ -113,8 +113,8 @@ document.addEventListener('click', () => {
       <h1>Projets</h1>
       <div class="button-group">
         <button id="addUserBtn" class="btn-primary">Ajouter un projet</button>
-        <button id="modifyBtn" class="btn-primary">Modifier Projet</button>
-        <button id="deleteBtn" class="btn-primary">Supprimer Projet</button>
+        <button id="modifyBtn" class="btn-primary" hidden>Modifier Projet</button>
+        <button id="deleteBtn" class="btn-primary" hidden>Supprimer Projet</button>
       </div>
     </div>
 
@@ -123,23 +123,136 @@ document.addEventListener('click', () => {
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
         <h2>Ajouter un projet</h2>
-        <form>
-          <label>Nom Du Projet</label>
-          <input type="text" placeholder="Entrez le nom du projet" />
-          <label>Période</label>
-          <input type="text" placeholder="Entrez la période" />
-          <label>Type</label>
-          <select required>
-            <option value="contrat">Contrat</option>
-            <option value="marche">Marché</option>
-            <option value="achat">Achat sur facture</option>
-          </select>
-          <label>Bureau</label>
-          <input type="text" placeholder="Entrez le Bureau" />
-          <label>Chapitre</label>
-          <input type="text" placeholder="Entrez le Chapitre" />
-          <button type="submit" class="btn-submit">Ajouter</button>
-        </form>
+        <form id="modifyForm" action="/projets" method="POST">
+        <div class="input-row">
+          <div class="input-group">
+            <label>ID bureau</label>
+            <input type="text" name="id_bureau" placeholder="Entrez l'ID bureau" value="{{agent.bureau_id_bureau}}" readonly/>
+          </div>
+          
+          <div class="input-group">
+            <label>ID Chapitre</label>
+            <input type="text" name="chapitre_id_chapitre" placeholder="Entrez l'ID chapitre" />
+          </div>
+        </div>
+        <label>Nom De Projet</label>
+        <input type="text" name="nom_projet" placeholder="Entrez la description"  />
+        <label >description</label>
+        <input type="text" name="description" placeholder="Entrez la description"  />
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Date</label>
+            <input type="date" name="date_debut" />
+          </div>
+          <div class="input-group">
+            <label>type</label>
+            <select name="type" id="typeSelect">
+              <option value="consultation" >Consultation</option>
+              <option value="achat sur facture" >achat sur facture</option>
+              <option value="AOON" >AOON</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group" >
+            <label>Etat</label>
+            <select name="etat" id="etatSelect" >
+              <!-- Les options seront injectées par JS -->
+            </select>
+          </div>
+          <div class="input-group">
+            <label>date etat</label>
+            <input type="date" name="date_etat" />
+          </div>
+        </div>
+        
+        <label>description etat</label>
+        <input type="text" name="description_etat" placeholder="Entrez la description d'etat"/>
+        <label>Montant</label>
+        <input type="number" name="montant" placeholder="Entrez le montant" />
+        <button type="submit" class="btn-submit">Modifier</button>
+      </form>
+      <script>
+        document.getElementById('modifyForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {};
+          Array.from(form.elements).forEach(el => {
+        if (el.name && !el.disabled) {
+          data[el.name] = el.value;
+        }
+          });
+          const response = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+          });
+          if (response.ok) {
+        // Optionally close modal or reload page
+        location.reload();
+          } else {
+        alert('Erreur lors de l\'envoi du formulaire');
+          }
+        });
+      </script>
+      <script>
+        // Mapping des états par type
+        const etatsByType = {
+          "AOON": [
+            {% for setat in setats %}
+              {% if setat.type == "AOON" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
+          ],
+          "consultation": [
+            {% for setat in setats %}
+              {% if setat.type == "consultation" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
+          ],
+          "achat sur facture": [
+            {% for setat in setats %}
+              {% if setat.type == "projet achat sur facture" %}
+                "{{ setat.nom }}",
+              {% endif %}
+            {% endfor %}
+          ]
+        };
+
+        // Récupérer les éléments
+        const typeSelect = document.getElementById('typeSelect');
+        const etatSelect = document.getElementById('etatSelect');
+        // Valeur actuelle de l'état (pour la sélection initiale)
+        
+
+        // Fonction pour remplir les options d'état selon le type
+        function updateEtatOptions() {
+          const type = typeSelect.value;
+          const etats = etatsByType[type] || [];
+          etatSelect.innerHTML = '';
+          etats.forEach(etat => {
+        const option = document.createElement('option');
+        option.value = etat;
+        option.textContent = etat;
+        
+        etatSelect.appendChild(option);
+          });
+        }
+
+        // Initialiser au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+          updateEtatOptions();
+        });
+
+        // Mettre à jour quand le type change
+        typeSelect.addEventListener('change', updateEtatOptions);
+      </script>
       </div>
     </div>
 
@@ -276,7 +389,7 @@ document.addEventListener('click', () => {
                               Non spécifié
                             {% endif %}
                           </td>
-                          <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                          <td>{{ projet.type }}</td>
                           <td>
                             {% set etat_projet = (etats | selectattr('id_projet', 'equalto', projet.id_projet) | map(attribute='etat.value') | list | first) %}
                             {{ etat_projet if etat_projet is not none else 'Non spécifié' }}

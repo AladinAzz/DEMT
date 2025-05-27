@@ -86,7 +86,21 @@ async def project_page(request: Request, db: Session = Depends(get_db), current_
             etats.append(etat)
         else:
             etats.append(None)
-    return templates.TemplateResponse("projets.html", {"request": request, "projects": projects,"etats": etats, "agent": current_agent})
+            
+    setats = []
+    setat=crud.EtatCRUD.get_all(db)
+    if isinstance(setat,list):
+        setats.extend(setat)
+    else:
+        setats.append(setat)
+    
+    return templates.TemplateResponse("projets.html", {
+        "request": request,
+        "projects": projects,
+        "etats": etats,
+        "setats": setats,
+        "agent": current_agent
+        })
 
 @app.get("/project/{id}",response_class=HTMLResponse)
 async def project_page(id:int,request: Request, db: Session = Depends(get_db), current_agent: Agent = Depends(security.get_current_agent)):
@@ -129,7 +143,20 @@ async def project_page(id:int,request: Request, db: Session = Depends(get_db), c
 async def contract_page(request: Request, db: Session = Depends(get_db), current_agent: Agent = Depends(security.get_current_agent)):
     contracts = crud.ContractCRUD.get_all(db)
     etats_dict = {}
-
+    chapitres=[]
+    ch = crud.ChapitreCRUD.get_all(db)
+    if isinstance(ch, list):
+        chapitres.extend(ch)
+    elif ch:
+        chapitres.append(ch)
+    
+    projets = []
+    p= crud.ProjetCRUD.get_all(db)
+    if isinstance(p, list):
+        projets.extend(p)
+    elif p:
+        projets.append(p)
+    
     for contrat in contracts:
         etat = crud.HistoriqueEtatCRUD.get(db, contrat.id_projet)
         if etat:
@@ -143,6 +170,8 @@ async def contract_page(request: Request, db: Session = Depends(get_db), current
         "request": request,
         "contracts": contracts,
         "etats_dict": etats_dict,
+        "chapitres": chapitres,
+        "projets": projets,
         "agent": current_agent
     })
 
@@ -156,21 +185,22 @@ async def achat_page(
 ):
     achats = crud.AchatSurFactureCRUD.get_all(db)
     # Créer un dictionnaire pour stocker les états par projet
-    etats_dict = {}
+    
     
     for achat in achats:
-        etat = crud.HistoriqueEtatCRUD.get(db, achat.projet_id_projet)
-        if etat:
-            if isinstance(etat, list):
-                latest_etat = max(etat, key=lambda e: e.date_debut)
-                etats_dict[achat.projet_id_projet] = latest_etat
-            else:
-                etats_dict[achat.projet_id_projet] = etat
-    
+        etat = crud.HistoriqueEtatCRUD.get_by_id_achat(db, achat.id_facture)
+        if isinstance(etat, list) and len(etat) > 0:
+            # Si etat est une liste, on prend le dernier état
+            etat = max(etat, key=lambda e: e.date_debut)
+            achat.etat = etat.etat  # CORRECT : etat est maintenant un seul objet
+        elif etat:
+            # Si etat est un seul objet, on l'utilise directement
+            achat.etat = etat.etat        
+        
     return templates.TemplateResponse("achat.html", {
         "request": request,
         "achats": achats,
-        "etats_dict": etats_dict,
+        
         "agent": current_agent
     })
 
@@ -236,25 +266,43 @@ def table_page(id:int,
             projets = crud.ProjetCRUD.get_by_id_chapitre(db, chapitre.id_chapitre)
             chapitre.nb_projets = 0
             chapitre.nb_contrats = 0
+            chapitre.nb_achats = 0
             if projets and len(projets) > 0:
                 chapitre.nb_projets = len(projets)
                 contrats=[]
+                achats = []
                 for projet in projets:
-                    contrats.extend(crud.ContractCRUD.get_by_id_projet(db, projet.id_projet))
-                    if contrats and isinstance(contrats, list):
-                        chapitre.nb_contrats = chapitre.nb_contrats+ len(contrats)
+                    cont = crud.ContractCRUD.get_by_id_projet(db, projet.id_projet)
+                    achat = crud.AchatSurFactureCRUD.get_by_id_projet(db, projet.id_projet)
+                    if achat:
+                        if isinstance(achat, list):
+                            achats.extend(achat)
+                            chapitre.nb_achats = chapitre.nb_achats + len(achat)
+                        else:
+                            achats.append(achat)
+                            chapitre.nb_achats = chapitre.nb_achats + 1
                     
-                    etats=crud.HistoriqueEtatCRUD.get_all(db)
-                    if isinstance(etats,list):
-                        etats = [etat for etat in etats if etat.id_projet is not None]
-                        etats.sort(key=lambda x: x.id_projet, reverse=True)
+                    if contrats and isinstance(cont, list):
+                        contrats.extend(cont)
+                        chapitre.nb_contrats = chapitre.nb_contrats + len(cont)
+                    elif cont:
+                        contrats.append(cont)
+                        chapitre.nb_contrats = chapitre.nb_contrats + 1
+                # Flatten achats in case any element is a list
+                
+                etats = crud.HistoriqueEtatCRUD.get_all(db)
+                if isinstance(etats, list):
+                    etats = [etat for etat in etats if etat.id_projet is not None]
+                    etats.sort(key=lambda x: x.id_projet, reverse=True)
+                    for projet in projets:
                         for etat in etats:
-                            if etat.id_projet==projet.id_projet:
-                                projet.etat=etat.etat
+                            if etat.id_projet == projet.id_projet:
+                                projet.etat = etat.etat
                                 break
-                    else:
-                        projet.etat=etats.etat
-
+                else:
+                    for projet in projets:
+                        projet.etat = etats.etat if etats else None
+                
             else:
                 chapitre.nb_projets = 0
                 chapitre.etat = None
@@ -394,7 +442,20 @@ async def fournisseur_page(
     })
     
     
+@app.get("/user", response_class=HTMLResponse)
+async def profile_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    agent = crud.AgentCRUD.get(db, current_agent.id_agent)
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
     
+    return templates.TemplateResponse("user.html", {
+        "request": request,
+        "agent": agent
+    })
     
     
     

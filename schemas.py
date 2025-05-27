@@ -39,10 +39,17 @@ class AgentBase(BaseModel):
     username: str
 
 class AgentCreate(AgentBase): pass
-class AgentRead(AgentBase):
-    id_agent: int
+class AgentRead(BaseModel):
+    nom: str
+    prenom: str
+    role: RoleEnum
+    direction_id_direction: int
+    password: Optional[str]= None
+    bureau_id_bureau: int
+    username: str
     class Config:
         orm_mode = True
+
 
 
 class BureauBase(BaseModel):
@@ -74,7 +81,8 @@ class ChapitreBase(BaseModel):
     montant_initiale: float
     mondatement: float=0
     nb_projets: Optional[int]=None
-    nb_cotrats: Optional[int]=None
+    nb_contrats: Optional[int]=None
+    nb_achats: Optional[int]=None
 
 class ChapitreCreate(BaseModel):
     id_chapitre: int
@@ -97,7 +105,7 @@ class ProjetBase(BaseModel):
     id_bureau: int
     montant: float
     chapitre_id_chapitre: int
-    type: ProjetTypeEnum
+    type: str
     etat:Optional[str]
 
 class ProjetCreate(ProjetBase): 
@@ -107,7 +115,7 @@ class ProjetCreate(ProjetBase):
     id_bureau: int
     montant: float
     chapitre_id_chapitre: int
-    type: ProjetTypeEnum
+    type: str
     etat:Optional[str]=None
     description_etat: Optional[str]=None
 class ProjetRead(ProjetBase):
@@ -117,13 +125,13 @@ class ProjetRead(ProjetBase):
     id_bureau: int
     montant: float
     chapitre_id_chapitre: int
-    type: ProjetTypeEnum
+    type: str
     etat:Optional[str]=None
     description_etat: Optional[str]=None
     
     
     chapitre_id_chapitre: int
-    type: ProjetTypeEnum
+    
     
     
     

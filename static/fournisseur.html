@@ -69,7 +69,14 @@
 </div>
 <div class="header">
   <h1>Fournisseur</h1>
-  <button id="addUserBtn" class="btn-primary">Ajouter un Fournisseur</button>
+  
+   <div class="button-group">
+    <button id="addUserBtn" class="btn-primary">Ajouter un Fournisseur</button>
+       
+         
+        
+        <button id="deleteBtn" class="btn-primary">Supprimer un Fournisseur</button>
+      </div>
   
 </div>
 
@@ -122,6 +129,41 @@
     </script>
   </div>
 </div>
+
+
+<!-- Modal Supprimer Contrat -->
+    <div id="deleteOverlay" class="overlay hidden">
+      <div id="deletePanel" class="form-panel">
+        <button id="closeDeletePanel" class="close-btn">&times;</button>
+        <h2>Supprimer un Fournisseur</h2>
+        <form id="deleteFournisseurForm">
+          <label>ID Fournisseur</label>
+          <input type="text" id="deleteFournisseurId" placeholder="Entrez l'ID Fournisseur à supprimer" required />
+          <p>Êtes-vous sûr de vouloir supprimer ce Fournisseur ? Cette action est irréversible.</p>
+          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+        </form>
+        <script>
+        document.getElementById('deleteFournisseurForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const id = document.getElementById('deleteFournisseurId').value;
+          try {
+            const response = await fetch(`/fournisseurs/${id}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+              location.reload();
+            } else {
+              alert("Erreur lors de la suppression du fournisseur");
+            }
+          } catch (err) {
+            alert("Erreur réseau");
+          }
+        });
+        </script>
+        
+      </div>
+    </div>
 <div id="detailsOverlay" class="overlay hidden">
   <div id="detailsPanel" class="form-panel">
     <button id="closeDetailsPanel" class="close-btn">&times;</button>
@@ -394,6 +436,75 @@ detailsOverlay.addEventListener('click', (e) => {
   }
 });
 
+</script>
+
+<script>
+// Ajouter ce script pour gérer la suppression
+document.addEventListener('DOMContentLoaded', function() {
+  const deleteBtn = document.getElementById('deleteBtn');
+  const deleteOverlay = document.getElementById('deleteOverlay');
+  const deletePanel = document.getElementById('deletePanel');
+  const closeDeletePanel = document.getElementById('closeDeletePanel');
+  const cancelDelete = document.getElementById('cancelDelete');
+  const deleteForm = document.getElementById('deleteForm');
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+      deleteOverlay.classList.remove('hidden');
+      void deletePanel.offsetWidth;
+      deletePanel.classList.add('show');
+    });
+  }
+
+  if (closeDeletePanel) {
+    closeDeletePanel.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (cancelDelete) {
+    cancelDelete.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (deleteForm) {
+    deleteForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const projectId = document.getElementById('deleteProjectId').value;
+      
+      try {
+        const response = await fetch(`/project/${projectId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          window.location.href = '/project'; // Rediriger après suppression
+        } else {
+          alert('Erreur lors de la suppression du projet');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Une erreur est survenue');
+      }
+    });
+  }
+
+  if (deleteOverlay) {
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteOverlay) {
+        deletePanel.classList.remove('show');
+        setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+});
 </script>
 
 </body>

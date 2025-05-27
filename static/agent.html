@@ -118,35 +118,67 @@ document.addEventListener('click', () => {
   <div id="formPanel" class="form-panel">
     <button id="closeUserPanel" class="close-btn">&times;</button>
     <h2>Ajouter un agent</h2>
-    <form action="/agent" method="POST">
+    <form id="addAgentForm">
       <label>Nom</label>
-      <input type="text" placeholder="Entrez le nom du nom" name="nom" />
-      
+      <input type="text" placeholder="Entrez le nom du nom" name="nom" required />
+
       <label>Prenom</label>
-      <input type="text" placeholder="Entrez le prenom" name="prenom"/>
+      <input type="text" placeholder="Entrez le prenom" name="prenom" required />
       <label>Nom d'utilisation</label>
-      <input type="text" placeholder="Entrez le nom d'utilisation" name="username"/>
+      <input type="text" placeholder="Entrez le nom d'utilisation" name="username" required />
       <label>Mot De Passe</label>
-      <input type="password" placeholder="Entrez le mot de passe" name="password"/>
-      
-      
+      <input type="password" placeholder="Entrez le mot de passe" name="password" required />
+
       <label>Role</label>
       <select required name="role">
-        <option value="directeur"> Directeur</option>
-        <option value="chef_direction">Chef Direction</option>
-        <option value="chef_bureau">Chef Bureau</option>
-        <option value="chef_bureau">Agent</option>
-        
+        <option value="directeur">directeur</option>
+        <option value="chef direction">chef direction</option>
+        <option value="chef bureau">chef bureau</option>
+        <option value="agent">agent</option>
       </select>
-      
+
       <label>Direction</label>
-      <input type="text" placeholder="Entrez la Direction" name="direction_id_direction"/>
-      
+      <input type="text" placeholder="Entrez la Direction" name="direction_id_direction" required />
+
       <label>Bureau</label>
-      <input type="text" placeholder="Entrez le Bureau" name="bureau_id_bureau"/>
-      
+      <input type="text" placeholder="Entrez le Bureau" name="bureau_id_bureau" required />
+
       <button type="submit" class="btn-submit">Ajouter</button>
     </form>
+    <script>
+      document.getElementById('addAgentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        nom: form.nom.value,
+        prenom: form.prenom.value,
+        username: form.username.value,
+        password: form.password.value,
+        role: form.role.value,
+        direction_id_direction: form.direction_id_direction.value,
+        bureau_id_bureau: form.bureau_id_bureau.value
+      };
+      try {
+        const response = await fetch('/agents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+        });
+        if (response.ok) {
+        // Optionally close the modal and refresh the table
+        alert('Agent ajouté avec succès');
+        window.location.reload();
+        } else {
+        const error = await response.text();
+        alert('Erreur: ' + error);
+        }
+      } catch (err) {
+        alert('Erreur réseau');
+      }
+      });
+    </script>
   </div>
 </div>
 <div id="detailsOverlay" class="overlay hidden">
@@ -156,61 +188,104 @@ document.addEventListener('click', () => {
     <script>
       // Attach event listeners after DOMContentLoaded to ensure elements exist
       document.addEventListener('DOMContentLoaded', function() {
-      const detailButtons = document.querySelectorAll('.btn-detail');
-      const detailsOverlay = document.getElementById('detailsOverlay');
-      const detailsPanel = document.getElementById('detailsPanel');
-      const closeDetailsPanel = document.getElementById('closeDetailsPanel');
+        const detailButtons = document.querySelectorAll('.btn-detail');
+        const detailsOverlay = document.getElementById('detailsOverlay');
+        const detailsPanel = document.getElementById('detailsPanel');
+        const closeDetailsPanel = document.getElementById('closeDetailsPanel');
 
-      detailButtons.forEach(button => {
-        button.addEventListener('click', function() {
-        // Find the row of the clicked button
-        const row = button.closest('tr');
-        const cells = row.querySelectorAll('td');
+        detailButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            // Find the row of the clicked button
+            const row = button.closest('tr');
+            const cells = row.querySelectorAll('td');
 
-        // Fill the form fields with the row data
-        document.getElementById('detailName').value = cells[0].innerText; // ID
-        document.getElementById('detailPeriod').value = cells[1].innerText; // Nom
-        document.getElementById('detailBureau').value = cells[2].innerText; // Prenom
+            // Fill the form fields with the row data
+            document.getElementById('detailName').value = cells[0].innerText; // ID Agent
+            // Direction and Bureau fields (by name)
+            detailsPanel.querySelector('input[name="direction_id_direction"]').value = cells[1].innerText; // ID Direction
+            detailsPanel.querySelector('input[name="bureau_id_bureau"]').value = cells[2].innerText; // ID Bureau
+            document.getElementById('detailPeriod').value = cells[3].innerText; // Nom
+            document.getElementById('detailBureau').value = cells[4].innerText; // Prenom
+            document.getElementById('detailUsername').value = cells[5].innerText; // Nom d'utilisation
 
-        // Username
-        const usernameInput = detailsPanel.querySelectorAll('input')[3];
-        if (usernameInput) usernameInput.value = cells[3].innerText;
-
-        // Role
-        const roleSelect = detailsPanel.querySelector('select');
-        if (roleSelect) {
-          for (let i = 0; i < roleSelect.options.length; i++) {
-          if (roleSelect.options[i].text.trim().toLowerCase() === cells[4].innerText.trim().toLowerCase()) {
-            roleSelect.selectedIndex = i;
-            break;
-          }
-          }
-        }
+            // Role
+            const roleSelect = document.getElementById('detailRole');
+            if (roleSelect) {
+              for (let i = 0; i < roleSelect.options.length; i++) {
+                if (roleSelect.options[i].text.trim().toLowerCase() === cells[6].innerText.trim().toLowerCase()) {
+                  roleSelect.selectedIndex = i;
+                  break;
+                }
+              }
+            }
+          });
         });
       });
-      });
     </script>
-    <form>
+    <form id="editAgentForm">
       <label>ID</label>
-      <input type="text" id="detailName" readonly />
+      <input type="text" id="detailName" readonly name="id_agent"/>
+      <label>Direction</label>
+      <input type="text" placeholder="Entrez la Direction" name="direction_id_direction" required />
+
+      <label>Bureau</label>
+      <input type="text" placeholder="Entrez le Bureau" name="bureau_id_bureau" required />
 
       <label>Nom</label>
-      <input type="text" id="detailPeriod" readonly />
+      <input type="text" id="detailPeriod" name="nom"/>
 
       <label>Prenom</label>
-      <input type="text" id="detailBureau" readonly />
+      <input type="text" id="detailBureau" name="prenom"/>
 
       <label>Nom d'utilisation</label>
-      <input type="text" id="detailBureau" readonly />
+      <input type="text" id="detailUsername" name="username"/>
+
       <label>Role</label>
-      <select required>
-        <option value="directeur">Chef Direction</option>
-        <option value="chef_direction"> Chef Bureau</option>
-        <option value="chef_bureau">Agent</option>
-        </select>
-       <button type="submit" class="btn-submit">Modifier</button>
+      <select id="detailRole" required name="role">
+      <option value="directeur">directeur</option>
+      <option value="chef direction">chef direction</option>
+      <option value="chef bureau">chef bureau</option>
+      <option value="agent">agent</option>
+      </select>
+      <button type="submit" class="btn-submit">Modifier</button>
       <!-- Add more fields if needed -->
     </form>
+    <script>
+      document.getElementById('editAgentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const id = form.id_agent.value;
+      const data = {
+        id_agent: id,
+        direction_id_direction: form.direction_id_direction.value,
+        bureau_id_bureau: form.bureau_id_bureau.value,
+        nom: form.nom.value,
+        prenom: form.prenom.value,
+        username: form.username.value,
+        role: form.role.value
+      };
+      try {
+        const response = await fetch(`/agents/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+        });
+        if (response.ok) {
+        alert('Agent modifié avec succès');
+        window.location.reload();
+        } else {
+        const error = await response.text();
+        alert('Erreur: ' + error);
+        }
+      } catch (err) {
+        alert('Erreur réseau');
+      }
+      });
+    </script>
+    
+    
   </div>
 </div>
 <form class="search-form">
@@ -256,7 +331,9 @@ document.addEventListener('click', () => {
           <table class="data-table">
             <thead>
               <tr>
-                <th class="w-1">ID</th>
+                <th class="w-1">ID Agent</th>
+                <th>ID Direction</th>
+                <th>ID Bureau</th>
                 <th class="w-3">Nom </th>
                 <th class="w-2">Prenom</th>
                 <th class="w-2">Nom d'utlisateur</th>
@@ -269,12 +346,27 @@ document.addEventListener('click', () => {
               <tr class="row-hover">
                 <td>{{agent.id_agent}}</td>
                 <td>
+                  {{agent.direction_id_direction}}
+                </td>
+                <td>
+                  {{agent.bureau_id_bureau}}
+                </td>
+                <td>
                   <div >{{agent.nom}}</div>
                   
                 </td>
                 <td >{{agent.prenom}}</td>
                 <td> {{agent.username}}</td>
-                <td><span class="badge badge-{%if agent.role.value == "directeur" %}red{%else%} {%if agent.role.value == "chef_bureau" %}green  {%else%} {%if agent.role.value == "agent" %}blue{%endif%} {%endif%} {%endif%}"> {{agent.role.value}}</span></td>
+                <td>
+                  <span class="badge 
+                    {% if agent.role.value == 'directeur' %}badge-red
+                    {% elif agent.role.value == 'chef bureau' %}badge-green
+                    {% elif agent.role.value == 'agent' %}badge-green
+                    
+                    {% endif %}">
+                    {{ agent.role.value }}
+                  </span>
+                </td>
                <td><a  class="btn btn-primary btn-detail">Modifier</a></td>
                </tr>
                {%endfor%} 

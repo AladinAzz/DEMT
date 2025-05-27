@@ -120,22 +120,34 @@
       <!-- Stats cards -->
       <div class="cards">
         <div class="card1">
-          <h3>Projets Actifs</h3>
+          <h3>Projets En Cours</h3>
           <p>{{ chapitre.nb_projets or 0 }}</p>
           <small>Projets en cours</small>
         </div>
         <div class="card1">
-          <h3>Contrats</h3>
+          <h3>Projets En cours de préparation</h3>
+          <p>{{ chapitre.nb_projets or 0 }}</p>
+          <small>Projets en cours de préparation</small>
+        </div>
+        <div class="card1">
+          <h3>Contrats Actifs</h3>
           <p>{{ chapitre.nb_contrats or 0 }}</p>
           <small>Contrats actifs</small>
         </div>
         <div class="card1">
+          <h3>Achats Actives</h3>
+          <p>{{ chapitre.nb_achat or 0 }}</p>
+          <small>Achats sur facture actives</small>
+        </div>
+        
+      </div>
+<div class="cards">
+      <div class="card1">
           <h3>Le Reste</h3>
           <p style="color: green;">{{ chapitre.montant_initiale-chapitre.engagement-chapitre.mondatement or "non specifié" }}</p>
           <small>Budget restant des projets</small>
         </div>
       </div>
-
       <!-- Charts -->
     
 <div class="dashboard">
@@ -152,46 +164,48 @@
   </div>
 </div>
   <script>
-    const projectProgress{{ chapitre.id_chapitre }} = {
-      labels: ['modatement', 'engagement'],
-      data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement or 0 }}]
-    };
-    const financeData{{ chapitre.id_chapitre }} = {
-      labels: [ 'engagement','reste'],
-      data: [ {{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale-(chapitre.engagement+chapitre.mondatement) or 0 }} ],
-      colors: ['#007bff', '#17a2b8']
-    };
-    new Chart(document.getElementById('progressChart{{ chapitre.id_chapitre }}'), {
-      type: 'bar',
-      data: {
-        labels: projectProgress{{ chapitre.id_chapitre }}.labels,
-        datasets: [{
-          label: 'Progression (%)',
-          data: projectProgress{{ chapitre.id_chapitre }}.data,
-          backgroundColor: '#3399ff'
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: {{chapitre.engagement or 100 }},
-          }
-        }
-      }
-    });
-    const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};
-    const percentages{{ chapitre.id_chapitre }} = financeData{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / total{{ chapitre.id_chapitre }}) * 100).toFixed(1) : 0);
-    new Chart(document.getElementById('financeChart{{ chapitre.id_chapitre }}'), {
-      type: 'pie',
-      data: {
-      labels: financeData{{ chapitre.id_chapitre }}.labels.map((label, i) => `${label}: ${percentages{{ chapitre.id_chapitre }}[i]}%`),
-      datasets: [{
-        data: financeData{{ chapitre.id_chapitre }}.data,
-        backgroundColor: financeData{{ chapitre.id_chapitre }}.colors
-      }]
-      }
-    });
+   const projectProgress{{ chapitre.id_chapitre }} = {
+  labels: ['modatement', 'engagement'],
+  data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement or 0 }}],
+  colors: ['#3399ff', '#66b3ff'] // Added colors for consistency with pie chart styling
+};
+
+const financeData{{ chapitre.id_chapitre }} = {
+  labels: ['engagement', 'reste'],
+  data: [{{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale - (chapitre.engagement + chapitre.mondatement) or 0 }}],
+  colors: ['#007bff', '#17a2b8']
+};
+
+const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};
+
+// Calculate percentages for projectProgress chart
+const progressPercentages{{ chapitre.id_chapitre }} = projectProgress{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / total{{ chapitre.id_chapitre }}) * 100).toFixed(1) : 0);
+
+// Progress Pie Chart
+new Chart(document.getElementById('progressChart{{ chapitre.id_chapitre }}'), {
+  type: 'pie',
+  data: {
+    labels: projectProgress{{ chapitre.id_chapitre }}.labels.map((label, i) => `${label}: ${progressPercentages{{ chapitre.id_chapitre }}[i]}%`),
+    datasets: [{
+      label: 'Progression (%)',
+      data: projectProgress{{ chapitre.id_chapitre }}.data,
+      backgroundColor: projectProgress{{ chapitre.id_chapitre }}.colors
+    }]
+  }
+});
+
+// Finance Pie Chart (unchanged)
+const percentages{{ chapitre.id_chapitre }} = financeData{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / total{{ chapitre.id_chapitre }}) * 100).toFixed(1) : 0);
+new Chart(document.getElementById('financeChart{{ chapitre.id_chapitre }}'), {
+  type: 'pie',
+  data: {
+    labels: financeData{{ chapitre.id_chapitre }}.labels.map((label, i) => `${label}: ${percentages{{ chapitre.id_chapitre }}[i]}%`),
+    datasets: [{
+      data: financeData{{ chapitre.id_chapitre }}.data,
+      backgroundColor: financeData{{ chapitre.id_chapitre }}.colors
+    }]
+  }
+});
   </script>
   {% if projets %}
         
@@ -232,7 +246,7 @@
                             <td>
                                 {{ projet.date_debut|format_date_fr }}
                             </td>
-                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>{{ projet.type}}</td>
                             <td>
                               {{projet.etat}}
                             </td>
@@ -286,7 +300,7 @@
                                 Non spécifié
                               {% endif %}
                             </td>
-                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>{{ projet.type}}</td>
                             <td>
                               {{projet.etat}}
                             </td>
@@ -340,7 +354,7 @@
                                 Non spécifié
                               {% endif %}
                             </td>
-                            <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                            <td>{{ projet.type }}</td>
                             <td>
                               {{projet.etat}}
                             </td>

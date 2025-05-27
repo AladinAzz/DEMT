@@ -26,10 +26,18 @@ def get_agent(agent_id: int, db: Session = Depends(get_db)):
 
 @router.post("/agents", response_model=schemas.AgentRead, status_code=status.HTTP_201_CREATED)
 def create_agent(agent: schemas.AgentCreate, db: Session = Depends(get_db)):
+    
+    
     return crud.AgentCRUD.create(db, agent.__dict__)
 
 @router.put("/agents/{agent_id}", response_model=schemas.AgentRead)
-def update_agent(agent_id: int, agent: schemas.AgentCreate, db: Session = Depends(get_db)):
+def update_agent(agent_id: int, agent: schemas.AgentRead, db: Session = Depends(get_db)):
+    
+    
+    if agent.password == None:
+        agent_to_update = crud.AgentCRUD.get(db, agent_id)
+        agent.password = agent_to_update.password  # Keep the existing password if not provided
+    
     updated = crud.AgentCRUD.update(db, agent_id, agent.__dict__)
     return get_or_404(updated, "Agent")
 
@@ -130,8 +138,47 @@ def get_projet(projet_id: int, db: Session = Depends(get_db)):
     return get_or_404(projet, "Projet")
 
 @router.post("/projets", response_model=schemas.ProjetRead, status_code=status.HTTP_201_CREATED)
-def create_projet(projet: schemas.ProjetCreate, db: Session = Depends(get_db)):
-    return crud.ProjetCRUD.create(db, projet.__dict__)
+def create_projet(
+    projet: dict,
+    db: Session = Depends(get_db),
+    current_user: models.Agent = Depends(security.get_current_agent)
+):
+    # Prepare project data
+    projet_data = {
+        "nom_projet": projet["nom_projet"],
+        "description": projet.get("description"),
+        "date_debut": projet["date_debut"],
+        "id_bureau": projet["id_bureau"],
+        "montant": projet["montant"],
+        "chapitre_id_chapitre": projet["chapitre_id_chapitre"],
+        "type": projet["type"],
+        
+    }
+    # Create project
+    created_projet = crud.ProjetCRUD.create(db, projet_data)
+
+    # Create state history if etat is provided
+    if projet.get("etat") is not None:
+        description_etat = projet.get("description_etat", "")
+        date_etat = projet.get("date_etat", projet.get("date_debut", date.today()))
+        try:
+            crud.HistoriqueEtatCRUD.create(
+                db,
+                {
+                    "etat": projet["etat"],
+                    "description": description_etat,
+                    "id_projet": created_projet.id_projet,
+                    "date_debut": date_etat,
+                    "agent_id_agent": current_user.id_agent,
+                },
+            )
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            print(f"Error creating history: {str(e)}")
+            raise HTTPException(500, f"History creation failed: {str(e)}")
+
+    return get_or_404(created_projet, "Projet")
 
 @router.put("/projets/{projet_id}", response_model=schemas.ProjetRead)
 def update_projet(
@@ -224,6 +271,15 @@ def update_projet(
 
 @router.delete("/projets/{projet_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_projet(projet_id: int, db: Session = Depends(get_db)):
+    # Delete all contracts referencing this project
+    contracts = db.query(models.Contract).filter(
+        (models.Contract.projet_id_projet == projet_id) | 
+        (models.Contract.id_projet == projet_id)
+    ).all()
+    for contract in contracts:
+        db.delete(contract)
+    db.commit()
+    # Now delete the project
     success = crud.ProjetCRUD.delete(db, projet_id)
     if not success:
         raise HTTPException(status_code=404, detail="Projet not found")
@@ -240,8 +296,47 @@ def get_achat(id_facture: str, db: Session = Depends(get_db)):
     return get_or_404(achat, "AchatSurFacture")
 
 @router.post("/achats_sur_facture", response_model=schemas.AchatSurFactureRead, status_code=status.HTTP_201_CREATED)
-def create_achat(achat: schemas.AchatSurFactureCreate, db: Session = Depends(get_db)):
-    return crud.AchatSurFactureCRUD.create(db, achat.__dict__)
+def create_achat(
+    achat: dict,
+    db: Session = Depends(get_db),
+    current_user: models.Agent = Depends(security.get_current_agent)
+):
+    # Prepare achat data
+    achat_data = {
+        "id_facture": achat["id_facture"],
+        "montant": achat["montant"],
+        "description": achat["description"],
+        "date": achat["date"],
+        "projet_id_projet": achat["projet_id_projet"],
+        "id_fournisseur": achat["id_fournisseur"],
+        "devise": achat["devise"],
+        "engagement": achat["engagement"],
+    }
+    # Create achat
+    created_achat = crud.AchatSurFactureCRUD.create(db, achat_data)
+
+    # Create state history if etat is provided
+    if achat.get("etat") is not None:
+        description_etat = achat.get("description_etat", "")
+        date_etat = achat.get("dateetat", achat.get("date"))
+        try:
+            crud.HistoriqueEtatCRUD.create(
+                db,
+                {
+                    "etat": achat["etat"],
+                    "description": description_etat,
+                    "id_facture": achat["id_facture"],
+                    "date_debut": date_etat,
+                    "agent_id_agent": current_user.id_agent,
+                },
+            )
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            print(f"Error creating history: {str(e)}")
+            raise HTTPException(500, f"History creation failed: {str(e)}")
+
+    return get_or_404(created_achat, "AchatSurFacture")
 
 
 @router.put("/achats_sur_facture/{id_facture}", response_model=schemas.AchatSurFactureRead)
@@ -356,9 +451,56 @@ def get_contract(id_contrat: str, db: Session = Depends(get_db)):
     contract = crud.ContractCRUD.get(db, id_contrat)
     return get_or_404(contract, "Contract")
 
-@router.post("/contracts", response_model=dict, status_code=status.HTTP_201_CREATED)
-def create_contract(contract: schemas.ContractCreate, db: Session = Depends(get_db)):
-    return crud.ContractCRUD.create(db, contract.__dict__)
+@router.post("/contracts", response_model=schemas.ContractRead, status_code=status.HTTP_201_CREATED)
+def create_contract(
+    contract: dict,
+    db: Session = Depends(get_db),
+    current_agent: models.Agent = Depends(security.get_current_agent)
+):
+    # Prepare contract data
+    contract_data = {
+        "id_contrat":contract["id_contrat"],
+        "id_projet": contract["id_projet"],
+        "projet_id_projet": contract.get("id_projet"),  # <-- add this line
+        "id_fournisseur": contract["id_fournisseur"],
+        "description": contract["description"],
+        "date_debut": contract["date_debut"],
+        "date_de_notification": contract.get("date_de_notification"),
+        "min": contract["min"],
+        "max": contract.get("max"),
+        "duree": contract["duree"],
+        "etat": contract.get("etat"),
+        "devise": contract["devise"],
+        "type": contract["type"],
+        "engagement": contract.get("engagement", 0),
+        "projet_chapitre_id_chapitre": contract.get("projet_chapitre_id_chapitre"),
+    }
+
+    # Create contract
+    created_contract = crud.ContractCRUD.create(db, contract_data)
+
+    # Create state history if etat is provided
+    if contract.get("etat") is not None:
+        description_etat = contract.get("description_etat", "")
+        date_etat = contract.get("date_etat", contract.get("date_debut", date.today()))
+        try:
+            crud.HistoriqueEtatCRUD.create(
+                db,
+                {
+                    "etat": contract["etat"],
+                    "description": description_etat,
+                    "id_contrat": created_contract.id_contrat,
+                    "date_debut": date_etat,
+                    "agent_id_agent": current_agent.id_agent,
+                },
+            )
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            print(f"Error creating history: {str(e)}")
+            raise HTTPException(500, f"History creation failed: {str(e)}")
+
+    return get_or_404(created_contract, "Contract")
 
 @router.put("/contracts/{id_contrat}", response_model=schemas.ContractRead)
 def update_contract(id_contrat: str, contract: dict, db: Session = Depends(get_db),current_agent: models.Agent = Depends(security.get_current_agent)):
@@ -451,7 +593,9 @@ def update_contract(id_contrat: str, contract: dict, db: Session = Depends(get_d
 
 @router.delete("/contracts/{id_contrat}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_contract(id_contrat: str, db: Session = Depends(get_db)):
-    success = crud.ContractCRUD.delete(db, id_contrat)
+    c=crud.ContractCRUD.get_by_id_contrat(db, id_contrat)
+    
+    success = crud.ContractCRUD.delete(db, (id_contrat, c.projet_id_projet, c.id_fournisseur))
     if not success:
         raise HTTPException(status_code=404, detail="Contract not found")
     return

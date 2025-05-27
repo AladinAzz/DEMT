@@ -113,106 +113,102 @@ document.addEventListener('click', () => {
   <div id="formPanel" class="form-panel">
     <button id="closeUserPanel" class="close-btn">&times;</button>
     <h2>Ajouter un Contrat</h2>
-    <form action="/contracts" method="post">
-      <div class="input-row">
-        <div class="input-group">
-      <label>ID Contrat</label>
-      <input type="text" placeholder="Entrez l'id" name="id_contrat" />
-     </div>
-     <div class="input-group">
-          <label>type</label>
-          <select required id="ty" name="type">
-        <option value="ferme">fermé</option>
-        <option value="commande">à commande</option>
-      </select>
-        </div>
-    </div>
-
-    <div class="input-row">
-      <div class="input-group">
-          <label>Description</label>
-          <input type="text" placeholder="Entrez la Description" name="description" />
-        </div>
-        <div class="input-group">
-          <label>date</label>
-          <input type="date" name="date_debut">
-        </div>
-      
-      </div>
-
-      <div class="input-row">
-        
-        <div class="input-group">
-          <label>Date notification</label>
-          <input type="date" name="date_de_notification" />
-        </div>
-        <div class="input-group">
-          <label>Duree</label>
-          <input type="text" placeholder="Entrez la duree" name="duree" />
-        </div>
-      </div>
-
-      <div class="input-row" id="mo">
-        <div class="input-group">
-          <label>Min</label>
-          <input type="number" placeholder="Entrez Min" name="min"/>
-        </div>
-        <div class="input-group">
-          <label>Max</label>
-          <input type="number" placeholder="Entrez Max" name="max"/>
-        </div>
-       
-      </div>
-      <script>
-          const typeSelect = document.getElementById("ty");
-          const montantRow = document.createElement('div');
-          montantRow.className = "input-row";
-          montantRow.innerHTML = `
+ <form action="/contracts" method="POST" id="modifyFormm">
+          <div class="input-row">
             <div class="input-group">
-              <label>Montant</label>
-              <input type="number" id="montant" placeholder="Entrez le montant" name="min" />
+              <label>ID Contrat</label>
+              <input type="text" placeholder="Entrez l'id" name="id_contrat" id="mod_id_contrat"  />
             </div>
-          `;
-          const divm = document.getElementById('mo');
+            <div class="input-group">
+              <label>type</label>
+              <select required id="mod_type" name="type">
+                <option value="ferme" >fermé</option>
+                <option value="commande" >à commande</option>
+              </select>
+            </div>
+          </div>
 
-          // Show/hide montant or min/max fields based on type
-          function updateMontantFields() {
-            if (typeSelect.value === "ferme") {
-              if (divm) divm.style.display = "none";
-              if (!document.getElementById('montant')) {
-                divm.parentNode.insertBefore(montantRow, divm);
+          <div class="input-row">
+            <div class="input-group">
+              <label>Description</label>
+              <input type="text" placeholder="Entrez la Description" name="description" id="mod_description"  />
+            </div>
+            <div class="input-group">
+              <label>date</label>
+              <input type="date" name="date_debut" id="mod_date_debut">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label>Date notification</label>
+              <input type="date" name="date_de_notification" id="mod_date_de_notification"  />
+            </div>
+            <div class="input-group">
+              <label>Duree</label>
+              <input type="text" placeholder="Entrez la duree" name="duree" id="mod_duree"  />
+            </div>
+          </div>
+
+          <div class="input-row" id="mod_moo">
+            <div class="input-group">
+              <label>Min</label>
+              <input type="number" placeholder="Entrez Min" name="min" id="mod_min"  />
+            </div>
+            <div class="input-group">
+              <label>Max</label>
+              <input type="number" placeholder="Entrez Max" name="max" id="mod_max"  />
+            </div>
+          </div>
+          <script>
+            const typeSelectMod = document.getElementById("mod_type");
+            const montantRowMod = document.createElement('div');
+            montantRowMod.className = "input-row";
+            montantRowMod.innerHTML = `
+              <div class="input-group">
+                <label>Montant</label>
+                <input type="number" id="mod_montant" placeholder="Entrez le montant" name="min"  />
+              </div>
+            `;
+            const divmMod = document.getElementById('mod_moo');
+
+            function updateMontantFieldsMod() {
+              if (typeSelectMod.value === "ferme") {
+                if (divmMod) divmMod.style.display = "none";
+                if (!document.getElementById('mod_montant')) {
+                  divmMod.parentNode.insertBefore(montantRowMod, divmMod);
+                }
+                montantRowMod.style.display = "";
+              } else {
+                if (divmMod) divmMod.style.display = "";
+                montantRowMod.style.display = "none";
               }
-              montantRow.style.display = "";
-            } else {
-              if (divm) divm.style.display = "";
-              montantRow.style.display = "none";
             }
-          }
 
-          typeSelect.addEventListener('change', updateMontantFields);
-          updateMontantFields();
-
-      </script>
-      <div class="input-row">
-       <div class="input-group">
-          <label>Etat</label>
-          <select required id="et" name="etat"> 
-        <option value="engagement">engagement</option>
-        <option value="instance engagé">instance engagé</option>
-      </select>
-        </div>
+            typeSelectMod.addEventListener('change', updateMontantFieldsMod);
+            updateMontantFieldsMod();
+          </script>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Etat</label>
+              <select required id="mod_etat" name="etat">
+                <option value="engagement" >engagement</option>
+                <option value="instance engagé" >instance engagé</option>
+              </select>
+            </div>
+            
         <div class="input-group">
       <label>Engagement</label>
-          <input id="en" type="number" placeholder="Entrez l'engagement" name="engagement"/>
+          <input id="en" type="number" placeholder="Entrez l'engagement" name="engagement" />
         </div>
       </div>
       <script>
-        const etatSelect = document.getElementById("et");
+        const etatSelectt = document.getElementById("et");
         const engagementInput = document.getElementById('en');
 
         // Disable/enable and set value based on etat
         function updateEngagementField() {
-          if (etatSelect.value === 'instance engagé') {
+          if (etatSelectt.value === 'instance engagé') {
             engagementInput.value = 0;
             engagementInput.disabled = true;
           } else {
@@ -220,7 +216,7 @@ document.addEventListener('click', () => {
           }
         }
 
-        etatSelect.addEventListener('change', updateEngagementField);
+        etatSelectt.addEventListener('change', updateEngagementField);
 
         // Prevent negative values
         engagementInput.addEventListener('input', function() {
@@ -235,25 +231,69 @@ document.addEventListener('click', () => {
       
       <div class="input-row">
         <div class="input-group">
+              <label>ID Chapitre</label>
+              <select type="text" name="projet_chapitre_id_chapitre" placeholder="ID Chapitre"  >
+              {%for chapitre in chapitres %}
+                <option value="{{ chapitre.id_chapitre }}" >{{ chapitre.id_chapitre }}</option>
+              {% endfor %}
+              </select>
+          </div>
           <div class="input-group">
-          <label>ID chapitre</label>
-          <input type="text" placeholder="Entrez ID Projet" name="projet_id_projet"/>
+          <label>ID Projet</label>
+          <select name="id_projet" id="id_projet_select" required>
+            <!-- Options will be populated dynamically -->
+          </select>
+          <script>
+            // Build a mapping from chapitre ID to its projets
+            const chapitres = {
+              {% for chapitre in chapitres %}
+              "{{ chapitre.id_chapitre }}": [
+                {% for projet in projets if chapitre.id_chapitre == projet.chapitre_id_chapitre %}
+                { "id_projet": "{{ projet.id_projet }}" },
+                {% endfor %}
+              ],
+              {% endfor %}
+            };
+
+            // Get references to the selects
+            const chapitreSelect = document.querySelector('select[name="projet_chapitre_id_chapitre"]');
+            const projetSelect = document.getElementById('id_projet_select');
+
+            // Function to populate projet options based on selected chapitre
+            function populateProjetOptions() {
+              const selectedChapitre = chapitreSelect.value;
+              const projets = chapitres[selectedChapitre] || [];
+              projetSelect.innerHTML = '';
+              projets.forEach(projet => {
+              const option = document.createElement('option');
+              option.value = projet.id_projet;
+              option.textContent = projet.id_projet;
+              projetSelect.appendChild(option);
+              });
+            }
+
+            // Populate on page load and when chapitre changes
+            chapitreSelect.addEventListener('change', populateProjetOptions);
+            populateProjetOptions();
+
+          </script>
+          
         </div>
-        </div>
+          
       </div>
           <div class="input-row">
         
         <div class="input-group">
           <label>ID Fournisseur</label>
-          <input type="text" placeholder="Entrez ID Fournisseur" name="id_fournisseur" />
+          <input type="text" placeholder="Entrez ID Fournisseur" name="id_fournisseur"  />
           
         </div>
         <div class="input-group">
         <label>Devise</label>
       <select required name="devise">
-        <option value="DZD">DZD</option>
-        <option value="EAR">EURO</option>
-        <option value="USA">DOLLAR</option>
+        <option value="DZD" >DZD</option>
+        <option value="EURO" >EURO</option>
+        <option value="DOLLAR" >USD</option>
       </select>
     </div>
       </div>
@@ -261,7 +301,7 @@ document.addEventListener('click', () => {
       <button type="submit" class="btn-submit">Ajouter</button>
     </form>
     <script>
-      const form = document.querySelector('#formPanel form');
+      const form = document.getElementById('modifyFormm');
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
         const formData = new FormData(form);
@@ -274,14 +314,18 @@ document.addEventListener('click', () => {
         });
         if (data.type === "ferme") {
           // For "ferme", get the montant value and set both min and max
-          const montantInput = document.getElementById('montant');
+          const montantInput = document.getElementById('mod_montant');
           const montantValue = montantInput ? montantInput.value : '';
-          data.min = montantValue;
-          data.max = montantValue;
+          data.min = montantValue !== '' ? Number(montantValue) : 0;
+          data.max = montantValue !== '' ? Number(montantValue) : 0;
+        } else {
+          // For "commande", ensure min and max are numbers or 0
+          data.min = data.min !== undefined && data.min !== '' ? Number(data.min) : 0;
+          data.max = data.max !== undefined && data.max !== '' ? Number(data.max) : 0;
         }
         try {
           const response = await fetch(form.action, {
-            method: form.method,
+            method: "POST",
             headers: {
               'Content-Type': 'application/json'
             },
@@ -391,7 +435,7 @@ document.addEventListener('click', () => {
                         <td>{{ contrat.id_fournisseur }}</td>
                         <td>{{ contrat.devise.value if contrat.devise is defined else '' }}</td>
                         <td>
-                          <a href="/bondecommande/{{ contrat.id_projet }}" class="btn btn-primary">Details</a>
+                          <a href="/bondecommande/{{ contrat.id_contrat }}" class="btn btn-primary">Details</a>
                         </td>
                       </tr>
                     {% endfor %}

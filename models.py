@@ -84,7 +84,7 @@ class Projet(Base):
     montant = Column(Float, nullable=True)
     id_bureau = Column(Integer, ForeignKey('bureau.id_bureau'), nullable=False)
     chapitre_id_chapitre = Column(Integer, ForeignKey('chapitre.id_chapitre'), nullable=False)
-    type = Column(SqlEnum(ProjetTypeEnum), nullable=False)
+    type = Column(String(45), nullable=False)
 
     bureau = relationship("Bureau", back_populates="projets")
     chapitre = relationship("Chapitre", back_populates="projets")

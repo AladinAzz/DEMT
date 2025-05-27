@@ -106,11 +106,12 @@ document.addEventListener('click', () => {
 </script>
 
     <div class="header">
-      <h1>Bons de Commande</h1>
+      <h1>Détails Contrat</h1>
       <div class="button-group">
-        <button id="addUserBtn" class="btn-primary" hidden>+ Ajouter un bon</button>
+        
         <button id="modifyContratBtn" class="btn-primary">Modifier Contrat</button>
         <button id="deleteContratBtn" class="btn-primary">Supprimer Contrat</button>
+        <button id="addUserBtn" class="btn-primary" >+ Ajouter un bon</button>
       </div>
     </div>
 
@@ -118,194 +119,78 @@ document.addEventListener('click', () => {
     <div id="overlay" class="overlay hidden">
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
-        <h2>Ajouter un Contrat</h2>
-        <form action="/contracts" method="post">
-      <div class="input-row">
-        <div class="input-group">
-      <label>ID Contrat</label>
-      <input type="text" placeholder="Entrez l'id" name="id_contrat" />
-     </div>
-     <div class="input-group">
-          <label>type</label>
-          <select required id="ty" name="type">
-        <option value="ferme">fermé</option>
-        <option value="commande">à commande</option>
-      </select>
-        </div>
-    </div>
-
-    <div class="input-row">
-      <div class="input-group">
+        <h2>Ajouter un Bon de commande</h2>
+        <form id="addBonForm">
+          <label >ID Bon</label>
+          <input type="text" name="id_bon" placeholder="Entrez l'ID Bon" />
+          <label>Date</label>
+          <input type="date" name="date_bon" placeholder="Entrez la date" />
           <label>Description</label>
-          <input type="text" placeholder="Entrez la Description" name="description" />
-        </div>
-        <div class="input-group">
-          <label>date</label>
-          <input type="date" name="date_debut">
-        </div>
-      
-      </div>
-
-      <div class="input-row">
-        
-        <div class="input-group">
-          <label>Date notification</label>
-          <input type="date" name="date_de_notification" />
-        </div>
-        <div class="input-group">
-          <label>Duree</label>
-          <input type="text" placeholder="Entrez la duree" name="duree" />
-        </div>
-      </div>
-
-      <div class="input-row" id="mo">
-        <div class="input-group">
-          <label>Min</label>
-          <input type="number" placeholder="Entrez Min" name="min"/>
-        </div>
-        <div class="input-group">
-          <label>Max</label>
-          <input type="number" placeholder="Entrez Max" name="max"/>
-        </div>
-       
-      </div>
-      <script>
-          const typeSelect = document.getElementById("ty");
-          const montantRow = document.createElement('div');
-          montantRow.className = "input-row";
-          montantRow.innerHTML = `
+          <input type="text" name="description" placeholder="Entrez la description" />
+          <div class="input-row">
             <div class="input-group">
               <label>Montant</label>
-              <input type="number" id="montant" placeholder="Entrez le montant" name="min" />
+              <input type="number" placeholder="Entrez le montant" name="montant" />
+            </div> 
+            <div class="input-group">
+              <label>État</label>
+              <select name="etat">
+                <option value="en cours">en cours</option>
+                <option value="terminé">terminé</option>
+                <option value="retard">en retard</option>
+              </select>
             </div>
-          `;
-          const divmm = document.getElementById('mo');
-
-          // Show/hide montant or min/max fields based on type
-          function updateMontantFields() {
-            if (typeSelect.value === "ferme") {
-              if (divmm) divmm.style.display = "none";
-              if (!document.getElementById('montant')) {
-                divmm.parentNode.insertBefore(montantRow, divmm);
-              }
-              montantRow.style.display = "";
-            } else {
-              if (divmm) divmm.style.display = "";
-              montantRow.style.display = "none";
-            }
-          }
-
-          typeSelect.addEventListener('change', updateMontantFields);
-          updateMontantFields();
-
-      </script>
-      <div class="input-row">
-       <div class="input-group">
-          <label>Etat</label>
-          <select required id="ett" name="etat"> 
-        <option value="engagement">engagement</option>
-        <option value="instance engagé">instance engagé</option>
-      </select>
-        </div>
-        <div class="input-group">
-      <label>Engagement</label>
-          <input id="en" type="number" placeholder="Entrez l'engagement" name="engagement"/>
-        </div>
-      </div>
-      <script>
-        const etatSelect = document.getElementById("ett");
-        const engagementInputt = document.getElementById('en');
-
-        // Disable/enable and set value based on etat
-        function updateEngagementField() {
-          if (etatSelect.value === 'instance engagé') {
-            engagementInputt.value = 0;
-            engagementInputt.disabled = true;
-          } else {
-            engagementInputt.disabled = false;
-          }
-        }
-
-        etatSelect.addEventListener('change', updateEngagementField);
-
-        // Prevent negative values
-        engagementInputt.addEventListener('input', function() {
-          if (this.value < 0) {
-            this.value = 0;
-          }
-        });
-
-        // Initialize on page load
-        updateEngagementField();
-      </script>
-      
-      <div class="input-row">
-        <div class="input-group">
-          <div class="input-group">
-          <label>ID chapitre</label>
-          <input type="text" placeholder="Entrez ID Projet" name="projet_id_projet"/>
-        </div>
-        </div>
-      </div>
+          </div>
+          <label>Date de notification</label>
+          <input type="date" name="date_de_notification" placeholder="Entrez la date de notification" />
+          <label>Délais</label>
+          <input type="number" name="delais" placeholder="Entrez le délais" />
+          <label>Agent</label>
+          <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly />
           <div class="input-row">
-        
-        <div class="input-group">
-          <label>ID Fournisseur</label>
-          <input type="text" placeholder="Entrez ID Fournisseur" name="id_fournisseur" />
-          
-        </div>
-        <div class="input-group">
-        <label>Devise</label>
-      <select required name="devise">
-        <option value="DZD">DZD</option>
-        <option value="EAR">EURO</option>
-        <option value="USA">DOLLAR</option>
-      </select>
-    </div>
-      </div>
-
-      <button type="submit" class="btn-submit">Ajouter</button>
-    </form>
-    <script>
-      const formm = document.querySelector('#formPanel form');
-      formm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = new FormData(formm);
-        const data = {};
-        formData.forEach((value, key) => {
-          // Only add if not empty string (to avoid sending empty fields)
-          if (value !== "") {
+            <div class="input-group">
+              <label>ID Projet</label>
+              <input type="text" placeholder="Entrez le projet" name="contract_projet_id_projet" value="{{contrats.id_projet}}" />
+            </div>
+            <div class="input-group">
+              <label>ID Fournisseur</label>
+              <input type="text" placeholder="Entrez le fournisseur" name="contract_id_fournisseur" value="{{contrats.id_fournisseur}}"/>
+            </div>
+            <div class="input-group">
+              <label>ID Contrat</label>
+              <input type="text" placeholder="Entrez le contrat" name="contract_id_contrat" value="{{contrats.id_contrat}}" readonly />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">Ajouter</button>
+        </form>
+        <script>
+        document.getElementById('addBonForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const formData = new FormData(form);
+          const data = {};
+          formData.forEach((value, key) => {
             data[key] = value;
+          });
+          try {
+            const response = await fetch('/bons_de_commande', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            if (response.ok) {
+              alert('Bon de commande ajouté avec succès.');
+              window.location.reload();
+            } else {
+              const errorText = await response.text();
+              alert("Erreur lors de l'ajout : " + errorText);
+            }
+          } catch (err) {
+            alert("Erreur réseau ou serveur : " + err.message);
           }
         });
-        if (data.type === "ferme") {
-          // For "ferme", get the montant value and set both min and max
-          const montantInput = document.getElementById('montant');
-          const montantValue = montantInput ? montantInput.value : '';
-          data.min = montantValue;
-          data.max = montantValue;
-        }
-        try {
-          const response = await fetch(formm.action, {
-            method: formm.method,
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          });
-          if (response.ok) {
-            alert('Contrat ajouté avec succès.');
-            window.location.reload();
-          } else {
-            const errorText = await response.text();
-            console.error('Erreur:', errorText);
-            alert('Erreur lors de l\'ajout du contrat : ' + errorText);
-          }
-        } catch (err) {
-          alert('Erreur réseau ou serveur : ' + err.message);
-        }
-      });
-    </script>
+        </script>
+        
       </div>
     </div>
 
@@ -460,7 +345,7 @@ document.addEventListener('click', () => {
     </div>
       </div>
 
-      <button type="submit" class="btn-submit">Ajouter</button>
+      <button type="submit" class="btn-submit">Modifier</button>
     </form>
     <script>
       const form = document.getElementById('modifyFormm');

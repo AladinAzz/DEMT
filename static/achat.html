@@ -106,7 +106,153 @@ document.addEventListener('click', () => {
     
     <div class="header">
       <h1>Achat sur facture</h1>
+      <button id="addUserBtn" class="btn-primary">+ Ajouter une achat</button>
     </div>
+
+
+<div id="modifyOverlay" class="overlay hidden">
+      <div id="modifyPanel" class="form-panel">
+        <button id="closeModifyPanel" class="close-btn">&times;</button>
+        <h2>Ajouter Achat</h2>
+        <form id="modifyContratForm">
+            <label>ID Achat</label>
+            <input type="text" name="id_facture" placeholder="Entrez l'ID d'achat"   />
+            <label >description</label>
+            <input type="text" name="description" placeholder="Entrez la description"/>
+            <label>Date</label>
+            <input type="date" name="date"  />
+            <label>Montant</label>
+            <input type="number" name="montant" placeholder="Max"  />
+            <label>État</label>
+            <select name="etat">
+                <option value="en cours de preparation" >en cours de preparation</option>
+                <option value="demande de facture proforma" >demande de facture proforma</option>
+                <option value="certification" >certification</option>
+                <option value="demande engagement" >demande engagement</option>
+                <option value="instance engagement" >instance engagement</option>
+                <option value="engagement" >engagement</option>
+            </select>
+            
+            <div class="input-row">
+                    <div class="input-group">
+                      <label>description etat</label>
+            <input type="text" name="description_etat" placeholder="Entrez la description d'etat" />
+               
+                    </div>
+                    <div class="input-group">
+                        <label>date etat</label>
+                        <input type="date" name="dateetat" placeholder="Entrez la date d'etat" />
+                    </div>
+            </div>
+           
+            
+            
+            <div class="input-row">
+
+                <div class="input-group">
+                <label>ID Projet</label>
+                <input type="text" name="projet_id_projet" placeholder="ID Projet"  />
+            
+                </div>
+                <div class="input-group">
+                <label>ID Fournisseur</label>
+                <input type="text" name="id_fournisseur" placeholder="ID Fournisseur"  />
+            
+                </div>
+
+            </div>
+            
+            <div class="input-row">
+
+            <div class="input-group">
+                <label>engagement</label>
+                <input type="number" name="engagement" placeholder="Entrez l'engagement"  />
+            </div>
+            
+            <div class="input-group">
+                <label>Devise</label>
+                <select name="devise" required>
+                    <option value="DZD" >DZD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="DOLLAR" >USD</option>
+                </select>
+            </div>
+            
+            </div>
+            
+            
+            <button type="submit" class="btn-submit">Ajouter</button>
+        </form>
+        <script>
+        document.getElementById('modifyContratForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                id_facture: form.id_facture.value,
+                date: form.date.value,
+                montant: form.montant.value,
+                etat: form.etat.value,
+                description: form.description.value,
+                engagement: form.engagement.value,
+                projet_id_projet: form.projet_id_projet.value,
+                id_fournisseur: form.id_fournisseur.value,
+                devise: form.devise.value
+            };
+            try {
+                const response = await fetch(`/achats_sur_facture`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    alert('Achat ajouté avec succès.');
+                    location.reload();
+                } else {
+                    alert('Erreur lors de l\'ajout.');
+                }
+            } catch (err) {
+                alert('Erreur réseau.');
+            }
+        });
+        </script>
+      </div>
+    </div>
+
+<script>
+   const modifyContratBtn = document.getElementById('addUserBtn');
+    const modifyOverlay = document.getElementById('modifyOverlay');
+    const modifyPanel = document.getElementById('modifyPanel');
+    const closeModifyPanel = document.getElementById('closeModifyPanel');
+
+    if (modifyContratBtn) {
+      modifyContratBtn.addEventListener('click', () => {
+        if (modifyOverlay && modifyPanel) {
+          modifyOverlay.classList.remove('hidden');
+          void modifyPanel.offsetWidth;
+          modifyPanel.classList.add('show');
+        }
+      });
+    }
+
+    if (closeModifyPanel) {
+      closeModifyPanel.addEventListener('click', () => {
+        if (modifyPanel && modifyOverlay) {
+          modifyPanel.classList.remove('show');
+          setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+        }
+      });
+    }
+
+    if (modifyOverlay) {
+      modifyOverlay.addEventListener('click', (e) => {
+        if (e.target === modifyOverlay && modifyPanel) {
+          modifyPanel.classList.remove('show');
+          setTimeout(() => modifyOverlay.classList.add('hidden'), 300);
+        }
+      });
+    }
+</script>
+
 
     <form class="search-form">
       <div class="search-wrapper">
@@ -179,18 +325,15 @@ document.addEventListener('click', () => {
                         </td>
                         
                           <td>
-                          {% if achat.projet_id_projet in etats_dict %}
-        {{ etats_dict[achat.projet_id_projet].etat.value }}
-    {% else %}
-        Non spécifié
-    {% endif %}
+                          {{achat.etat}}
+
                         </td>
                         
                         <td>{{ achat.projet_id_projet }}</td>
                         <td>{{ achat.id_fournisseur if achat.id_fournisseur is defined else '' }}</td>
                         <td>{{ achat.devise.value if achat.devise is defined else '' }}</td>
                         <td>
-                          <a href="/bondecommande/{{ achat.id_facture }}" class="btn btn-primary">Details</a>
+                          <a href="/bondecommandef/{{ achat.id_facture }}" class="btn btn-primary">Details</a>
                         </td>
                       </tr>
                     {% endfor %}

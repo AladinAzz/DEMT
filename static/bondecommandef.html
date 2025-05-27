@@ -111,6 +111,7 @@ document.addEventListener('click', () => {
          
         <button id="modifyBtn" class="btn-primary">Modifier Achat</button>
         <button id="deleteBtn" class="btn-primary">Supprimer Achat</button>
+        <button id="addUserBtn" class="btn-primary" >+ Ajouter un bon</button>
       </div>
     </div>
 
@@ -119,29 +120,83 @@ document.addEventListener('click', () => {
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
         <h2>Ajouter un bon de commande</h2>
-        <form>
+        <form id="addBonForm">
+          <label >ID Bon</label>
+          <input type="text" name="id_bon" placeholder="Entrez l'ID Bon" />
           <label>Date</label>
-          <input type="date" placeholder="Entrez la date" />
+          <input type="date" name="date_bon" placeholder="Entrez la date" />
           <label>Description</label>
-          <input type="text" placeholder="Entrez la description" />
-          <label>Montant</label>
-          <input type="number" placeholder="Entrez le montant" />
-          <label>État</label>
-          <input type="text" placeholder="Entrez l'état" />
+          <input type="text" name="description" placeholder="Entrez la description" />
+          <div class="input-row">
+            <div class="input-group">
+              <label>Montant</label>
+              <input type="number" placeholder="Entrez le montant" name="montant" />
+            </div> 
+            <div class="input-group">
+              <label>État</label>
+              <select name="etat">
+          <option value="en cours">en cours</option>
+          <option value="terminé">terminé</option>
+          <option value="retard">en retard</option>
+              </select>
+            </div>
+          </div>
           <label>Date de notification</label>
-          <input type="date" placeholder="Entrez la date de notification" />
+          <input type="date" name="date_de_notification" placeholder="Entrez la date de notification" />
           <label>Délais</label>
-          <input type="number" placeholder="Entrez le délais" />
+          <input type="number" name="delais" placeholder="Entrez le délais" />
           <label>Agent</label>
-          <input type="text" placeholder="Entrez l'agent" />
-          <label>Projet</label>
-          <input type="text" placeholder="Entrez le projet" />
-          <label>Fournisseur</label>
-          <input type="text" placeholder="Entrez le fournisseur" />
-          <label>achat</label>
-          <input type="text" placeholder="Entrez le contrat" />
+          <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly />
+          <div class="input-row">
+            <div class="input-group">
+              <label>ID Projet</label>
+              <input type="text" placeholder="Entrez le projet" name="achat_sur_facture_projet_id_projet" value="{{achat.projet_id_projet}}" />
+            </div>
+            <div class="input-group">
+              <label>ID Fournisseur</label>
+              <input type="text" placeholder="Entrez le fournisseur" name="achat_sur_facture_id_fournisseur" value="{{achat.id_fournisseur}}"/>
+            </div>
+            <div class="input-group">
+              <label>ID Achat</label>
+              <input type="text" placeholder="Entrez le contrat" name="achat_sur_facture_id_facture" value="{{achat.id_facture}}" readonly />
+            </div>
+          </div>
           <button type="submit" class="btn-submit">Ajouter</button>
         </form>
+        <script>
+        document.getElementById('addBonForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            id_bon: form.id_bon.value,
+            date_bon: form.date_bon.value,
+            description: form.description.value,
+            montant: form.montant.value,
+            etat: form.etat.value,
+            date_de_notification: form.date_de_notification.value,
+            delais: form.delais.value,
+            agent_id_agent: form.agent_id_agent.value,
+            achat_sur_facture_projet_id_projet: form.achat_sur_facture_projet_id_projet.value,
+            achat_sur_facture_id_fournisseur: form.achat_sur_facture_id_fournisseur.value,
+            achat_sur_facture_id_facture: form.achat_sur_facture_id_facture.value
+          };
+          try {
+            const response = await fetch('/bons_de_commande', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            if (response.ok) {
+              alert('Bon de commande ajouté avec succès.');
+              location.reload();
+            } else {
+              alert('Erreur lors de l\'ajout du bon de commande.');
+            }
+          } catch (err) {
+            alert('Erreur réseau.');
+          }
+        });
+        </script>
       </div>
     </div>
 

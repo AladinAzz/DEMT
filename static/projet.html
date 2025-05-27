@@ -293,39 +293,36 @@ document.addEventListener('click', () => {
       <div id="deletePanel" class="form-panel">
         <button id="closeDeletePanel" class="close-btn">&times;</button>
         <h2>Supprimer Projet</h2>
-        <form id="deleteForm"></form>
+        <form id="deleteForm">
           <label>ID Projet</label>
           <input type="text" id="deleteProjectId" value="{{projet.id_projet}}" disabled />
           <p>Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.</p>
           <button type="submit" class="btn-submit btn-danger">Supprimer</button>
-          
         </form>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
           const deleteForm = document.getElementById('deleteForm');
-          if (deleteForm) {
-            deleteForm.addEventListener('submit', async function(e) {
-              e.preventDefault();
-              const projectId = "{{projet.id_projet}}";
-              if (!confirm("Êtes-vous sûr de vouloir supprimer ce projet ?")) return;
-              try {
-                const response = await fetch(`/projets/${projectId}`, {
-                  method: 'DELETE',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include'
-                });
-                if (response.ok) {
-                  window.location.href = '/acceuil';
-                } else {
-                  alert('Erreur lors de la suppression du projet');
-                }
-              } catch (error) {
-                alert('Une erreur est survenue');
+          deleteForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const projectId = document.getElementById('deleteProjectId').value;
+            try {
+              const response = await fetch(`/projets/${projectId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+              });
+              if (response.ok) {
+                window.location.href = '/project';
+              } else {
+                alert('Erreur lors de la suppression du projet');
               }
-            });
-          }
+            } catch (error) {
+              alert('Une erreur est survenue');
+            }
+          });
         });
         </script>
+        
       </div>
     </div>
 
@@ -401,7 +398,7 @@ document.addEventListener('click', () => {
                             {% endif %}
                           </td>
                           <td>{{projet.montant}}</td>
-                          <td>{{ projet.type.value if projet.type is defined else projet.type }}</td>
+                          <td>{{ projet.type}}</td>
                           <td>{{ etats[-1].etat }}</td>
                           <td>{{ projet.id_bureau }}</td>
                           
@@ -548,10 +545,12 @@ document.addEventListener('click', () => {
             </div>
           </div>
         
-      {% else %}
+      {% elif projet.type != "achat sur facture" %}
         <div class="card">
           <h2 class="section-title">Aucun contrat trouvé</h2>
         </div>
+        {%else%}
+        
       {% endif %}
     </section>
      <section class="section-space">
@@ -883,31 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  if (deleteForm) {
-    deleteForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const projectId = document.getElementById('deleteProjectId').value;
-      
-      try {
-        const response = await fetch(`/project/${projectId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include'
-        });
-
-        if (response.ok) {
-          window.location.href = '/project'; // Rediriger après suppression
-        } else {
-          alert('Erreur lors de la suppression du projet');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Une erreur est survenue');
-      }
-    });
-  }
+  
 
   if (deleteOverlay) {
     deleteOverlay.addEventListener('click', (e) => {
