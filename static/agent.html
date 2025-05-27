@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
+  <!-- Redirect agents away from this page -->
+  {% if agent.role.value == 'agent' %}
+    <script>window.location.href = '/project';</script>
+  {% endif %}
   <aside id="sidebar">
     <div class="sidebar-header">
       <span class="sidebar-title">Administration</span>
@@ -33,27 +37,24 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link active" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
-      </a>
-     
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-
-
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
   <main>
@@ -111,7 +112,13 @@ document.addEventListener('click', () => {
 
 <div class="header">
   <h1>Agents</h1>
+  <div class="button-group">
+    {% if agent.role.value in ['directeur', 'chef bureau'] %}
   <button id="addUserBtn" class="btn-primary">+ Ajouter un Agent</button>
+  <button id="deleteBtn" class="btn-primary">Supprimer un agent</button>
+  {% endif %}
+</div>
+  
 </div>
 
 <div id="overlay" class="overlay hidden">
@@ -284,10 +291,80 @@ document.addEventListener('click', () => {
       }
       });
     </script>
-    
-    
+
   </div>
 </div>
+
+
+ <div id="deleteOverlay" class="overlay hidden">
+  <div id="deletePanel" class="form-panel">
+    <button id="closeDeletePanel" class="close-btn">&times;</button>
+    <h2>Supprimer Agent</h2>
+    <form id="deleteContratForm">
+      <label>ID Agent</label>
+      <input type="text" id="deleteContratId" placeholder="Entrez l'ID de L'agent à supprimer" required />
+      <p>Êtes-vous sûr de vouloir supprimer cet Agent ? Cette action est irréversible.</p>
+      <button type="submit" class="btn-submit btn-danger">Supprimer</button>
+    </form>
+    <script>
+      document.getElementById('deleteContratForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const agentId = document.getElementById('deleteContratId').value;
+      try {
+        const response = await fetch(`/agents/${agentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+        });
+        if (response.ok) {
+        alert('Agent supprimé avec succès');
+        window.location.reload();
+        } else {
+        const error = await response.text();
+        alert('Erreur: ' + error);
+        }
+      } catch (err) {
+        alert('Erreur réseau');
+      }
+      });
+    </script>
+    <script>
+      // Show delete form logic
+      const deleteOverlay = document.getElementById('deleteOverlay');
+      const deletePanel = document.getElementById('deletePanel');
+      const closeDeletePanel = document.getElementById('closeDeletePanel');
+      // Example: call showDeleteForm() with the achat id to show the form
+      function showDeleteForm(achatId) {
+    document.getElementById('deleteContratId').value = achatId;
+    deleteOverlay.classList.remove('hidden');
+    void deletePanel.offsetWidth;
+    deletePanel.classList.add('show');
+      }
+      closeDeletePanel.addEventListener('click', () => {
+    deletePanel.classList.remove('show');
+    setTimeout(() => {
+      deleteOverlay.classList.add('hidden');
+    }, 300);
+      });
+      deleteOverlay.addEventListener('click', (e) => {
+    if (e.target === deleteOverlay) {
+      deletePanel.classList.remove('show');
+      setTimeout(() => {
+        deleteOverlay.classList.add('hidden');
+      }, 300);
+    }
+      });
+    </script>
+  </div>
+    </div>
+
+
+
+
+<!-- Modal Supprimer Contrat -->
+   
+
 <form class="search-form">
   <div class="search-wrapper">
     <!-- Dropdown Button -->
@@ -342,34 +419,31 @@ document.addEventListener('click', () => {
               </tr>
             </thead>
             <tbody>
-              {%for agent in agents%}
+            {% set c_agent=agent %}
+              {% for agent in agents %}
               <tr class="row-hover">
                 <td>{{agent.id_agent}}</td>
-                <td>
-                  {{agent.direction_id_direction}}
-                </td>
-                <td>
-                  {{agent.bureau_id_bureau}}
-                </td>
-                <td>
-                  <div >{{agent.nom}}</div>
-                  
-                </td>
-                <td >{{agent.prenom}}</td>
-                <td> {{agent.username}}</td>
+                <td>{{agent.direction_id_direction}}</td>
+                <td>{{agent.bureau_id_bureau}}</td>
+                <td><div>{{agent.nom}}</div></td>
+                <td>{{agent.prenom}}</td>
+                <td>{{agent.username}}</td>
                 <td>
                   <span class="badge 
                     {% if agent.role.value == 'directeur' %}badge-red
                     {% elif agent.role.value == 'chef bureau' %}badge-green
-                    {% elif agent.role.value == 'agent' %}badge-green
-                    
+                    {% elif agent.role.value == 'agent' %}badge-orange
                     {% endif %}">
                     {{ agent.role.value }}
                   </span>
                 </td>
-               <td><a  class="btn btn-primary btn-detail">Modifier</a></td>
-               </tr>
-               {%endfor%} 
+                <td>
+                  {% if c_agent.role.value in ['directeur','chef bureau'] %}
+                  <a class="btn btn-primary btn-detail">Modifier</a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %} 
             </tbody>
           </table>
         </div>
@@ -483,6 +557,8 @@ const overlay = document.getElementById('overlay');
 const panel = document.getElementById('formPanel');
 const closeUserPanel = document.getElementById('closeUserPanel');
 
+
+
 addUserBtn.addEventListener('click', () => {
   overlay.classList.remove('hidden');
   // trigger reflow for animation to apply correctly
@@ -539,6 +615,73 @@ detailsOverlay.addEventListener('click', (e) => {
 });
 
 </script>
+<script>
+// Ajouter ce script pour gérer la suppression
+document.addEventListener('DOMContentLoaded', function() {
+  const deleteBtn = document.getElementById('deleteBtn');
+  const deleteOverlay = document.getElementById('deleteOverlay');
+  const deletePanel = document.getElementById('deletePanel');
+  const closeDeletePanel = document.getElementById('closeDeletePanel');
+  const cancelDelete = document.getElementById('cancelDelete');
+  const deleteForm = document.getElementById('deleteForm');
 
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+      deleteOverlay.classList.remove('hidden');
+      void deletePanel.offsetWidth;
+      deletePanel.classList.add('show');
+    });
+  }
+
+  if (closeDeletePanel) {
+    closeDeletePanel.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (cancelDelete) {
+    cancelDelete.addEventListener('click', () => {
+      deletePanel.classList.remove('show');
+      setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+    });
+  }
+
+  if (deleteForm) {
+    deleteForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const projectId = document.getElementById('deleteProjectId').value;
+      
+      try {
+        const response = await fetch(`/project/${projectId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          window.location.href = '/project'; // Rediriger après suppression
+        } else {
+          alert('Erreur lors de la suppression du projet');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Une erreur est survenue');
+      }
+    });
+  }
+
+  if (deleteOverlay) {
+    deleteOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteOverlay) {
+        deletePanel.classList.remove('show');
+        setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>

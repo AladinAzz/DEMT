@@ -33,64 +33,61 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
-      </a>
-      <a href="/fournisseur" class="sidebar-link" data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
       </a>
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      
-
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link" data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
   <main>
     <div class="header">
-        <div>
-          <h1>Tableau des achats sur facture</h1>
-          <p>Aperçu sur les achats sur facture</p>
-        </div>
-        <div class="action">
-       <div class="profile">
-  <img src="/static/user.png" alt="User">
-</div>
-
-        <div class="menu">
-            <h3>
-                {{agent.nom}} {{agent.prenom}}
-                <div>
-                    {{agent.role.value}}
-                </div>
-            </h3>
-            <ul>
-                <li>
-                   
-                    <a href="/user">My Profile</a>
-                </li>
-                <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
-                    <script>
-                    function destroyAccessTokenCookie() {
-                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-                    </script>
-            </ul>
-        </div>
-    </div>
-
+      <div>
+        <h1>Tableau des achats sur facture</h1>
+        <p>Aperçu sur les achats sur facture</p>
       </div>
+      <div class="action">
+        <div class="profile">
+          <img src="/static/user.png" alt="User">
+        </div>
+        <div class="menu">
+          <h3>
+            {{agent.nom}} {{agent.prenom}}
+            <div>
+              {{agent.role.value}}
+            </div>
+          </h3>
+          <ul>
+            <li>
+              <a href="/user">My Profile</a>
+            </li>
+            <li>
+              <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+              <script>
+                function destroyAccessTokenCookie() {
+                  document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }
+              </script>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <script>
-  const profile = document.querySelector('.profile');
+      const profile = document.querySelector('.profile');
 const toggleMenu = document.querySelector('.menu');
 
 profile.addEventListener('click', (e) => {
@@ -102,11 +99,12 @@ document.addEventListener('click', () => {
     toggleMenu.classList.remove('active');
 });
 
-</script>
-    
+    </script>
     <div class="header">
       <h1>Achat sur facture</h1>
+      {% if agent.role.value in ['directeur', 'chef bureau'] %}
       <button id="addUserBtn" class="btn-primary">+ Ajouter une achat</button>
+      {% endif %}
     </div>
 
 

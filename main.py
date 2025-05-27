@@ -59,17 +59,14 @@ async def custom_unauthorized_handler(request: Request, exc: HTTPException):
 
 @app.get("/", response_class=RedirectResponse)
 async def root(current_agent: Agent = Depends(security.get_current_agent)):
-    return RedirectResponse(url=f"/{current_agent.role.value}", status_code=302)
+    return RedirectResponse(url=f"/acceuil", status_code=302)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.get("/directeur", response_class=HTMLResponse)
-async def login_page(request: Request):
-    
-    return RedirectResponse(url="/acceuil")
+
 
 
 

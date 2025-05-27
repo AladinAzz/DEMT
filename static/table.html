@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="stylesheet" href="/static/styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/data/chart.umd.min.js"></script>
+ 
   <style>
     .dashboard {
       display: flex;
@@ -38,6 +39,9 @@
   </style>
 </head>
 <body>
+  {% if agent.role.value == 'agent' %}
+    <script>window.location.href = '/projets';</script>
+  {% endif %}
   <div class="container">
     <!-- Sidebar -->
    <aside id="sidebar">
@@ -52,7 +56,7 @@
         <i class="fas fa-chart-line"></i>
         <span>Acceuil</span>
       </a>
-      <a href="/project" class="sidebar-link " data-tooltip="Projets">
+      <a href="/project" class="sidebar-link" data-tooltip="Projets">
         <i class="fas fa-folder"></i>
         <span>Projets</span>
       </a>
@@ -64,16 +68,24 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      
+      <a href="/settings" class="sidebar-link" data-tooltip="settings">
+        <i class="fas fa-cog"></i>
+        <span>paramétre</span>
+      </a>
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link" data-tooltip="Fournisseur">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
 

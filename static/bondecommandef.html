@@ -33,14 +33,12 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {%if agent.role.value != 'agent'%}
       <a href="/agent" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
-      </a>
+      
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
@@ -50,8 +48,11 @@
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-
-
+{%endif%}
+<a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
   <main>
@@ -108,10 +109,13 @@ document.addEventListener('click', () => {
     <div class="header">
       <h1>Achat sur facture</h1>
       <div class="button-group">
-         
+        {% if agent.role.value in ['directeur', 'chef bureau'] %}
         <button id="modifyBtn" class="btn-primary">Modifier Achat</button>
         <button id="deleteBtn" class="btn-primary">Supprimer Achat</button>
+        {% endif %}
+        {% if agent.role.value in ['directeur', 'chef bureau', 'agent'] %}
         <button id="addUserBtn" class="btn-primary" >+ Ajouter un bon</button>
+        {% endif %}
       </div>
     </div>
 
@@ -485,7 +489,9 @@ document.addEventListener('click', () => {
                           <td>{{ etat.date_debut|format_date_fr }}</td>
                           <td>{{ etat.agent_id_agent }}</td>
                           <td>
+                            {% if agent.role.value != 'agent' %}
                             <button type="button" class="btn btn-primary" onclick="deleteEtat('{{etat.id_historique}}', this)">Supprimer</button>
+                            
                             <script>
                             function deleteEtat(id, btn) {
                               if (confirm("Êtes-vous sûr de vouloir supprimer cet état ?")) {
@@ -508,6 +514,7 @@ document.addEventListener('click', () => {
                             }
                             </script>
                             </form>
+                            {% endif %}
                           </td>
                         </tr>
                         {% endif %}

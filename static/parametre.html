@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
+  {% if agent.role.value == 'agent' %}
+    <script>window.location.href = '/project';</script>
+  {% endif %}
   <aside id="sidebar">
     <div class="sidebar-header">
       <span class="sidebar-title">Administration</span>

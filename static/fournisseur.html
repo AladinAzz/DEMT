@@ -6,6 +6,7 @@
   <title>Admin Sidebar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <aside id="sidebar">
@@ -32,52 +33,73 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
-      <a href="/users" class="sidebar-link " data-tooltip="Agents">
+      {% if agent.role.value != 'agent' %}
+      <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
       </a>
-      <a href="/fournisseur" class="sidebar-link active" data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
-      </a>
-
-
-      
-     
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
+      </a>
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link active" data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
       </a>
     </nav>
   </aside>
   <main>
 
     
-    <div class="user-profile">
-  <div class="user-info">
-    <i class="fas fa-bell icon-bell" aria-hidden="true"></i>
-    <div class="user-details">
-      <span class="user-name">Administrateur</span>
-      <div class="user-avatar">A</div>
-    </div>
-  </div>
+   <div class="header">
+        <div>
+          <h1>Tableau des fournisseurs</h1>
+          
+        </div>
+        <div class="action">
+       <div class="profile">
+  <img src="/static/user.png" alt="User">
 </div>
+
+        <div class="menu">
+            <h3>
+                {{agent.nom}} {{agent.prenom}}
+                <div>
+                    {{agent.role.value}}
+                </div>
+            </h3>
+            <ul>
+                <li>
+                   
+                    <a href="/user">My Profile</a>
+                </li>
+                <li>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <script>
+                    function destroyAccessTokenCookie() {
+                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    </script>
+            </ul>
+        </div>
+    </div>
+
+      </div>
 <div class="header">
   <h1>Fournisseur</h1>
-  
-   <div class="button-group">
+  <div class="button-group">
+    {% if agent.role.value in ['directeur', 'chef bureau', 'agent'] %}
     <button id="addUserBtn" class="btn-primary">Ajouter un Fournisseur</button>
-       
-         
-        
-        <button id="deleteBtn" class="btn-primary">Supprimer un Fournisseur</button>
-      </div>
-  
+    {% endif %}
+    {% if agent.role.value in ['directeur', 'chef bureau'] %}
+    <button id="deleteBtn" class="btn-primary">Supprimer un Fournisseur</button>
+    {% endif %}
+  </div>
 </div>
 
 <div id="overlay" class="overlay hidden">
@@ -161,7 +183,6 @@
           }
         });
         </script>
-        
       </div>
     </div>
 <div id="detailsOverlay" class="overlay hidden">

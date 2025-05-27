@@ -193,6 +193,10 @@
 </style>
 </head>
 <body>
+  <!-- Hide page for agent -->
+{% if agent.role.value == 'agent' %}
+  <script>window.location.href = '/project';</script>
+{% endif %}
   <div class="container">
     <!-- Sidebar -->
      <aside id="sidebar">

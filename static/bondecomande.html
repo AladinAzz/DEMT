@@ -33,85 +33,71 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
-      </a>
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
       </a>
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-
-
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
   <main>
     <div class="header">
-        <div>
-          <h1>Tableau de bons de commande</h1>
-          <p>Aperçu des les bons de commande</p>
+      <div>
+        <h1>Tableau de bons de commande</h1>
+        <p>Aperçu des les bons de commande</p>
+      </div>
+      <div class="action">
+        <div class="profile">
+          <img src="/static/user.png" alt="User">
         </div>
-        <div class="action">
-       <div class="profile">
-  <img src="/static/user.png" alt="User">
-</div>
-
         <div class="menu">
-            <h3>
-                {{agent.nom}} {{agent.prenom}}
-                <div>
-                    {{agent.role.value}}
-                </div>
-            </h3>
-            <ul>
-                <li>
-                   
-                    <a href="/user">My Profile</a>
-                </li>
-                <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
-                    <script>
-                    function destroyAccessTokenCookie() {
-                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-                    </script>
-            </ul>
+          <h3>
+            {{agent.nom}} {{agent.prenom}}
+            <div>
+              {{agent.role.value}}
+            </div>
+          </h3>
+          <ul>
+            <li>
+              <a href="/user">My Profile</a>
+            </li>
+            <li>
+              <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+              <script>
+                function destroyAccessTokenCookie() {
+                  document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }
+              </script>
+            </li>
+          </ul>
         </div>
+      </div>
     </div>
 
-      </div>
-
-<script>
-  const profile = document.querySelector('.profile');
-const toggleMenu = document.querySelector('.menu');
-
-profile.addEventListener('click', (e) => {
-    e.stopPropagation(); // prevent the click from bubbling to document
-    toggleMenu.classList.toggle('active');
-});
-
-document.addEventListener('click', () => {
-    toggleMenu.classList.remove('active');
-});
-
-</script>
-
+    <!-- Button group for actions -->
     <div class="header">
       <h1>Détails Contrat</h1>
       <div class="button-group">
-        
+        {% if agent.role.value in ['directeur', 'chef bureau'] %}
         <button id="modifyContratBtn" class="btn-primary">Modifier Contrat</button>
         <button id="deleteContratBtn" class="btn-primary">Supprimer Contrat</button>
-        <button id="addUserBtn" class="btn-primary" >+ Ajouter un bon</button>
+        {% endif %}
+        {% if agent.role.value in ['directeur', 'chef bureau', 'agent'] %}
+        <button id="addUserBtn" class="btn-primary">+ Ajouter un bon</button>
+        {% endif %}
       </div>
     </div>
 
@@ -567,6 +553,7 @@ document.addEventListener('click', () => {
                           <td>{{ etat.date_debut|format_date_fr }}</td>
                           <td>{{ etat.agent_id_agent }}</td>
                           <td>
+                            {% if agent.role.value != 'agent' %}
                             <button type="button" class="btn btn-primary" onclick="deleteEtat('{{etat.id_historique}}', this)">Supprimer</button>
                             <script>
                             function deleteEtat(id, btn) {
@@ -590,6 +577,7 @@ document.addEventListener('click', () => {
                             }
                             </script>
                             </form>
+                            {%endif%}
                           </td>
                         </tr>
                         {% endif %}

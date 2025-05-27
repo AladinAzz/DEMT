@@ -16,7 +16,6 @@
         <i class="fas fa-bars"></i>
       </button>
     </div>
-    
     <nav class="sidebar-nav">
       <a href="/acceuil" class="sidebar-link" data-tooltip="Tableau de bord">
         <i class="fas fa-chart-line"></i>
@@ -34,13 +33,10 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
-      </a>
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
       </a>
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
@@ -49,6 +45,11 @@
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
+      </a>
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
       </a>
     </nav>
   </aside>
@@ -104,8 +105,10 @@ document.addEventListener('click', () => {
     <div class="header">
       <h1>Projet : {{ projet.nom_projet }}</h1>
       <div class="button-group">
+        {% if agent.role.value in ['directeur', 'chef bureau'] %}
         <button id="modifyBtn" class="btn-primary">Modifier Projet</button>
         <button id="deleteBtn" class="btn-primary">Supprimer Projet</button>
+        {% endif %}
       </div>
     </div>
 
@@ -409,7 +412,7 @@ document.addEventListener('click', () => {
                 </div>
               </div>
             </div>
-          {%if etats%}
+          {% if etats %}
           <div class="group-space">
               <div class="group-box projets">
                 <h3 class="group-title">
@@ -432,40 +435,41 @@ document.addEventListener('click', () => {
                     <tbody>
                       {% for etat in etats %}
                       {% if etat.id_projet == projet.id_projet %}
-                        <tr class="row-hover">
-                          <td>{{ etat.id_historique }}</td>
-                          <td>{{ etat.id_projet }}</td>
-                          <td>{{ etat.etat }}</td>
-                          <td>{{etat.description}}</td>
-                          <td>{{ etat.date_debut|format_date_fr }}</td>
-                          <td>{{ etat.agent_id_agent }}</td>
-                          <td>
-                            <button type="button" class="btn btn-primary" onclick="deleteEtat('{{etat.id_historique}}', this)">Supprimer</button>
-                            <script>
-                            function deleteEtat(id, btn) {
-                              if (confirm("Êtes-vous sûr de vouloir supprimer cet état ?")) {
-                                fetch(`/historiques_etat/${id}`, {
-                                  method: 'DELETE',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  credentials: 'include'
-                                })
-                                .then(res => {
-                                  if (res.ok) {
-                                    // Remove the row from the table
-                                    const row = btn.closest('tr');
-                                    if (row) row.remove();
-                                  } else {
-                                    alert("Erreur lors de la suppression de l'état");
-                                  }
-                                })
-                                .catch(() => alert("Une erreur est survenue"));
-                              }
+                      <tr class="row-hover">
+                        <td>{{ etat.id_historique }}</td>
+                        <td>{{ etat.id_projet }}</td>
+                        <td>{{ etat.etat }}</td>
+                        <td>{{etat.description}}</td>
+                        <td>{{ etat.date_debut|format_date_fr }}</td>
+                        <td>{{ etat.agent_id_agent }}</td>
+                        <td>
+                          {% if agent.role.value != 'agent' %}
+                          <button type="button" class="btn btn-primary" onclick="deleteEtat('{{etat.id_historique}}', this)">Supprimer</button>
+                          {% endif %}
+                          <script>
+                          function deleteEtat(id, btn) {
+                            if (confirm("Êtes-vous sûr de vouloir supprimer cet état ?")) {
+                              fetch(`/historiques_etat/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include'
+                              })
+                              .then(res => {
+                                if (res.ok) {
+                                  // Remove the row from the table
+                                  const row = btn.closest('tr');
+                                  if (row) row.remove();
+                                } else {
+                                  alert("Erreur lors de la suppression de l'état");
+                                }
+                              })
+                              .catch(() => alert("Une erreur est survenue"));
                             }
-                            </script>
-                            </form>
-                          </td>
-                        </tr>
-                        {% endif %}
+                          }
+                          </script>
+                        </td>
+                      </tr>
+                      {% endif %}
                       {% endfor %}
 {% else %}
         <div class="card">

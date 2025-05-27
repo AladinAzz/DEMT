@@ -18,6 +18,21 @@ CREATE SCHEMA IF NOT EXISTS `demt1` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb
 USE `demt1` ;
 
 -- -----------------------------------------------------
+-- Table `demt1`.`fournisseur`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `demt1`.`fournisseur` (
+  `id_fournisseur` INT NOT NULL,
+  `nom` VARCHAR(100) NOT NULL,
+  `adresse` TEXT NULL DEFAULT NULL,
+  `contact` TEXT NULL DEFAULT NULL,
+  `email` VARCHAR(100) NULL,
+  PRIMARY KEY (`id_fournisseur`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
 -- Table `demt1`.`direction`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `demt1`.`direction` (
@@ -70,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `demt1`.`projet` (
   `nom_projet` VARCHAR(100) NOT NULL,
   `description` TEXT NULL DEFAULT NULL,
   `date_debut` DATE NOT NULL,
-  `date_fin` DATE NOT NULL,
+  `date_fin` DATE NULL DEFAULT NULL,
   `id_bureau` INT NOT NULL,
   `chapitre_id_chapitre` INT NOT NULL,
   `type` VARCHAR(45) NOT NULL,
@@ -100,9 +115,15 @@ CREATE TABLE IF NOT EXISTS `demt1`.`achat_sur_facture` (
   `id_fournisseur` INT NOT NULL,
   `devise` ENUM('DZD', 'EURO', 'DOLLAR') NULL DEFAULT NULL,
   `etat` VARCHAR(45) NULL DEFAULT NULL,
+  `description` TEXT NULL DEFAULT NULL,
+  `engagement` DOUBLE NULL DEFAULT NULL,
   PRIMARY KEY (`id_facture`),
   INDEX `projet_id_projet` (`projet_id_projet` ASC) VISIBLE,
-  INDEX `fk_achat_sur_facture_fournisseur1_idx` (`id_fournisseur` ASC) VISIBLE,
+  INDEX `fk_achat_sur_facture_fournisseur1_idx` (`id_fournisseur` ASC) INVISIBLE,
+  INDEX `idx_facture_projet_fournisseur` (`id_facture` ASC, `projet_id_projet` ASC, `id_fournisseur` ASC) VISIBLE,
+  CONSTRAINT `achat_sur_facture_fournisseur_1`
+    FOREIGN KEY (`id_fournisseur`)
+    REFERENCES `demt1`.`fournisseur` (`id_fournisseur`),
   CONSTRAINT `achat_sur_facture_ibfk_1`
     FOREIGN KEY (`projet_id_projet`)
     REFERENCES `demt1`.`projet` (`id_projet`))
@@ -118,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `demt1`.`agent` (
   `id_agent` INT NOT NULL,
   `nom` VARCHAR(100) NOT NULL,
   `prenom` VARCHAR(100) NOT NULL,
-  `role` ENUM('directeur', 'chef direction', 'chef bureau', 'agent') NOT NULL,
+  `role` VARCHAR(45) NOT NULL,
   `direction_id_direction` INT NOT NULL,
   `password` VARCHAR(100) NOT NULL,
   `bureau_id_bureau` INT NOT NULL,
@@ -130,46 +151,6 @@ CREATE TABLE IF NOT EXISTS `demt1`.`agent` (
   CONSTRAINT `fk_agent_direction1`
     FOREIGN KEY (`direction_id_direction`)
     REFERENCES `demt1`.`direction` (`id_direction`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `demt1`.`bon_de_commande`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `demt1`.`bon_de_commande` (
-  `id_bon` INT NOT NULL,
-  `date_bon` DATE NOT NULL,
-  `description` TEXT NULL DEFAULT NULL,
-  `montant` DOUBLE NOT NULL,
-  `etat` VARCHAR(50) NOT NULL,
-  `date_de_notification` DATE NULL DEFAULT NULL,
-  `delais` INT NOT NULL,
-  `agent_id_agent` INT NOT NULL,
-  `id_contrat` VARCHAR(45) NULL DEFAULT NULL,
-  `id_facture` VARCHAR(45) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_bon`),
-  INDEX `agent_id_agent` (`agent_id_agent` ASC) VISIBLE,
-  INDEX `fk_bon_de_commande_contract1_idx` (`id_contrat` ASC) VISIBLE,
-  INDEX `fk_bon_de_commande_achat_sur_facture1_idx` (`id_facture` ASC) VISIBLE,
-  CONSTRAINT `bon_de_commande_ibfk_2`
-    FOREIGN KEY (`agent_id_agent`)
-    REFERENCES `demt1`.`agent` (`id_agent`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `demt1`.`fournisseur`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `demt1`.`fournisseur` (
-  `id_fournisseur` INT NOT NULL,
-  `nom` VARCHAR(100) NOT NULL,
-  `adresse` TEXT NULL DEFAULT NULL,
-  `contact` TEXT NULL DEFAULT NULL,
-  PRIMARY KEY (`id_fournisseur`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -199,7 +180,60 @@ CREATE TABLE IF NOT EXISTS `demt1`.`contract` (
   INDEX `fk_contract_projet1_idx` (`projet_id_projet` ASC, `projet_chapitre_id_chapitre` ASC) VISIBLE,
   CONSTRAINT `contract_ibfk_2`
     FOREIGN KEY (`id_fournisseur`)
-    REFERENCES `demt1`.`fournisseur` (`id_fournisseur`))
+    REFERENCES `demt1`.`fournisseur` (`id_fournisseur`),
+  CONSTRAINT `projet`
+    FOREIGN KEY (`projet_id_projet` , `projet_chapitre_id_chapitre`)
+    REFERENCES `demt1`.`projet` (`id_projet` , `chapitre_id_chapitre`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `demt1`.`bon_de_commande`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `demt1`.`bon_de_commande` (
+  `id_bon` INT NOT NULL,
+  `date_bon` DATE NOT NULL,
+  `description` TEXT NULL DEFAULT NULL,
+  `montant` DOUBLE NOT NULL,
+  `etat` VARCHAR(50) NOT NULL,
+  `date_de_notification` DATE NULL DEFAULT NULL,
+  `delais` INT NOT NULL,
+  `agent_id_agent` INT NOT NULL,
+  `contract_id_contrat` VARCHAR(45) NULL DEFAULT NULL,
+  `contract_id_fournisseur` INT NULL DEFAULT NULL,
+  `contract_id_projet` INT NULL DEFAULT NULL,
+  `achat_sur_facture_id_facture` VARCHAR(45) NULL DEFAULT NULL,
+  `achat_sur_facture_projet_id_projet` INT NULL DEFAULT NULL,
+  `achat_sur_facture_id_fournisseur` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`id_bon`),
+  INDEX `agent_id_agent` (`agent_id_agent` ASC) VISIBLE,
+  INDEX `fk_bon_de_commande_contract1_idx` (`contract_id_contrat` ASC) VISIBLE,
+  INDEX `bon_de_commande_ibfk_3_idx` (`achat_sur_facture_id_facture` ASC, `achat_sur_facture_projet_id_projet` ASC, `achat_sur_facture_id_fournisseur` ASC) VISIBLE,
+  INDEX `bon_de_commande_ibfk_4_idx` (`contract_id_projet` ASC, `contract_id_fournisseur` ASC, `contract_id_contrat` ASC) VISIBLE,
+  CONSTRAINT `bon_de_commande_ibfk_2`
+    FOREIGN KEY (`agent_id_agent`)
+    REFERENCES `demt1`.`agent` (`id_agent`),
+  CONSTRAINT `bon_de_commande_ibfk_3`
+    FOREIGN KEY (`achat_sur_facture_id_facture` , `achat_sur_facture_projet_id_projet` , `achat_sur_facture_id_fournisseur`)
+    REFERENCES `demt1`.`achat_sur_facture` (`id_facture` , `projet_id_projet` , `id_fournisseur`),
+  CONSTRAINT `bon_de_commande_ibfk_4`
+    FOREIGN KEY (`contract_id_projet` , `contract_id_fournisseur` , `contract_id_contrat`)
+    REFERENCES `demt1`.`contract` (`id_projet` , `id_fournisseur` , `id_contrat`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `demt1`.`etat`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `demt1`.`etat` (
+  `id_etat` INT NOT NULL AUTO_INCREMENT,
+  `nom` VARCHAR(100) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_etat`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -236,7 +270,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `demt1`.`pv_de_reception` (
   `id_PV` VARCHAR(45) NOT NULL,
-  `date` DATE NOT NULL,
+  `date_pv` DATE NOT NULL,
   `description` TEXT NULL DEFAULT NULL,
   `id_bon` INT NOT NULL,
   `agent_id_agent` INT NOT NULL,
@@ -312,6 +346,18 @@ DELIMITER $$
 USE `demt1`$$
 CREATE
 DEFINER=`root`@`localhost`
+TRIGGER `demt1`.`fournisseur_BEFORE_INSERT`
+BEFORE INSERT ON `demt1`.`fournisseur`
+FOR EACH ROW
+BEGIN
+DECLARE identifier INT;
+    SELECT IFNULL(MAX(id_fournisseur), 0) INTO identifier FROM fournisseur;
+    SET NEW.id_fournisseur = identifier + 1;
+END$$
+
+USE `demt1`$$
+CREATE
+DEFINER=`root`@`localhost`
 TRIGGER `demt1`.`direction_BEFORE_INSERT`
 BEFORE INSERT ON `demt1`.`direction`
 FOR EACH ROW
@@ -340,6 +386,9 @@ TRIGGER `demt1`.`projet_BEFORE_INSERT_date`
 BEFORE INSERT ON `demt1`.`projet`
 FOR EACH ROW
 BEGIN
+ DECLARE identifier INT;
+    SELECT IFNULL(MAX(id_projet), 0) INTO identifier FROM projet;
+    SET NEW.id_projet = identifier + 1;
   IF NEW.date_fin < NEW.date_debut THEN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'End date cannot be before start date';
@@ -369,18 +418,6 @@ BEGIN
     DECLARE identifier INT;
     SELECT IFNULL(MAX(id_agent), 0) INTO identifier FROM agent;
     SET NEW.id_agent = identifier + 1;
-END$$
-
-USE `demt1`$$
-CREATE
-DEFINER=`root`@`localhost`
-TRIGGER `demt1`.`fournisseur_BEFORE_INSERT`
-BEFORE INSERT ON `demt1`.`fournisseur`
-FOR EACH ROW
-BEGIN
-DECLARE identifier INT;
-    SELECT IFNULL(MAX(id_fournisseur), 0) INTO identifier FROM fournisseur;
-    SET NEW.id_fournisseur = identifier + 1;
 END$$
 
 USE `demt1`$$

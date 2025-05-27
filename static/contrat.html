@@ -33,25 +33,24 @@
         <i class="fas fa-receipt"></i>
         <span>Achat sur Facture</span>
       </a>
+      {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
         <i class="fas fa-users"></i>
         <span>Agents</span>
-      </a>
-      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
-        <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
       </a>
       <a href="/notification" class="sidebar-link" data-tooltip="Notifications">
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-
-
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
         <span>paramétre</span>
       </a>
-      
+      {% endif %}
+      <a href="/fournisseur" class="sidebar-link " data-tooltip="Agents">
+        <i class="fas fa-users"></i>
+        <span>Fournisseur</span>
+      </a>
     </nav>
   </aside>
   <main>
@@ -106,7 +105,9 @@ document.addEventListener('click', () => {
 </script>
     <div class="header">
       <h1>Contrats</h1>
+      {% if agent.role.value in ['directeur', 'chef bureau'] %}
       <button id="addUserBtn" class="btn-primary">+ Ajouter un contrat</button>
+      {% endif %}
     </div>
 
     <div id="overlay" class="overlay hidden">
