@@ -36,6 +36,7 @@
     canvas {
       max-width: 100%;
     }
+    /* Print button styles */
     .print-btn {
     display: inline-flex;
     align-items: center;
@@ -60,101 +61,143 @@
   }
 
   @media print {
+    /* Page setup */
+    @page {
+      size: landscape;
+      margin: 1cm;
+    }
+
+    /* Hide UI elements */
     #sidebar,
     .action,
-    .print-btn {
+    .print-btn,
+    .btn-primary,
+    .button-group,
+    .search-form,
+    .sidebar-header,
+    .sidebar-nav,
+    .overlay,
+    .form-panel,
+    .profile,
+    .menu,
+    .btn {
       display: none !important;
     }
 
+    /* Layout adjustments */
+    main {
+      margin-left: 0 !important;
+      padding: 10px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    /* Table styles */
     .data-table {
-      width: 100%;
+      width: 100% !important;
       border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 12px;
+      margin: 10px 0;
+      font-size: 8pt;
+      page-break-inside: auto;
+      table-layout: fixed !important;
+    }
+
+    .data-table thead {
+      display: table-header-group;
+    }
+
+    .data-table tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
     }
 
     .data-table th,
     .data-table td {
-      border: 1px solid #000;
-      padding: 8px;
-      text-align: left;
+      padding: 4px 6px;
+      border: 0.5pt solid #000;
+      white-space: normal;
+      word-wrap: break-word;
+      font-size: 8pt;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .data-table th {
       background-color: #f0f0f0 !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
-    }
-
-    .data-table tr {
-      page-break-inside: avoid;
-    }
-
-    /* Hide unnecessary elements in tables */
-    .data-table .btn,
-    .data-table .actions {
-      display: none;
-    }
-
-    /* Adjust table wrapper */
-    .table-wrapper {
-      margin: 0;
-      padding: 0;
-      box-shadow: none;
-      border: none;
+      font-weight: bold;
     }
 
     /* Group box styling */
     .group-box {
       break-inside: avoid;
-      margin: 20px 0;
+      margin: 10px 0;
       padding: 0;
       border: none;
       box-shadow: none;
-    }
-
-    .group-title {
-      font-size: 14px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #000;
-    }
-
-    /* Ensure text is black for better printing */
-    .font-medium,
-    .text-muted {
-      color: #000 !important;
-    }
-
-    /* Remove hover effects */
-    .row-hover:hover {
-      background: none;
-    }
-
-    .main {
-      margin-left: 0 !important;
-      padding: 20px !important;
       width: 100% !important;
     }
 
-    body {
-      padding: 0;
-      margin: 0;
+    .group-title {
+      font-size: 12pt;
+      margin-bottom: 8px;
+      border-bottom: 1pt solid #000;
+      font-weight: bold;
+    }
+
+    /* Remove decorative elements */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+
+    /* Force backgrounds to print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Hide scrollbars */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Ensure content fits width */
+    .group-space,
+    .section-space {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+    }
+
+    /* Charts and dashboard styling */
+    .dashboard {
+      page-break-before: always;
+      margin: 20px 0;
     }
 
     .cards {
       page-break-inside: avoid;
+      margin: 20px 0;
     }
 
-    .dashboard {
-      page-break-before: always;
+    .card {
+      break-inside: avoid;
+      border: none;
+      box-shadow: none;
+      margin: 10px 0;
     }
 
-    .group-space {
-      page-break-inside: avoid;
+    /* Header styles */
+    .header h1 {
+      font-size: 18pt;
+      margin-bottom: 5px;
     }
 
-    table {
-      page-break-inside: avoid;
+    .header p {
+      font-size: 10pt;
+      margin: 0;
     }
   }
   </style>
@@ -218,7 +261,7 @@
           <p>Aperçu des activités et statistiques</p>
         </div>
         <div class="button-group">
-          <button onclick="printPage()" class="primary-btn">
+          <button onclick="printPage()" class="primary-btn print-btn">
       <i class="fas fa-print"></i>
       Imprimer
     </button>
@@ -776,8 +819,47 @@ deleteOverlay.addEventListener('click', (e) => {
   }
 });
 function printPage() {
-    window.print();
+  // Pre-print adjustments
+  const tables = document.querySelectorAll('.data-table');
+  
+  tables.forEach(table => {
+    // Calculate column widths
+    const columnCount = table.rows[0].cells.length;
+    const columnWidth = (100 / columnCount).toFixed(2) + '%';
+    
+    // Create and apply styles
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = `
+      @media print {
+        .data-table th,
+        .data-table td {
+          width: ${columnWidth} !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleTag);
+    
+    // Set table layout to fixed
+    table.style.tableLayout = 'fixed';
+    
+    // Ensure headers repeat
+    const thead = table.querySelector('thead');
+    if (thead) {
+      thead.style.display = 'table-header-group';
+    }
+  });
+
+  // Trigger print
+  window.print();
+}
+
+// Optional: Add keyboard shortcut
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault();
+    printPage();
   }
+});
 
 </script>
 </body>
