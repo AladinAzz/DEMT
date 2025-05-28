@@ -348,8 +348,10 @@ def acceuil_page(
     chapters = crud.ChapitreCRUD.get_all(db)
     
     return templates.TemplateResponse("acceuil.html", {
+        
         "request": request,
         "chapitres": chapters,
+        "current_year":datetime.now().year,
         "agent": current_agent
     })
     

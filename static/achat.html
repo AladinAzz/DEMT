@@ -7,6 +7,126 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+  /* Print button styles */
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 16px;
+    transition: background-color 0.2s;
+  }
+
+  .print-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .print-btn i {
+    font-size: 16px;
+  }
+
+  @media print {
+    /* Page setup */
+    @page {
+      size: landscape;
+      margin: 1cm;
+    }
+
+    /* Hide UI elements */
+    #sidebar,
+    .action,
+    .print-btn,
+    .btn-primary,
+    .button-group,
+    .search-form,
+    .sidebar-header,
+    .sidebar-nav,
+    .overlay,
+    .form-panel,
+    .profile,
+    .menu,
+    .btn {
+      display: none !important;
+    }
+
+    /* Layout adjustments */
+    main {
+      margin-left: 0 !important;
+      padding: 10px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    /* Table styles */
+    .data-table {
+      width: 100% !important;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 8pt;
+      page-break-inside: auto;
+      table-layout: fixed !important;
+    }
+
+    .data-table thead {
+      display: table-header-group;
+    }
+
+    .data-table tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 4px 6px;
+      border: 0.5pt solid #000;
+      white-space: normal;
+      word-wrap: break-word;
+      font-size: 8pt;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .data-table th {
+      background-color: #f0f0f0 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-weight: bold;
+    }
+
+    /* Remove decorative elements */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+
+    /* Force backgrounds to print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Hide scrollbars */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Ensure content fits width */
+    .group-space,
+    .section-space {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+    }
+  }
+</style>
 </head>
 <body>
   <aside id="sidebar">
@@ -102,10 +222,16 @@ document.addEventListener('click', () => {
     </script>
     <div class="header">
       <h1>Achats sur facture</h1>
+      <div class="button-group">
+      <button onclick="printPage()" class="btn-primary">
+      <i class="fas fa-print"></i>
+      Imprimer
+    </button>
       {% if agent.role.value in ['directeur', 'chef bureau'] %}
       <button id="addUserBtn" class="btn-primary">+ Ajouter un achat</button>
       {% endif %}
     </div>
+  </div>
 
 
 <div id="modifyOverlay" class="overlay hidden">
@@ -467,6 +593,50 @@ overlay.addEventListener('click', (e) => {
 });
 
 </script>
+<script>
+  // Print functionality
+  function printPage() {
+    // Pre-print adjustments
+    const tables = document.querySelectorAll('.data-table');
+    
+    tables.forEach(table => {
+      // Calculate column widths
+      const columnCount = table.rows[0].cells.length;
+      const columnWidth = (100 / columnCount).toFixed(2) + '%';
+      
+      // Create and apply styles
+      const styleTag = document.createElement('style');
+      styleTag.innerHTML = `
+        @media print {
+          .data-table th,
+          .data-table td {
+            width: ${columnWidth} !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleTag);
+      
+      // Set table layout to fixed
+      table.style.tableLayout = 'fixed';
+      
+      // Ensure headers repeat
+      const thead = table.querySelector('thead');
+      if (thead) {
+        thead.style.display = 'table-header-group';
+      }
+    });
 
+    // Trigger print
+    window.print();
+  }
+
+  // Optional: Add keyboard shortcut
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      e.preventDefault();
+      printPage();
+    }
+  });
+</script>
 </body>
 </html>

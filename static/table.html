@@ -36,6 +36,127 @@
     canvas {
       max-width: 100%;
     }
+    .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 16px;
+    transition: background-color 0.2s;
+  }
+
+  .print-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .print-btn i {
+    font-size: 16px;
+  }
+
+  @media print {
+    #sidebar,
+    .action,
+    .print-btn {
+      display: none !important;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: #f0f0f0 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .data-table tr {
+      page-break-inside: avoid;
+    }
+
+    /* Hide unnecessary elements in tables */
+    .data-table .btn,
+    .data-table .actions {
+      display: none;
+    }
+
+    /* Adjust table wrapper */
+    .table-wrapper {
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+      border: none;
+    }
+
+    /* Group box styling */
+    .group-box {
+      break-inside: avoid;
+      margin: 20px 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    .group-title {
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #000;
+    }
+
+    /* Ensure text is black for better printing */
+    .font-medium,
+    .text-muted {
+      color: #000 !important;
+    }
+
+    /* Remove hover effects */
+    .row-hover:hover {
+      background: none;
+    }
+
+    .main {
+      margin-left: 0 !important;
+      padding: 20px !important;
+      width: 100% !important;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .cards {
+      page-break-inside: avoid;
+    }
+
+    .dashboard {
+      page-break-before: always;
+    }
+
+    .group-space {
+      page-break-inside: avoid;
+    }
+
+    table {
+      page-break-inside: avoid;
+    }
+  }
   </style>
 </head>
 <body>
@@ -96,7 +217,14 @@
           <h1>Tableau de bord du chapitre</h1>
           <p>Aperçu des activités et statistiques</p>
         </div>
+        <div class="button-group">
+          <button onclick="printPage()" class="primary-btn">
+      <i class="fas fa-print"></i>
+      Imprimer
+    </button>
+        </div>
         <div class="action">
+
        <div class="profile">
   <img src="/static/user.png" alt="User">
 </div>
@@ -133,7 +261,7 @@
       <div class="cards">
         <div class="card1">
           <h3>Projets En Cours</h3>
-          <p>{{ chapitre.nb_projets or 0 }}</p>
+          <p>{{ chapitre.nb_projets-chapitre.nb_pre or 0 }}</p>
           <small>Projets en cours</small>
         </div>
         <div class="card1">
@@ -647,7 +775,9 @@ deleteOverlay.addEventListener('click', (e) => {
     setTimeout(() => deleteOverlay.classList.add('hidden'), 300);
   }
 });
-
+function printPage() {
+    window.print();
+  }
 
 </script>
 </body>

@@ -8,6 +8,255 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
+<style>
+  /* Dashboard layout */
+  .dashboard {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+  }
+
+  .card h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+  }
+
+  canvas {
+    max-width: 100%;
+  }
+
+  /* Print button styles */
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 16px;
+    transition: background-color 0.2s;
+  }
+
+  .print-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .print-btn i {
+    font-size: 16px;
+  }
+
+  /* Print styles */
+  @media print {
+    /* Page setup */
+    @page {
+      size: landscape;
+      margin: 1cm;
+    }
+
+    /* Hide elements */
+    #sidebar,
+    .action,
+    .print-btn,
+    .btn-primary,
+    .button-group,
+    .search-form,
+    .sidebar-header,
+    .sidebar-nav,
+    .overlay,
+    .form-panel,
+    .profile,
+    .menu,
+    .btn {
+      display: none !important;
+    }
+
+    /* Layout adjustments */
+    main {
+      margin-left: 0 !important;
+      padding: 10px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .container {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    /* Table styles */
+    .data-table {
+      width: 100% !important;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 9pt;
+      page-break-inside: auto;
+      table-layout: fixed !important;
+    }
+
+    .data-table thead {
+      display: table-header-group;
+    }
+
+    .data-table tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 4px 6px;
+      border: 0.5pt solid #000;
+      white-space: normal;
+      word-wrap: break-word;
+      font-size: 9pt;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .data-table th {
+      background-color: #f0f0f0 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-weight: bold;
+    }
+
+    /* Section spacing */
+    .section-space {
+      margin-bottom: 20px;
+      page-break-before: auto;
+    }
+
+    /* Group box styling */
+    .group-box {
+      break-inside: avoid;
+      margin: 10px 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      width: 100% !important;
+    }
+
+    .group-title {
+      font-size: 12pt;
+      margin-bottom: 8px;
+      border-bottom: 1pt solid #000;
+      font-weight: bold;
+    }
+
+    /* Text formatting */
+    .font-medium {
+      font-size: 9pt;
+      margin: 0;
+      color: #000 !important;
+    }
+
+    .text-muted {
+      font-size: 8pt;
+      margin: 0;
+      color: #000 !important;
+    }
+
+    /* Table wrapper adjustments */
+    .table-wrapper {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-shadow: none;
+      border: none;
+      overflow: visible !important;
+    }
+
+    /* Basic page setup */
+    body {
+      padding: 0 !important;
+      margin: 0 !important;
+      color: #000;
+      background: #fff;
+      width: 100% !important;
+    }
+
+    /* Headers */
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin-top: 0;
+      font-size: 18pt;
+      color: #000;
+    }
+
+    .header p {
+      font-size: 10pt;
+      color: #000;
+      margin: 5px 0;
+    }
+
+    /* Icons */
+    .icon {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Remove decorative elements */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+
+    /* Force backgrounds to print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Hide scrollbars */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Ensure content fits width */
+    .group-space,
+    .section-space {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+    }
+
+    /* Prevent unwanted breaks */
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+
+    img {
+      page-break-inside: avoid;
+    }
+
+    /* Table cell width control */
+    .data-table th,
+    .data-table td {
+      width: auto !important;
+    }
+  }
+</style>
 <body>
   <aside id="sidebar">
     <div class="sidebar-header">
@@ -59,6 +308,7 @@
           <h1>Details projet</h1>
           <p>Aperçu sur les etats ,les contrats et les achats</p>
         </div>
+        
         <div class="action">
        <div class="profile">
   <img src="/static/user.png" alt="User">
@@ -105,10 +355,15 @@ document.addEventListener('click', () => {
     <div class="header">
       <h1>Projet : {{ projet.nom_projet }}</h1>
       <div class="button-group">
+
         {% if agent.role.value in ['directeur', 'chef bureau'] %}
         <button id="modifyBtn" class="btn-primary">Modifier Projet</button>
         <button id="deleteBtn" class="btn-primary">Supprimer Projet</button>
         {% endif %}
+        <button onclick="printPage()" class="btn-primary">
+      <i class="fas fa-print"></i>
+      Imprimer
+    </button>
       </div>
     </div>
 
@@ -377,7 +632,7 @@ document.addEventListener('click', () => {
                         <th>Chapitre</th>
                         <th>Nom du projet</th>
                         <th>date</th>
-                        <th>Montant</th>
+                        <th>Estimation budgetaire</th>
                         <th>Type</th>
                         <th>etat</th>
                         <th>Bureau</th>
@@ -897,8 +1152,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-</script>
 
+
+
+
+</script>
+<script>
+// Print functionality
+function printPage() {
+  // Pre-print adjustments
+  const tables = document.querySelectorAll('.data-table');
+  
+  // Adjust table layouts
+  tables.forEach(table => {
+    // Calculate column widths
+    const columnCount = table.rows[0].cells.length;
+    const columnWidth = 100 / columnCount;
+    
+    // Apply widths to all cells
+    const cells = table.querySelectorAll('th, td');
+    cells.forEach(cell => {
+      cell.style.width = columnWidth + '%';
+    });
+    
+    // Ensure headers repeat on each page
+    const thead = table.querySelector('thead');
+    if (thead) {
+      thead.style.display = 'table-header-group';
+    }
+  });
+
+  // Store current scroll position
+  const scrollPos = window.scrollY;
+
+  // Trigger print
+  window.print();
+
+  // Restore scroll position after print dialog closes
+  window.scrollTo(0, scrollPos);
+}
+
+
+// Optional: Add keyboard shortcut for printing
+document.addEventListener('keydown', function(e) {
+  // Ctrl/Cmd + P
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault();
+    printPage();
+  }
+});
+</script>
 
 </body>
 </html>
