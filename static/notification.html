@@ -58,7 +58,7 @@
     
    <div class="header">
         <div>
-          <h1>Tableau des fournisseurs</h1>
+          <h1>Tableau des notifications</h1>
           
         </div>
         <div class="action">
@@ -79,7 +79,7 @@
                     <a href="/user">Mon Profil</a>
                 </li>
                 <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Déconnexion</a>
                     <script>
                     function destroyAccessTokenCookie() {
                       document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -91,128 +91,16 @@
 
       </div>
 <div class="header">
-  <h1>Fournisseur</h1>
-  <div class="button-group">
-    {% if agent.role.value in ['directeur', 'chef bureau', 'agent'] %}
-    <button id="addUserBtn" class="btn-primary">Ajouter un fournisseur</button>
-    {% endif %}
-    {% if agent.role.value in ['directeur', 'chef bureau'] %}
-    <button id="deleteBtn" class="btn-primary">Supprimer un fournisseur</button>
-    {% endif %}
-  </div>
+  <h1>Notifications</h1>
+  
 </div>
 
-<div id="overlay" class="overlay hidden">
-  <div id="formPanel" class="form-panel">
-    <button id="closeUserPanel" class="close-btn">&times;</button>
-    <h2>Ajouter un fournisseur</h2>
-    <form id="addFournisseurForm" method="POST">
-      <label>Nom</label>
-      <input type="text" placeholder="Entrez le nom" name="nom" required />
-
-      <label>Adresse</label>
-      <input type="text" placeholder="Entrez l'adresse" name="adresse" required />
-      <label>Contact</label>
-      <input type="text" placeholder="Entrez le contact" name="contact" required />
-      <label>Email</label>
-      <input type="email" placeholder="Entrez l'email" name="email" required />
-
-      <button type="submit" class="btn-submit">Ajouter</button>
-    </form>
-    <script>
-      document.getElementById('addFournisseurForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
-      const data = {
-        nom: form.nom.value,
-        adresse: form.adresse.value,
-        contact: form.contact.value,
-        email: form.email.value
-      };
-      try {
-        const response = await fetch('/fournisseurs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-        });
-        if (response.ok) {
-        // Optionally close modal, reset form, or reload
-        form.reset();
-        location.reload();
-        } else {
-        alert('Erreur lors de l\'ajout du fournisseur');
-        }
-      } catch (err) {
-        alert('Erreur réseau');
-      }
-      });
-    </script>
-  </div>
-</div>
-
-
-<!-- Modal Supprimer Contrat -->
-    <div id="deleteOverlay" class="overlay hidden">
-      <div id="deletePanel" class="form-panel">
-        <button id="closeDeletePanel" class="close-btn">&times;</button>
-        <h2>Supprimer un fournisseur</h2>
-        <form id="deleteFournisseurForm">
-          <label>ID Fournisseur</label>
-          <input type="text" id="deleteFournisseurId" placeholder="Entrez l'identifiant du fournisseur" required />
-          <p>Êtes-vous sûr de vouloir supprimer ce fournisseur ? Cette action est irréversible.</p>
-          <button type="submit" class="btn-submit btn-danger">Supprimer</button>
-        </form>
-        <script>
-        document.getElementById('deleteFournisseurForm').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const id = document.getElementById('deleteFournisseurId').value;
-          try {
-            const response = await fetch(`/fournisseurs/${id}`, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' }
-            });
-            if (response.ok) {
-              location.reload();
-            } else {
-              alert("Erreur lors de la suppression du fournisseur");
-            }
-          } catch (err) {
-            alert("Erreur réseau");
-          }
-        });
-        </script>
-      </div>
-    </div>
-<div id="detailsOverlay" class="overlay hidden">
-  <div id="detailsPanel" class="form-panel">
-    <button id="closeDetailsPanel" class="close-btn">&times;</button>
-    <h2>Modifier le fournisseur</h2>
-    <form>
-      <label>Nom</label>
-      <input type="text" id="detailName" readonly />
-
-      <label>Adresse</label>
-      <input type="text" id="detailaddress" readonly />
-
-      <label>Contact</label>
-      <input type="text" id="detailcontact" readonly />
-
-      <label>Email</label>
-      <input type="email" id="detailemail" readonly />
-      
-       <button type="submit" class="btn-submit">Modifier</button>
-      <!-- Add more fields if needed -->
-    </form>
-  </div>
-</div>
 <form class="search-form">
   <div class="search-wrapper">
     <!-- Dropdown Button -->
     <button id="dropdown-button" type="button" aria-haspopup="listbox" aria-expanded="false" class="dropdown-button">
 
-      <span id="selected-category">All categories</span>
+      <span id="selected-category">Toutes les catégories</span>
       <svg class="dropdown-arrow" fill="none" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4 4-4" />
       </svg>
@@ -237,62 +125,76 @@
         id="searchInput"
         placeholder="Rechercher..."
         class="search-input"
-        aria-label="Search"
+        aria-label="Rechercher"
       />
       
     </div>
   </div>
 </form>
 <section class="section-space">
-  <div class="card">
-    <h2 class="section-title">Liste des fournisseurs</h2>
-
-<div class="table-wrapper">
-  {%if fournisseurs%}
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="w-1">ID Fournisseur</th>
-                <th class="w-3">Nom</th>
-                <th class="w-2">Adresse</th>
-                <th class="w-2">Contact</th>
-                <th class="w-2">Email</th>
-               
-                
-              </tr>
-            </thead>
-            <tbody> {%for fournisseur in fournisseurs%}
-              <tr class="row-hover">
-               
-                <td>{{fournisseur.id_fournisseur}}</td>
-                <td>
-                  <div >{{fournisseur.nom}}</div>
-                  
-                </td>
-                <td >{{fournisseur.adresse}}</td>
-                <td> {{fournisseur.contact}}</td>
-                <td> {{fournisseur.email}}</td>
-              
-               
-              </tr>
-              {%endfor%}
-            
-     
-              <!-- Repeat rows as needed -->
-            </tbody>
-          </table>
-        </div>
-      
-{%else%}
-   <div class="card">
-    <h2>Aucun fournisseur</h2>
-   </div>  
-{%endif%}
-    </div>
-
   
-    
-  
+    <h3 class="group-title">
+              <i class="fas fa-file-invoice icon" style="color: #4CAF50;"></i>
+              <span>Bons de Commande</span>
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>État</th>
+                    <th>Date de notification</th>
+                    <th>Délais</th>
+                    <th>Agent</th>
+                    <th>Projet</th>
+                    <th>Fournisseur</th>
+                    <th>Contrat</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if bons %}
+                    {% for bon in bons %}
+                      <tr class="row-hover">
+                        <td>{{ bon.id_bon }}</td>
+                        <td>
+                          {% if bon.date_bon %}
+                            {{ bon.date_bon|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.description }}</td>
+                        <td>{{ bon.montant }}</td>
+                        <td>{{ bon.etat }}</td>
+                        <td>
+                          {% if bon.date_de_notification %}
+                            {{ bon.date_de_notification|format_date_fr }}
+                          {% else %}
+                            Non spécifié
+                          {% endif %}
+                        </td>
+                        <td>{{ bon.delais }}</td>
+                        <td>{{ bon.agent_id_agent }}</td>
+                        <td>{{ bon.contract_id_projet }}</td>
+                        <td>{{ bon.contract_id_fournisseur }}</td>
+                        <td>{{ bon.contract_id_contrat }}</td>
+                        <td>
+                          <a href="/pv/{{bon.id_bon}}" class="btn btn-primary">Details</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="12" class="text-center text-gray-500">Aucun bon de commande trouvé</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
 </section>
 
 

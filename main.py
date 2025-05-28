@@ -11,6 +11,7 @@ from database import engine, get_db
 from models import Agent
 from routes import router
 import security as security
+from datetime import datetime, timedelta
 
 # Create the database tables if they don't exist
 
@@ -264,6 +265,7 @@ def table_page(id:int,
             chapitre.nb_projets = 0
             chapitre.nb_contrats = 0
             chapitre.nb_achats = 0
+            chapitre.nb_pre=0
             if projets and len(projets) > 0:
                 chapitre.nb_projets = len(projets)
                 contrats=[]
@@ -295,10 +297,15 @@ def table_page(id:int,
                         for etat in etats:
                             if etat.id_projet == projet.id_projet:
                                 projet.etat = etat.etat
+                                if projet.etat == "en cours de preparation":
+                                    chapitre.nb_pre += 1
                                 break
                 else:
                     for projet in projets:
                         projet.etat = etats.etat if etats else None
+                        if projet.etat == "en cours de preparation":
+                            chapitre.nb_pre += 1
+                        
                 
             else:
                 chapitre.nb_projets = 0
@@ -457,5 +464,32 @@ async def profile_page(
     
     
     
+    
+@app.get("/notification", response_class=HTMLResponse)
+async def notification_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_agent: Agent = Depends(security.get_current_agent)
+):
+    bons = crud.BonDeCommandeCRUD.get_all(db)
+    
+    for bon in bons:
+        if hasattr(bon, "date_notification") and hasattr(bon, "delais"):
+            if bon.date_notification and bon.delais:
+                if bon.date_notification + timedelta(days=bon.delais) > datetime.now():
+                    bon.etat = "retard"
+                    crud.BonDeCommandeCRUD.update(db, bon.id_bon, bon.__dict__)
+    
+    bon=[]
+    if isinstance(bons,list): 
+        for b in bons:
+            if b.etat == "retard" :
+                bon.append(b)
+    
+    return templates.TemplateResponse("notification.html", {
+        "request": request,
+        "bons": bon,
+        "agent": current_agent
+    })
     
     

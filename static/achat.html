@@ -19,7 +19,7 @@
     <nav class="sidebar-nav">
       <a href="/acceuil" class="sidebar-link" data-tooltip="Accueil">
         <i class="fas fa-chart-line"></i>
-        <span>Acceuil</span>
+        <span>Accueil</span>
       </a>
       <a href="/project" class="sidebar-link" data-tooltip="Projets">
         <i class="fas fa-folder"></i>
@@ -29,9 +29,9 @@
         <i class="fas fa-file-signature"></i>
         <span>Contrats</span>
       </a>
-      <a href="/achat" class="sidebar-link active" data-tooltip="Achat sur Facture">
+      <a href="/achat" class="sidebar-link active" data-tooltip="Achats sur facture">
         <i class="fas fa-receipt"></i>
-        <span>Achat sur Facture</span>
+        <span>Achats sur facture</span>
       </a>
       {% if agent.role.value != 'agent' %}
       <a href="/users" class="sidebar-link" data-tooltip="Agents">
@@ -42,14 +42,14 @@
         <i class="fas fa-bell"></i>
         <span>Notifications</span>
       </a>
-      <a href="/settings" class="sidebar-link" data-tooltip="settings">
+      <a href="/settings" class="sidebar-link" data-tooltip="Paramètre">
         <i class="fas fa-cog"></i>
-        <span>paramétre</span>
+        <span>Paramètre</span>
       </a>
       {% endif %}
-      <a href="/fournisseur" class="sidebar-link" data-tooltip="Agents">
+      <a href="/fournisseur" class="sidebar-link" data-tooltip="Fournisseurs">
         <i class="fas fa-users"></i>
-        <span>Fournisseur</span>
+        <span>Fournisseurs</span>
       </a>
     </nav>
   </aside>
@@ -72,10 +72,10 @@
           </h3>
           <ul>
             <li>
-              <a href="/user">My Profile</a>
+              <a href="/user">Mon profil</a>
             </li>
             <li>
-              <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+              <a href="/" onclick="destroyAccessTokenCookie()">Déconnexion</a>
               <script>
                 function destroyAccessTokenCookie() {
                   document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -101,9 +101,9 @@ document.addEventListener('click', () => {
 
     </script>
     <div class="header">
-      <h1>Achat sur facture</h1>
+      <h1>Achats sur facture</h1>
       {% if agent.role.value in ['directeur', 'chef bureau'] %}
-      <button id="addUserBtn" class="btn-primary">+ Ajouter une achat</button>
+      <button id="addUserBtn" class="btn-primary">+ Ajouter un achat</button>
       {% endif %}
     </div>
 
@@ -115,49 +115,40 @@ document.addEventListener('click', () => {
         <form id="modifyContratForm">
             <label>ID Achat</label>
             <input type="text" name="id_facture" placeholder="Entrez l'ID d'achat"   />
-            <label >description</label>
+            <label>Description</label>
             <input type="text" name="description" placeholder="Entrez la description"/>
             <label>Date</label>
             <input type="date" name="date"  />
             <label>Montant</label>
-            <input type="number" name="montant" placeholder="Max"  />
+            <input type="number" name="montant" placeholder="Montant"  />
             <label>État</label>
             <select name="etat">
-                <option value="en cours de preparation" >en cours de preparation</option>
-                <option value="demande de facture proforma" >demande de facture proforma</option>
-                <option value="certification" >certification</option>
-                <option value="demande engagement" >demande engagement</option>
-                <option value="instance engagement" >instance engagement</option>
-                <option value="engagement" >engagement</option>
+                <option value="en cours de preparation" >En cours de préparation</option>
+                <option value="demande de facture proforma" >Demande de facture proforma</option>
+                <option value="certification" >Certification</option>
+                <option value="demande engagement" >Demande d'engagement</option>
+                <option value="instance engagement" >Instance engagement</option>
+                <option value="engagement" >Engagement</option>
             </select>
-            
             <div class="input-row">
                     <div class="input-group">
-                      <label>description etat</label>
-            <input type="text" name="description_etat" placeholder="Entrez la description d'etat" />
-               
+                      <label>Description état</label>
+            <input type="text" name="description_etat" placeholder="Entrez la description de l'état" />
                     </div>
                     <div class="input-group">
-                        <label>date etat</label>
-                        <input type="date" name="dateetat" placeholder="Entrez la date d'etat" />
+                        <label>Date état</label>
+                        <input type="date" name="dateetat" placeholder="Entrez la date de l'état" />
                     </div>
             </div>
-           
-            
-            
             <div class="input-row">
-
                 <div class="input-group">
                 <label>ID Projet</label>
-                <input type="text" name="projet_id_projet" placeholder="ID Projet"  />
-            
+                <input type="text" name="projet_id_projet" placeholder="ID projet"  />
                 </div>
                 <div class="input-group">
                 <label>ID Fournisseur</label>
-                <input type="text" name="id_fournisseur" placeholder="ID Fournisseur"  />
-            
+                <input type="text" name="id_fournisseur" placeholder="ID fournisseur"  />
                 </div>
-
             </div>
             
             <div class="input-row">

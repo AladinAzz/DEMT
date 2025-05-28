@@ -140,29 +140,29 @@ document.addEventListener('click', () => {
               <label>État</label>
               <select name="etat">
           <option value="en cours">en cours</option>
-          <option value="terminé">terminé</option>
-          <option value="retard">en retard</option>
+          <option value="terminé">Terminé</option>
+          <option value="retard">En retard</option>
               </select>
             </div>
           </div>
           <label>Date de notification</label>
           <input type="date" name="date_de_notification" placeholder="Entrez la date de notification" />
-          <label>Délais</label>
-          <input type="number" name="delais" placeholder="Entrez le délais" />
+          <label>Délai</label>
+          <input type="number" name="delais" placeholder="Entrez le délai" />
           <label>Agent</label>
           <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly />
           <div class="input-row">
             <div class="input-group">
               <label>ID Projet</label>
-              <input type="text" placeholder="Entrez le projet" name="achat_sur_facture_projet_id_projet" value="{{achat.projet_id_projet}}" />
+              <input type="text" placeholder="Entrez l'ID du projet" name="achat_sur_facture_projet_id_projet" value="{{achat.projet_id_projet}}" />
             </div>
             <div class="input-group">
               <label>ID Fournisseur</label>
-              <input type="text" placeholder="Entrez le fournisseur" name="achat_sur_facture_id_fournisseur" value="{{achat.id_fournisseur}}"/>
+              <input type="text" placeholder="Entrez l'ID du fournisseur" name="achat_sur_facture_id_fournisseur" value="{{achat.id_fournisseur}}"/>
             </div>
             <div class="input-group">
               <label>ID Achat</label>
-              <input type="text" placeholder="Entrez le contrat" name="achat_sur_facture_id_facture" value="{{achat.id_facture}}" readonly />
+              <input type="text" placeholder="Entrez l'ID de l'achat" name="achat_sur_facture_id_facture" value="{{achat.id_facture}}" readonly />
             </div>
           </div>
           <button type="submit" class="btn-submit">Ajouter</button>

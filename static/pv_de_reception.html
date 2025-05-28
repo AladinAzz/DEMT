@@ -44,7 +44,7 @@
       </a>
       <a href="/settings" class="sidebar-link" data-tooltip="settings">
         <i class="fas fa-cog"></i>
-        <span>paramétre</span>
+        <span>Paramètres</span>
       </a>
       {% endif %}
       <a href="/fournisseur" class="sidebar-link" data-tooltip="Fournisseur">
@@ -71,10 +71,10 @@
             <ul>
                 <li>
                    
-                    <a href="/user">My Profile</a>
+                    <a href="/user">Mon Profil</a>
                 </li>
                 <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Déconnexion</a>
                     <script>
                     function destroyAccessTokenCookie() {
                       document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -109,7 +109,7 @@ document.addEventListener('click', () => {
       <div class="button-group">
         {% if agent.role.value in ['directeur', 'chef bureau', 'agent'] %}
         <button id="addUserBtn" class="btn-primary">Ajouter un PV</button>
-        <button id="modifyBtn" class="btn-primary" hidden>Modifier PV</button>
+        <button id="modifyBtn" class="btn-primary" >Modifier Bon</button>
         {% endif %}
         {% if agent.role.value in ['directeur', 'chef bureau'] %}
         <button id="deleteBtn" class="btn-primary">Supprimer PV</button>
@@ -120,12 +120,13 @@ document.addEventListener('click', () => {
     <div id="overlay" class="overlay hidden">
       <div id="formPanel" class="form-panel">
         <button id="closeUserPanel" class="close-btn">&times;</button>
-        <h2>Ajouter un pv de reception</h2>
+        <h2>Ajouter un PV de réception</h2>
       <form id="addPvForm">
+        
         <div class="input-group">
           <div class="input-row">
             <label>ID PV</label>
-            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+            <input type="text" name="id_PV" placeholder="Entrez l'identifiant du PV" /> 
           </div>
           <div class="input-row">
             <label>ID Bon</label>
@@ -197,7 +198,7 @@ document.addEventListener('click', () => {
         <div class="input-group">
           <div class="input-row">
             <label>ID PV</label>
-            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+            <input type="text" name="id_PV" placeholder="Entrez l'identifiant du PV" /> 
           </div>
           <div class="input-row">
             <label>ID Bon</label>
@@ -270,7 +271,7 @@ document.addEventListener('click', () => {
           <div class="input-group">
             <div class="input-row">
               <label>ID PV</label>
-              <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+              <input type="text" name="id_PV" placeholder="Entrez l'identifiant du PV" /> 
             </div>
             <div class="input-row">
               <label>ID Bon</label>
@@ -339,40 +340,105 @@ document.addEventListener('click', () => {
     <div id="modifyOverlay" class="overlay hidden">
       <div id="modifyPanel" class="form-panel">
         <button id="closeModifyPanel" class="close-btn">&times;</button>
-        <h2>Modifier PV</h2>
-        <form>
-          <div class="input-group">
+        <h2>Modifier Bon</h2>
+        {% set bon=bons[0] %}
+        <form id="addBonForm">
+          <label >ID Bon</label>
+          <input type="text" name="id_bon" placeholder="Entrez l'ID Bon" value="{{bon.id_bon}}" readonly/>
+          <label>Date</label>
+          <input type="date" name="date_bon" placeholder="Entrez la date" value="{{bon.date_bon}}"/>
+          <label>Description</label>
+          <input type="text" name="description" placeholder="Entrez la description" value="{{bon.description}}"/>
           <div class="input-row">
-            <label>ID PV</label>
-            <input type="text" name="id_PV" placeholder="Entrez l'ID PV" /> 
+            <div class="input-group">
+              <label>Montant</label>
+              <input type="number" placeholder="Entrez le montant" name="montant" value="{{bon.montant}}" />
+            </div> 
+            <div class="input-group">
+              <label>État</label>
+              <select name="etat">
+          <option value="en cours" {%if bon.etat == "en cours" %} selected {%endif%}>en cours</option>
+          <option value="terminé" {%if bon.etat == "terminé" %} selected {%endif%}>terminé</option>
+          <option value="retard" {%if bon.etat == "en retard" %} selected {%endif%}>en retard</option>
+              </select>
+            </div>
           </div>
+          <label>Date de notification</label>
+          <input type="date" name="date_de_notification" placeholder="Entrez la date de notification" value="{{bon.date_de_notification}}" />
+          <label>Délais</label>
+          <input type="number" name="delais" placeholder="Entrez le délais" value="{{bon.delais}}"/>
+          <label>Agent</label>
+          <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly />
           <div class="input-row">
-            <label>ID Bon</label>
-            <input type="text" name="id_bon" placeholder="Entrez l'ID Bon de Commande"  value="{{bons[0].id_bon}}" readonly/>
+            {% if bon.contract_id_contrat != (None or "")  %}
+            <div class="input-group">
+              <label>ID Projet</label>
+              <input type="text" placeholder="Entrez le projet" name="contract_id_projet" value="{{bon.contract_id_projet}}" readonly />
+            </div>
+            <div class="input-group">
+              <label>ID Fournisseur</label>
+              <input type="text" placeholder="Entrez le fournisseur" name="contract_id_fournisseur" value="{{bon.contract_id_fournisseur}}" readonly/>
+            </div>
+            <div class="input-group">
+              <label>ID Contrat</label>
+              <input type="text" placeholder="Entrez le contrat" name="contract_id_contrat" value="{{bon.contract_id_contrat}}" readonly />
+            </div>
+            {% else %}
+            <div class="input-group">
+              <label>ID Projet</label>
+              <input type="text" placeholder="Entrez le projet" name="achat_sur_facture_projet_id_projet" value="{{bon.achat_sur_facture_projet_id_projet}}" readonly />
+            </div>
+            <div class="input-group">
+              <label>ID Fournisseur</label>
+              <input type="text" placeholder="Entrez le fournisseur" name="achat_sur_facture_id_fournisseur" value="{{bon.achat_sur_facture_id_fournisseur}}" readonly/>
+            </div>
+            <div class="input-group">
+              <label>ID Achat</label>
+              <input type="text" placeholder="Entrez le contrat" name="achat_sur_facture_id_facture" value="{{bon.achat_sur_facture_id_facture}}" readonly />
+            </div>
+            {% endif %}
           </div>
-          <div class="input-row">
-            <label>Date</label>
-            <input type="date" name="date_pv" placeholder="Entrez la date" />
-          </div>
-          <div class="input-row">
-            <label>Description</label>
-            <input type="text" name="description" placeholder="Entrez la description" />
-          </div>
-          <div class="input-row">
-            <label>Date facture</label>
-            <input type="date" placeholder="Entrez la date de facture" name="date_facture" />
-          </div>
-          <div class="input-row">
-            <label>Montant</label>
-            <input type="number" placeholder="Entrez le montant" name="montant" />
-          </div>
-          <div class="input-row">
-            <label>Agent</label>
-            <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly/>
-          </div>
-          <button type="submit" class="btn-submit">Modifier</button>
-        </div>
+          <button type="submit" class="btn-submit">modifier</button>
         </form>
+        <script>
+        document.getElementById('addBonForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            id_bon: form.id_bon.value,
+            date_bon: form.date_bon.value,
+            description: form.description.value,
+            montant: form.montant.value,
+            etat: form.etat.value,
+            date_de_notification: form.date_de_notification.value,
+            delais: form.delais.value,
+            agent_id_agent: form.agent_id_agent.value,
+            contract_id_projet: form.contract_id_projet ? form.contract_id_projet.value : null,
+            contract_id_fournisseur: form.contract_id_fournisseur ? form.contract_id_fournisseur.value : null,
+            contract_id_contrat: form.contract_id_contrat ? form.contract_id_contrat.value : null,
+            achat_sur_facture_projet_id_projet: form.achat_sur_facture_projet_id_projet ? form.achat_sur_facture_projet_id_projet.value : null,
+            achat_sur_facture_id_fournisseur: form.achat_sur_facture_id_fournisseur ? form.achat_sur_facture_id_fournisseur.value : null,
+            achat_sur_facture_id_facture: form.achat_sur_facture_id_facture ? form.achat_sur_facture_id_facture.value : null
+          };
+          try {
+            const response = await fetch('/bons_de_commande/' + encodeURIComponent(form.id_bon.value), {
+              method: 'PUT',
+              headers: {
+          'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            });
+            if (response.ok) {
+              alert('Bon de commande modifié avec succès');
+              window.location.reload();
+            } else {
+              alert('Erreur lors de la modification du bon de commande');
+            }
+          } catch (err) {
+            alert('Erreur réseau');
+          }
+        });
+        </script>
       </div>
     </div>
 

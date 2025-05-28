@@ -64,38 +64,37 @@
   <main>
     <div class="header">
         <div>
-          <h1>Tableau de bord du chapitre</h1>
+          <h1>Tableau de bord des chapitres</h1>
           <p>Aperçu des activités et statistiques</p>
         </div>
         <div class="action">
-       <div class="profile">
-  <img src="/static/user.png" alt="User">
-</div>
+            <div class="profile">
+                <img src="/static/user.png" alt="Utilisateur">
+            </div>
 
-        <div class="menu">
-            <h3>
-                {{agent.nom}} {{agent.prenom}}
-                <div>
-                    {{agent.role.value}}
-                </div>
-            </h3>
-            <ul>
-                <li>
-                   
-                    <a href="/user">My Profile</a>
-                </li>
-                <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
-                    <script>
-                    function destroyAccessTokenCookie() {
-                      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-                    </script>
-            </ul>
+            <div class="menu">
+                <h3>
+                    {{agent.nom}} {{agent.prenom}}
+                    <div>
+                        {{agent.role.value}}
+                    </div>
+                </h3>
+                <ul>
+                    <li>
+                        <a href="/user">Mon profil</a>
+                    </li>
+                    <li>
+                        <a href="/" onclick="destroyAccessTokenCookie()">Déconnexion</a>
+                        <script>
+                        function destroyAccessTokenCookie() {
+                          document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        }
+                        </script>
+                </ul>
+            </div>
         </div>
     </div>
 
-      </div>
       <script>
   const profile = document.querySelector('.profile');
 const toggleMenu = document.querySelector('.menu');

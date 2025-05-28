@@ -107,8 +107,8 @@
         <button id="closeUserPanel" class="close-btn">&times;</button>
         <h2>Ajouter un Bon de commande</h2>
         <form id="addBonForm">
-          <label >ID Bon</label>
-          <input type="text" name="id_bon" placeholder="Entrez l'ID Bon" />
+          <label>ID Bon</label>
+          <input type="text" name="id_bon" placeholder="Entrez l'ID du bon" />
           <label>Date</label>
           <input type="date" name="date_bon" placeholder="Entrez la date" />
           <label>Description</label>
@@ -121,16 +121,16 @@
             <div class="input-group">
               <label>État</label>
               <select name="etat">
-                <option value="en cours">en cours</option>
-                <option value="terminé">terminé</option>
-                <option value="retard">en retard</option>
+                <option value="en cours">En cours</option>
+                <option value="terminé">Terminé</option>
+                <option value="retard">En retard</option>
               </select>
             </div>
           </div>
           <label>Date de notification</label>
           <input type="date" name="date_de_notification" placeholder="Entrez la date de notification" />
           <label>Délais</label>
-          <input type="number" name="delais" placeholder="Entrez le délais" />
+          <input type="number" name="delais" placeholder="Entrez le délai" />
           <label>Agent</label>
           <input type="text" placeholder="Entrez l'agent" name="agent_id_agent" value="{{agent.id_agent}}" readonly />
           <div class="input-row">

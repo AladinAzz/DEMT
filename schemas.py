@@ -83,6 +83,7 @@ class ChapitreBase(BaseModel):
     nb_projets: Optional[int]=None
     nb_contrats: Optional[int]=None
     nb_achats: Optional[int]=None
+    nb_pre: Optional[int]=None
 
 class ChapitreCreate(BaseModel):
     id_chapitre: int

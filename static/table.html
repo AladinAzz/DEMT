@@ -54,7 +54,7 @@
     <nav class="sidebar-nav">
       <a href="/acceuil" class="sidebar-link active" data-tooltip="Acceuil">
         <i class="fas fa-chart-line"></i>
-        <span>Acceuil</span>
+        <span>Accueil</span>
       </a>
       <a href="/project" class="sidebar-link" data-tooltip="Projets">
         <i class="fas fa-folder"></i>
@@ -138,7 +138,11 @@
         </div>
         <div class="card1">
           <h3>Projets En cours de préparation</h3>
-          <p>{{ chapitre.nb_projets or 0 }}</p>
+          <p>
+            
+            {{ chapitre.nb_pre }}
+          
+          </p>
           <small>Projets en cours de préparation</small>
         </div>
         <div class="card1">
@@ -148,7 +152,7 @@
         </div>
         <div class="card1">
           <h3>Achats Actives</h3>
-          <p>{{ chapitre.nb_achat or 0 }}</p>
+          <p>{{ chapitre.nb_achats or 0 }}</p>
           <small>Achats sur facture actives</small>
         </div>
         
