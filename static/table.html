@@ -354,13 +354,13 @@
    const projectProgress{{ chapitre.id_chapitre }} = {
   labels: ['modatement', 'engagement'],
   data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement or 0 }}],
-  colors: ['#3399ff', '#66b3ff'] // Added colors for consistency with pie chart styling
+  colors: ['#28a745', '#007bff'] // Green and blue
 };
 
 const financeData{{ chapitre.id_chapitre }} = {
   labels: ['engagement', 'reste'],
   data: [{{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale - (chapitre.engagement + chapitre.mondatement) or 0 }}],
-  colors: ['#007bff', '#17a2b8']
+  colors: ['#ffff00','#ff0000']
 };
 
 const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};

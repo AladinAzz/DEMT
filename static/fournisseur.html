@@ -526,6 +526,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+const profile = document.querySelector('.profile');
+const toggleMenu = document.querySelector('.menu');
+
+profile.addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent the click from bubbling to document
+    toggleMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    toggleMenu.classList.remove('active');
+});
+
+
+
 </script>
 
 </body>
