@@ -64,8 +64,8 @@
   <main>
     <div class="header">
         <div>
-          <h1>Tableau de bord des chapitres</h1>
-          <p>Aperçu des activités et statistiques</p>
+          <h1>Liste des projets</h1>
+          
         </div>
         <div class="action">
             <div class="profile">
@@ -368,7 +368,7 @@ document.addEventListener('click', () => {
                         <th>ID</th>
                         <th>Chapitre</th>
                         <th>Nom du projet</th>
-                        <th>Période</th>
+                        <th>date debut</th>
                         <th>Type</th>
                         <th>etat</th>
                         <th>Bureau</th>
@@ -385,11 +385,9 @@ document.addEventListener('click', () => {
                             <div class="text-muted small">{{ projet.description }}</div>
                           </td>
                           <td>
-                            {% if projet.date_debut and projet.date_fin %}
-                              {{ projet.date_debut|format_date_fr }} - {{ projet.date_fin|format_date_fr }}
-                            {% else %}
-                              Non spécifié
-                            {% endif %}
+                            
+                              {{ projet.date_debut}}
+                            
                           </td>
                           <td>{{ projet.type }}</td>
                           <td>
