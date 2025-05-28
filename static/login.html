@@ -148,11 +148,15 @@
       const password = document.getElementById("password").value;
       const errorBox = document.getElementById("error");
 
-      const formData = new URLSearchParams();
-      formData.append("username", username);
-      formData.append("password", password);
-
       try {
+        const formData = new URLSearchParams();
+        formData.append("username", username);
+        formData.append("password", password);
+        formData.append("grant_type", "password");
+        formData.append("scope", "");
+        formData.append("client_id", "");
+        formData.append("client_secret", "");
+
         const response = await fetch("/token", {
           method: "POST",
           headers: {
@@ -169,17 +173,13 @@
         const data = await response.json();
         const token = data.access_token;
 
-        // Store token in secure cookie
-         document.cookie =
-        `access_token=${token}` +
-        `; Path=/` +
-       
-        `; SameSite=Lax`;
+        // Set cookie for HTTP
+        document.cookie = `access_token=${token}; Path=/; SameSite=Lax`;
 
-        // Redirect to home, where the token will be validated
         window.location.href = "/";
+
       } catch (error) {
-        console.error("Erreur de connexion :", error);
+        console.error("Connection error:", error);
         errorBox.style.display = "block";
       }
     });

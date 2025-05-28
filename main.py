@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.exception_handlers import http_exception_handler
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -33,15 +33,37 @@ def format_date_fr(value):
 
 templates.env.filters["format_date_fr"] = format_date_fr
 
-@app.post("/token", response_model=security.Token)
+@app.post("/token")
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
     agent = security.authenticate_agent(db, form_data.username, form_data.password)
     if not agent:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400,
+            detail="Incorrect username or password"
+        )
+    
     access_token = security.create_access_token(data={"sub": agent.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    
+    # Create response with token
+    response = JSONResponse({
+        "access_token": access_token,
+        "token_type": "bearer"
+    })
+    
+    # Set cookie in response
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=False,  # Allow JavaScript access
+        samesite="lax",
+        path="/"
+    )
+    
+    return response
 
 
 # Protect all routes by default:
@@ -493,5 +515,4 @@ async def notification_page(
         "bons": bon,
         "agent": current_agent
     })
-    
-    
+
