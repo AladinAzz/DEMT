@@ -10,6 +10,14 @@
   <script src="/static/data/chart.umd.min.js"></script>
  
   <style>
+    .chapter-tag {
+      background: #d3f5e2;
+      color: #188848;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      margin-left: 10px;
+    }
     .dashboard {
       display: flex;
       gap: 2rem;
@@ -298,7 +306,7 @@
       </div>
 
       
-<h1 class="section-title">chapitre: {{chapitre.nom}} </h1>
+<h1 class="section-title">chapitre: {{chapitre.nom}}   </h1>   
 <br>
       <!-- Stats cards -->
       <div class="cards">
@@ -330,10 +338,17 @@
       </div>
 <div class="cards">
       <div class="card1">
+          <h3>Le montant initiale</h3>
+          <p style="color: green;">{{ chapitre.montant_initiale or "non specifié" }}</p>
+          <small>Budget total des projets</small>
+        </div>
+        <div class="card1">
           <h3>Le Reste</h3>
-          <p style="color: green;">{{ chapitre.montant_initiale-chapitre.engagement-chapitre.mondatement or "non specifié" }}</p>
+          <p style="color: green;">{{ chapitre.montant_initiale-chapitre.engagement or "non specifié" }}</p>
           <small>Budget restant des projets</small>
         </div>
+      
+      
       </div>
       <!-- Charts -->
     
@@ -352,21 +367,21 @@
 </div>
   <script>
    const projectProgress{{ chapitre.id_chapitre }} = {
-  labels: ['modatement', 'engagement'],
-  data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement or 0 }}],
+  labels: ['modatement', 'reste d\'engagement'],
+  data: [{{ chapitre.mondatement or 0 }}, {{ chapitre.engagement-chapitre.mondatement or 0 }}],
   colors: ['#28a745', '#007bff'] // Green and blue
 };
 
 const financeData{{ chapitre.id_chapitre }} = {
   labels: ['engagement', 'reste'],
-  data: [{{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale - (chapitre.engagement + chapitre.mondatement) or 0 }}],
+  data: [{{ chapitre.engagement or 0 }}, {{ chapitre.montant_initiale - (chapitre.engagement ) or 0 }}],
   colors: ['#ffff00','#ff0000']
 };
 
 const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};
 
 // Calculate percentages for projectProgress chart
-const progressPercentages{{ chapitre.id_chapitre }} = projectProgress{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / total{{ chapitre.id_chapitre }}) * 100).toFixed(1) : 0);
+const progressPercentages{{ chapitre.id_chapitre }} = projectProgress{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / {{ chapitre.engagement }})0 * 100).toFixed(1) : 0);
 
 // Progress Pie Chart
 new Chart(document.getElementById('progressChart{{ chapitre.id_chapitre }}'), {

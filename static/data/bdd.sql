@@ -461,3 +461,9 @@ DELIMITER ;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+insert into direction values (1,'admin');
+insert into bureau values (1,'admin',1);
+insert into agent values (1,'admin','admin','directeur',1,'$2b$12$66RuT1VYQYPvnd/rbcPQ4.dIGJoYBdPielqRUy4Y1TViGrZAkLceK',1,'admin');
+
