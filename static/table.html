@@ -381,7 +381,7 @@ const financeData{{ chapitre.id_chapitre }} = {
 const total{{ chapitre.id_chapitre }} = {{ chapitre.montant_initiale or 1 }};
 
 // Calculate percentages for projectProgress chart
-const progressPercentages{{ chapitre.id_chapitre }} = projectProgress{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / {{ chapitre.engagement }})0 * 100).toFixed(1) : 0);
+const progressPercentages{{ chapitre.id_chapitre }} = projectProgress{{ chapitre.id_chapitre }}.data.map(val => total{{ chapitre.id_chapitre }} ? ((val / {{ chapitre.engagement }}) * 100).toFixed(1) : 0);
 
 // Progress Pie Chart
 new Chart(document.getElementById('progressChart{{ chapitre.id_chapitre }}'), {
