@@ -58,7 +58,7 @@
     
    <div class="header">
         <div>
-          <h1>Tableau des notifications</h1>
+          <h1>Tableau des fournisseurs</h1>
           
         </div>
         <div class="action">
@@ -79,11 +79,24 @@
                     <a href="/user">Mon Profil</a>
                 </li>
                 <li>
-                    <a href="/" onclick="destroyAccessTokenCookie()">Déconnexion</a>
+                    <a href="/" onclick="destroyAccessTokenCookie()">Logout</a>
                     <script>
                     function destroyAccessTokenCookie() {
                       document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     }
+                    
+                            const profile = document.querySelector('.profile');
+                            const toggleMenu = document.querySelector('.menu');
+
+                            profile.addEventListener('click', (e) => {
+                                e.stopPropagation(); // prevent the click from bubbling to document
+                                toggleMenu.classList.toggle('active');
+                            });
+
+                            document.addEventListener('click', () => {
+                                toggleMenu.classList.remove('active');
+                            });
+
                     </script>
             </ul>
         </div>
